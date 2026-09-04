@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cuándo cambiar las cuerdas de tu guitarra o bajo, según cuánto tocas y en qué ambiente.">
+  <title>Cada cuánto cambiar las cuerdas — Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="barra-sesion">
+      <div class="contenedor">
+        <a href="login.html">Iniciar sesión</a>
+        <a href="registro.html">Registrar usuario</a>
+      </div>
+    </div>
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="index.html">
+        <img src="assets/img/logo.svg" alt="" width="30" height="30">
+        <span>Sonido Vivo</span>
+      </a>
+      <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">☰ Menú</button>
+      <nav class="nav-principal" id="menu" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="blogs.html" aria-current="page">Blogs</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="acciones-cabecera">
+        <a class="enlace-carrito" href="carrito.html">
+          Carrito <span class="contador-carrito">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="seccion">
+      <div class="contenedor">
+        <article class="articulo">
+          <nav class="migas" aria-label="Ruta de navegación">
+            <a href="index.html">Home</a> › <a href="blogs.html">Blogs</a> › <span>Cambio de cuerdas</span>
+          </nav>
+          <h1>Cada cuánto cambiar las cuerdas</h1>
+          <p class="tarjeta-producto__marca">Publicado por el equipo de Sonido Vivo</p>
+          <img src="assets/img/accesorios.svg" alt="Juegos de cuerdas de distintos calibres" width="560" height="300">
+
+          <p>No hay un número mágico, pero sí señales claras. Si tus cuerdas perdieron brillo, se desafinan a los diez minutos o dejaron marcas negras en tus dedos, ya pasó el punto.</p>
+
+          <h2>Una referencia según cuánto tocas</h2>
+          <p>Si tocas una hora al día, un juego rinde entre seis y ocho semanas. Si ensayas con banda tres veces por semana, cuenta un mes. Si tocas en vivo, cambia antes de la fecha y no después: una cuerda cortada a mitad del set arruina un tema entero.</p>
+
+          <h2>El sudor y la costa</h2>
+          <p>En Viña del Mar hay un factor extra: la humedad. La sal en el aire acelera la oxidación, sobre todo si guardas el instrumento fuera del estuche. Pasar un paño seco por las cuerdas después de tocar es gratis y les suma semanas de vida.</p>
+
+          <h2>Calibre, no solo marca</h2>
+          <p>Un juego 09-42 se toca fácil y sirve para hacer bendings; un 10-46 suena más grueso y aguanta afinaciones bajas. Cambiar de calibre modifica la tensión del mástil, así que después de un cambio grande conviene revisar el ajuste del alma.</p>
+
+          <p><a class="boton boton--linea" href="productos.html?categoria=Accesorios">Ver cuerdas y accesorios</a></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie__grid">
+        <div>
+          <h3>Sonido Vivo</h3>
+          <p>Instrumentos, equipos de sonido y accesorios en Viña del Mar desde 2014. Atendemos en tienda y despachamos a todo Chile.</p>
+        </div>
+        <div>
+          <h3>Categorías</h3>
+          <ul>
+            <li><a href="productos.html?categoria=Guitarras%20El%C3%A9ctricas">Guitarras eléctricas</a></li>
+            <li><a href="productos.html?categoria=Amplificadores">Amplificadores</a></li>
+            <li><a href="productos.html?categoria=Accesorios">Accesorios</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="nosotros.html">Quiénes somos</a></li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a href="admin/index.html">Panel de administración</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Novedades por correo</h3>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
+          <form class="suscripcion" id="form-suscripcion" novalidate>
+            <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
+            <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">
+            <button class="boton boton--primario" type="submit">Suscribirme</button>
+            <span class="error" role="alert"></span>
+          </form>
+        </div>
+      </div>
+      <div class="pie__legal">
+        <p>Av. San Martín 452, Viña del Mar · +56 32 245 8890 · contacto@sonidovivo.cl</p>
+        <p>&copy; <span id="anio">2026</span> Sonido Vivo. Proyecto académico DSY1104 — Duoc UC.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/datos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/tienda.js"></script>
+</body>
+</html>

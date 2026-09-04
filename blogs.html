@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noticias, guías y datos curiosos sobre instrumentos musicales publicados por Sonido Vivo.">
+  <title>Blogs — Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="barra-sesion">
+      <div class="contenedor">
+        <a href="login.html">Iniciar sesión</a>
+        <a href="registro.html">Registrar usuario</a>
+      </div>
+    </div>
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="index.html">
+        <img src="assets/img/logo.svg" alt="" width="30" height="30">
+        <span>Sonido Vivo</span>
+      </a>
+      <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">☰ Menú</button>
+      <nav class="nav-principal" id="menu" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="blogs.html" aria-current="page">Blogs</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="acciones-cabecera">
+        <a class="enlace-carrito" href="carrito.html">
+          Carrito <span class="contador-carrito">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="seccion">
+      <div class="contenedor">
+        <h1>Noticias importantes</h1>
+        <p>Lo que preguntan los músicos en el mesón, contestado acá para que no tengas que venir a preguntarlo.</p>
+
+        <div class="lista-blogs separado-arriba" id="lista-blogs">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie__grid">
+        <div>
+          <h3>Sonido Vivo</h3>
+          <p>Instrumentos, equipos de sonido y accesorios en Viña del Mar desde 2014. Atendemos en tienda y despachamos a todo Chile.</p>
+        </div>
+        <div>
+          <h3>Categorías</h3>
+          <ul>
+            <li><a href="productos.html?categoria=Guitarras%20El%C3%A9ctricas">Guitarras eléctricas</a></li>
+            <li><a href="productos.html?categoria=Amplificadores">Amplificadores</a></li>
+            <li><a href="productos.html?categoria=Accesorios">Accesorios</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="nosotros.html">Quiénes somos</a></li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a href="admin/index.html">Panel de administración</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Novedades por correo</h3>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
+          <form class="suscripcion" id="form-suscripcion" novalidate>
+            <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
+            <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">
+            <button class="boton boton--primario" type="submit">Suscribirme</button>
+            <span class="error" role="alert"></span>
+          </form>
+        </div>
+      </div>
+      <div class="pie__legal">
+        <p>Av. San Martín 452, Viña del Mar · +56 32 245 8890 · contacto@sonidovivo.cl</p>
+        <p>&copy; <span id="anio">2026</span> Sonido Vivo. Proyecto académico DSY1104 — Duoc UC.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/datos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/tienda.js"></script>
+</body>
+</html>
