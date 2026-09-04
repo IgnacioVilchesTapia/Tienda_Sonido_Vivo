@@ -513,3 +513,78 @@ textarea { min-height: 130px; resize: vertical; }
 
 .mapa-tienda { border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden; }
 .mapa-tienda iframe { width: 100%; height: 340px; border: 0; display: block; }
+/* ---------- 14. Pie de página ---------- */
+.pie {
+  background: var(--tolex);
+  color: rgba(242, 237, 228, 0.78);
+  padding-block: var(--esp-4) var(--esp-3);
+  margin-top: var(--esp-5);
+}
+.pie__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+  gap: var(--esp-3);
+}
+.pie h3 { color: var(--grille); font-size: 1rem; margin-bottom: var(--esp-1); }
+.pie a { color: rgba(242, 237, 228, 0.78); text-decoration: none; }
+.pie a:hover { color: var(--ambar); }
+.pie ul { display: grid; gap: 0.35rem; }
+.pie__legal {
+  border-top: 1px solid rgba(242, 237, 228, 0.15);
+  margin-top: var(--esp-3);
+  padding-top: var(--esp-2);
+  font-size: 0.88rem;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+}
+.suscripcion { display: flex; gap: 0.5rem; margin-top: var(--esp-1); }
+.suscripcion input { flex: 1; }
+
+/* ---------- 15. Utilidades ----------*/
+.centrado { text-align: center; }
+.centrado img { margin-inline: auto; }
+.separado-arriba { margin-top: var(--esp-3); }
+.separado-arriba-corto { margin-top: var(--esp-2); }
+.logo-grande { width: 56px; height: 56px; }
+.imagen-ficha { border-radius: var(--radio); margin-bottom: var(--esp-3); }
+
+/* ---------- 16. Responsive ---------- */
+
+@media (max-width: 1024px) {
+  .hero__grid, .detalle, .carrito, .entrada-blog { grid-template-columns: 1fr; }
+  .pie__grid { grid-template-columns: 1fr 1fr; }
+  .resumen { position: static; }
+}
+
+/* Móvil */
+@media (max-width: 767px) {
+  .boton-menu { display: block; margin-left: auto; }
+  .nav-principal {
+    display: none;
+    width: 100%;
+    order: 3;
+    padding-bottom: var(--esp-2);
+  }
+  .nav-principal.abierto { display: block; }
+  .nav-principal ul { flex-direction: column; gap: 0; }
+  .nav-principal a { display: block; padding: 0.7rem 0; border-bottom: 1px solid rgba(242,237,228,0.12); }
+  .cabecera__barra { flex-wrap: wrap; gap: var(--esp-1); }
+  .acciones-cabecera { order: 2; }
+  .fila { grid-template-columns: 1fr; }
+  .linea-carrito { grid-template-columns: 80px 1fr; }
+  .pie__grid { grid-template-columns: 1fr; }
+  .seccion { padding-block: var(--esp-4); }
+}
+
+/* Móvil chico */
+@media (max-width: 400px) {
+  .contenedor { width: min(100% - 1.5rem, var(--ancho)); }
+  .grilla-productos { grid-template-columns: 1fr; }
+  .marca span { font-size: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto; }
+}
