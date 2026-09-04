@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Carrito de compras de Sonido Vivo. Revisa tus productos y finaliza tu pedido.">
+  <title>Carrito de Compras — Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="barra-sesion">
+      <div class="contenedor">
+        <a href="login.html">Iniciar sesión</a>
+        <a href="registro.html">Registrar usuario</a>
+      </div>
+    </div>
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="index.html">
+        <img src="assets/img/logo.svg" alt="" width="30" height="30">
+        <span>Sonido Vivo</span>
+      </a>
+      <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">☰ Menú</button>
+      <nav class="nav-principal" id="menu" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="productos.html">Productos</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="blogs.html">Blogs</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+      <div class="acciones-cabecera">
+        <a class="enlace-carrito" href="carrito.html" aria-current="page">
+          Carrito <span class="contador-carrito">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="seccion">
+      <div class="contenedor">
+        <div class="seccion__encabezado">
+          <div>
+            <h1>Tu Carrito de Compras</h1>
+            <p>Revisa los artículos seleccionados antes de proceder al pago.</p>
+          </div>
+        </div>
+
+        <!-- Mensaje cuando el carrito está vacío -->
+        <div id="mensaje-carrito-vacio" class="mensaje" style="text-align: center; padding: var(--esp-5); display: none;">
+          <p style="font-size: 1.25rem; margin-bottom: var(--esp-2);">Tu carrito está vacío.</p>
+          <a href="productos.html" class="boton boton--primario">Ir al catálogo</a>
+        </div>
+
+        <!-- Contenedor del carrito con productos -->
+        <div id="contenedor-carrito" class="carrito-grid" style="display: grid; gap: var(--esp-4); grid-template-columns: 1fr; margin-top: var(--esp-3);">
+          
+          <!-- Tabla de productos -->
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead style="border-bottom: 2px solid var(--linea);">
+                <tr>
+                  <th style="padding: var(--esp-2) var(--esp-1);">Producto</th>
+                  <th style="padding: var(--esp-2) var(--esp-1);">Precio</th>
+                  <th style="padding: var(--esp-2) var(--esp-1);">Cantidad</th>
+                  <th style="padding: var(--esp-2) var(--esp-1);">Subtotal</th>
+                  <th style="padding: var(--esp-2) var(--esp-1);">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-carrito">
+                <!-- Los items del carrito se inyectarán aquí mediante carrito.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Resumen de compra -->
+          <aside class="carrito-resumen" style="background-color: var(--grille); padding: var(--esp-3); border-radius: var(--radio);">
+            <h2 style="margin-bottom: var(--esp-2);">Resumen de la compra</h2>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-1);">
+              <span>Subtotal:</span>
+              <span id="resumen-subtotal" style="font-weight: 500;">$0</span>
+            </div>
+
+            <!-- Sección de cupón -->
+            <div style="margin-bottom: var(--esp-2); border-bottom: 1px solid var(--linea); padding-bottom: var(--esp-2);">
+              <label for="input-cupon" style="display: block; margin-bottom: var(--esp-1); font-size: 0.875rem;">¿Tienes un cupón?</label>
+              <div style="display: flex; gap: var(--esp-1);">
+                <input type="text" id="input-cupon" placeholder="Ej: SONIDOVIVO10" style="flex: 1; padding: var(--esp-1);">
+                <button type="button" id="btn-aplicar-cupon" class="boton boton--linea">Aplicar</button>
+              </div>
+              <div id="mensaje-cupon" style="font-size: 0.875rem; margin-top: var(--esp-1);"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-1); color: var(--ok);">
+              <span>Descuento:</span>
+              <span id="resumen-descuento">-$0</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-2); border-bottom: 1px solid var(--linea); padding-bottom: var(--esp-2);">
+              <span>Despacho:</span>
+              <span id="resumen-despacho">$0</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-3); font-size: 1.25rem; font-weight: 600;">
+              <span>Total:</span>
+              <span id="resumen-total" style="color: var(--ambar-fuerte);">$0</span>
+            </div>
+
+            <button type="button" id="btn-finalizar-compra" class="boton boton--primario" style="width: 100%;">Finalizar Compra</button>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie__grid">
+        <div>
+          <h3>Sonido Vivo</h3>
+          <p>Instrumentos, equipos de sonido y accesorios en Viña del Mar desde 2014. Atendemos en tienda y despachamos a todo Chile.</p>
+        </div>
+        <div>
+          <h3>Categorías</h3>
+          <ul>
+            <li><a href="productos.html?categoria=Guitarras%20El%C3%A9ctricas">Guitarras eléctricas</a></li>
+            <li><a href="productos.html?categoria=Amplificadores">Amplificadores</a></li>
+            <li><a href="productos.html?categoria=Accesorios">Accesorios</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Tienda</h3>
+          <ul>
+            <li><a href="nosotros.html">Quiénes somos</a></li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a href="admin/index.html">Panel de administración</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Novedades por correo</h3>
+          <p>Te avisamos cuando llega stock nuevo.</p>
+          <form class="suscripcion" id="form-suscripcion" novalidate>
+            <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
+            <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">
+            <button class="boton boton--primario" type="submit">Suscribirme</button>
+            <span class="error" role="alert"></span>
+          </form>
+        </div>
+      </div>
+      <div class="pie__legal">
+        <p>Av. San Martín 452, Viña del Mar · +56 32 245 8890 · contacto@sonidovivo.cl</p>
+        <p>&copy; <span id="anio">2026</span> Sonido Vivo. Proyecto académico DSY1104 — Duoc UC.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/datos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/tienda.js"></script>
+</body>
+</html>
