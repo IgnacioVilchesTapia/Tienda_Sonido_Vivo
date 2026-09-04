@@ -1,0 +1,90 @@
+/* ============================================================
+   Sonido Vivo — hoja de estilos principal
+   Externa y única para todas las páginas de la tienda.
+   Paleta tomada del rubro: azul tolex de amplificador, tela de
+   rejilla color hueso y el ámbar de la luz piloto encendida.
+   ============================================================ */
+
+
+/* 1. Tokens */
+:root {
+  --tolex: #16232f;
+  --tolex-claro: #223441;
+  --grille: #f2ede4;
+  --papel: #ffffff;
+  --tinta: #1c2630;
+  --tinta-suave: #5d6b78;
+  --linea: #dcd6cb;
+  --ambar: #e0a13c;
+  --ambar-fuerte: #a86f14;
+  --alerta: #b3261e;
+  --ok: #1d7a4c;
+
+  --fuente-titulo: "Space Grotesk", "Trebuchet MS", sans-serif;
+  --fuente-texto: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+
+  --esp-1: 0.5rem;
+  --esp-2: 1rem;
+  --esp-3: 1.5rem;
+  --esp-4: 2.5rem;
+  --esp-5: 4rem;
+
+  --ancho: 1200px;
+  --radio: 6px;
+}
+
+/* ---------- 2. Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
+ul[class] { list-style: none; padding: 0; }
+img, svg { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--tinta);
+  background: var(--papel);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.125rem); }
+h3 { font-size: 1.25rem; }
+
+a { color: var(--ambar-fuerte); }
+p { max-width: 68ch; }
+
+:focus-visible {
+  outline: 3px solid var(--ambar);
+  outline-offset: 2px;
+}
+
+.contenedor {
+  width: min(100% - 2.5rem, var(--ancho));
+  margin-inline: auto;
+}
+
+.salto-contenido {
+  position: absolute;
+  left: -9999px;
+  background: var(--tolex);
+  color: var(--papel);
+  padding: var(--esp-1) var(--esp-2);
+}
+.salto-contenido:focus { left: var(--esp-2); top: var(--esp-2); z-index: 100; }
+
+.visualmente-oculto {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
