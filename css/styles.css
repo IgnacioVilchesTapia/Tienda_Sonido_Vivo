@@ -88,3 +88,208 @@ p { max-width: 68ch; }
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+/* ============================================================
+   Sonido Vivo — hoja de estilos principal
+   Externa y única para todas las páginas de la tienda.
+   Paleta tomada del rubro: azul tolex de amplificador, tela de
+   rejilla color hueso y el ámbar de la luz piloto encendida.
+   ============================================================ */
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  --tolex: #16232f;
+  --tolex-claro: #223441;
+  --grille: #f2ede4;
+  --papel: #ffffff;
+  --tinta: #1c2630;
+  --tinta-suave: #5d6b78;
+  --linea: #dcd6cb;
+  --ambar: #e0a13c;
+  --ambar-fuerte: #a86f14;
+  --alerta: #b3261e;
+  --ok: #1d7a4c;
+
+  --fuente-titulo: "Space Grotesk", "Trebuchet MS", sans-serif;
+  --fuente-texto: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+
+  --esp-1: 0.5rem;
+  --esp-2: 1rem;
+  --esp-3: 1.5rem;
+  --esp-4: 2.5rem;
+  --esp-5: 4rem;
+
+  --ancho: 1200px;
+  --radio: 6px;
+}
+
+/* ---------- 2. Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
+ul[class] { list-style: none; padding: 0; }
+img, svg { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--tinta);
+  background: var(--papel);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.125rem); }
+h3 { font-size: 1.25rem; }
+
+a { color: var(--ambar-fuerte); }
+p { max-width: 68ch; }
+
+:focus-visible {
+  outline: 3px solid var(--ambar);
+  outline-offset: 2px;
+}
+
+.contenedor {
+  width: min(100% - 2.5rem, var(--ancho));
+  margin-inline: auto;
+}
+
+.salto-contenido {
+  position: absolute;
+  left: -9999px;
+  background: var(--tolex);
+  color: var(--papel);
+  padding: var(--esp-1) var(--esp-2);
+}
+.salto-contenido:focus { left: var(--esp-2); top: var(--esp-2); z-index: 100; }
+
+.visualmente-oculto {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+/* ---------- 3. Cabecera y navegación ---------- */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--tolex);
+  color: var(--grille);
+  border-bottom: 1px solid rgba(224, 161, 60, 0.25);
+}
+.cabecera__barra {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  min-height: 68px;
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--grille);
+  text-decoration: none;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+.marca img { width: 30px; height: 30px; }
+
+.nav-principal { margin-left: auto; }
+.nav-principal ul {
+  display: flex;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-principal a {
+  color: var(--grille);
+  text-decoration: none;
+  padding: 0.35rem 0;
+  display: inline-block;
+  border-bottom: 2px solid transparent;
+}
+.nav-principal a:hover { border-bottom-color: rgba(224, 161, 60, 0.5); }
+/* La luz piloto: marca la página activa igual que el LED de un amplificador */
+.nav-principal a[aria-current="page"] {
+  border-bottom-color: var(--ambar);
+  color: var(--ambar);
+}
+
+.acciones-cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+.enlace-carrito {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--grille);
+  text-decoration: none;
+  border: 1px solid rgba(242, 237, 228, 0.3);
+  border-radius: var(--radio);
+  padding: 0.35rem 0.75rem;
+}
+.enlace-carrito:hover { border-color: var(--ambar); color: var(--ambar); }
+.contador-carrito {
+  background: var(--ambar);
+  color: var(--tolex);
+  border-radius: 999px;
+  padding: 0 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 1.4rem;
+  text-align: center;
+}
+
+.boton-menu {
+  display: none;
+  background: none;
+  border: 1px solid rgba(242, 237, 228, 0.35);
+  border-radius: var(--radio);
+  color: var(--grille);
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+
+.barra-sesion {
+  background: var(--tolex-claro);
+  color: var(--grille);
+  font-size: 0.9rem;
+}
+.barra-sesion .contenedor {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--esp-2);
+  padding: 0.4rem 0;
+}
+.barra-sesion a { color: var(--grille); }
+
+/* ---------- 4. Hero ---------- */
+.hero {
+  background: var(--tolex);
+  color: var(--grille);
+  padding-block: var(--esp-5);
+}
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--esp-4);
+  align-items: center;
+}
+.hero h1 { color: var(--papel); }
+.hero p { color: rgba(242, 237, 228, 0.82); margin-top: var(--esp-2); font-size: 1.075rem; }
+.hero__acciones { display: flex; gap: var(--esp-2); margin-top: var(--esp-3); flex-wrap: wrap; }
+.hero__figura img { border-radius: var(--radio); width: 100%; }
