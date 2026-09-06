@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Salón de la tienda Sonido Vivo en Viña del Mar">
+  <rect width="800" height="560" fill="#16232f"/>
+  <rect x="0" y="430" width="800" height="130" fill="#101b24"/>
+  <g stroke="#e0a13c" stroke-width="3" fill="none" opacity="0.9">
+    <path d="M120 120c0-26 22-46 48-46s48 20 48 46v210c0 42-96 42-96 0z"/>
+    <path d="M168 74v-30"/>
+    <circle cx="168" cy="300" r="34"/>
+  </g>
+  <g fill="#243645">
+    <rect x="330" y="230" width="180" height="200" rx="8"/>
+    <rect x="560" y="280" width="150" height="150" rx="8"/>
+  </g>
+  <g fill="#e0a13c" opacity="0.55">
+    <circle cx="420" cy="320" r="52"/>
+    <circle cx="635" cy="350" r="42"/>
+  </g>
+  <g fill="#f2ede4" opacity="0.9">
+    <circle cx="420" cy="320" r="10"/>
+    <circle cx="635" cy="350" r="8"/>
+  </g>
+</svg>
