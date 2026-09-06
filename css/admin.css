@@ -1,0 +1,121 @@
+
+.admin {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+}
+
+/* ---------- Menú lateral ---------- */
+.lateral {
+  background: var(--tolex);
+  color: var(--grille);
+  padding: var(--esp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+}
+.lateral .marca { padding: var(--esp-1) 0 var(--esp-2); }
+.lateral nav ul { display: grid; gap: 0.15rem; }
+.lateral nav a {
+  display: block;
+  color: rgba(242, 237, 228, 0.85);
+  text-decoration: none;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radio);
+  border-left: 3px solid transparent;
+}
+.lateral nav a:hover { background: var(--tolex-claro); }
+.lateral nav a[aria-current="page"] {
+  background: var(--tolex-claro);
+  border-left-color: var(--ambar);
+  color: var(--ambar);
+}
+.lateral__grupo { font-size: 0.78rem; color: rgba(242,237,228,0.5); padding: var(--esp-1) 0.7rem 0.2rem; }
+.lateral__pie { margin-top: auto; font-size: 0.85rem; border-top: 1px solid rgba(242,237,228,0.15); padding-top: var(--esp-2); }
+.lateral__pie a { color: var(--ambar); }
+
+/* ---------- Área de trabajo ---------- */
+.panel { background: #f7f6f3; padding: var(--esp-3); }
+.panel__encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-3);
+}
+.panel__encabezado p { color: var(--tinta-suave); }
+
+.tarjetas-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-3);
+}
+.tarjeta-dato {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: var(--esp-2);
+}
+.tarjeta-dato__valor { font-family: var(--fuente-titulo); font-size: 2rem; font-weight: 700; }
+.tarjeta-dato__etiqueta { color: var(--tinta-suave); font-size: 0.9rem; }
+.tarjeta-dato--alerta { border-left: 4px solid var(--alerta); }
+
+/* -- Tablas --*/
+.bloque {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: var(--esp-2);
+}
+.tabla-envoltorio { overflow-x: auto; }
+table.tabla { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+.tabla caption { text-align: left; color: var(--tinta-suave); padding-bottom: var(--esp-1); }
+.tabla th, .tabla td { text-align: left; padding: 0.65rem 0.6rem; border-bottom: 1px solid var(--linea); }
+.tabla th { font-family: var(--fuente-titulo); font-weight: 600; background: var(--grille); white-space: nowrap; }
+.tabla tbody tr:hover { background: #fbfaf7; }
+.tabla td.numerico, .tabla th.numerico { text-align: right; }
+.acciones-fila { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.acciones-fila .boton { padding: 0.3rem 0.6rem; font-size: 0.85rem; }
+
+.insignia {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+.insignia--admin { color: #6b3fa0; border-color: #d3c2ea; background: #f4effb; }
+.insignia--vendedor { color: var(--ambar-fuerte); border-color: #ecd7ae; background: #fbf4e8; }
+.insignia--cliente { color: var(--ok); border-color: #bfe0cd; background: #eef7f1; }
+.insignia--critico { color: var(--alerta); border-color: #edc3c0; background: #fdf1f0; }
+
+.buscador-tabla { display: flex; gap: var(--esp-1); margin-bottom: var(--esp-2); flex-wrap: wrap; }
+.buscador-tabla input, .buscador-tabla select { min-width: 190px; }
+
+.paginacion { display: flex; gap: 0.3rem; justify-content: center; margin-top: var(--esp-2); }
+.paginacion button {
+  border: 1px solid var(--linea);
+  background: var(--papel);
+  border-radius: 4px;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+}
+.paginacion button[aria-current="true"] { background: var(--tolex); color: var(--grille); border-color: var(--tolex); }
+
+.formulario--ancho { max-width: 100%; }
+
+/* -- Responsive --*/
+@media (max-width: 900px) {
+  .admin { grid-template-columns: 1fr; }
+  .lateral { flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--esp-2); }
+  .lateral nav { width: 100%; }
+  .lateral nav ul { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .lateral__grupo { display: none; }
+  .lateral__pie { margin-top: 0; border: 0; padding-top: 0; }
+}
+@media (max-width: 500px) {
+  .panel { padding: var(--esp-2); }
+}
