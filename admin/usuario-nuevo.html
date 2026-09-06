@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Usuario — Admin Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="../index.html">
+        <span>Admin | Sonido Vivo</span>
+      </a>
+      <nav class="nav-principal">
+        <ul>
+          <li><a href="usuarios.html" aria-current="page">Usuarios</a></li>
+          <li><a href="../index.html">Volver a la tienda</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido" class="seccion">
+    <div class="contenedor" style="max-width: 600px; margin-inline: auto;">
+      <div style="margin-bottom: var(--esp-3);">
+        <a href="usuarios.html" class="boton boton--linea">← Volver al listado</a>
+      </div>
+
+      <h1 style="margin-bottom: var(--esp-3);">Alta de Usuario</h1>
+
+      <form id="form-usuario-nuevo" style="display: flex; flex-direction: column; gap: var(--esp-3);" novalidate>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-2);">
+          <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
+            <label for="admin-nombre" style="font-weight: 500;">Nombre</label>
+            <input type="text" id="admin-nombre" name="nombre" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
+            <label for="admin-apellido" style="font-weight: 500;">Apellido</label>
+            <input type="text" id="admin-apellido" name="apellido" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
+          <label for="admin-correo" style="font-weight: 500;">Correo electrónico</label>
+          <input type="email" id="admin-correo" name="correo" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
+          <label for="admin-password" style="font-weight: 500;">Contraseña</label>
+          <input type="password" id="admin-password" name="password" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
+          <label for="admin-rol" style="font-weight: 500;">Rol del sistema</label>
+          <select id="admin-rol" name="rol" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio); background-color: var(--papel);">
+            <option value="USER">Usuario Estándar (Cliente)</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+
+        <button type="submit" class="boton boton--primario" style="margin-top: var(--esp-2);">Crear usuario</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>
