@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel de administración de Sonido Vivo. Acceso restringido al perfil Administrador.">
+  <meta name="robots" content="noindex">
+  <title>Editar producto — Administración Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <div class="admin">
+    <aside class="lateral">
+      <a class="marca" href="index.html">
+        <img src="../assets/img/logo.svg" alt="" width="30" height="30">
+        <span>Sonido Vivo</span>
+      </a>
+      <nav aria-label="Menú de administración">
+        <ul>
+          <li class="lateral__grupo">Panel</li>
+            <li><a href="index.html">Inicio</a></li>
+          <li class="lateral__grupo">Productos</li>
+            <li><a href="productos.html" aria-current="page">Listado de productos</a></li>
+            <li><a href="producto-nuevo.html">Nuevo producto</a></li>
+          <li class="lateral__grupo">Usuarios</li>
+            <li><a href="usuarios.html">Listado de usuarios</a></li>
+            <li><a href="usuario-nuevo.html">Nuevo usuario</a></li>
+        </ul>
+      </nav>
+      <div class="lateral__pie">
+        <p>Sesión: Carla Pizarro<br>Perfil Administrador</p>
+        <p><a href="../index.html">Volver a la tienda</a></p>
+      </div>
+    </aside>
+
+    <main class="panel" id="contenido">
+      <div class="panel__encabezado">
+        <div>
+          <h1>Editar producto</h1>
+          <p>Los datos se cargan desde el catálogo según el código recibido en la URL.</p>
+        </div>
+        <a class="boton boton--linea" href="productos.html">Volver al listado</a>
+      </div>
+
+      <section class="bloque">
+        <form class="formulario formulario--ancho" id="form-producto" novalidate>
+          <div class="mensaje" role="status" hidden></div>
+          <div class="fila">
+            <div class="campo">
+              <label for="codigo">Código del producto</label>
+              <input type="text" id="codigo" name="codigo" minlength="3" placeholder="GA001" required>
+              <span class="ayuda">Texto, mínimo 3 caracteres.</span>
+              <span class="error" role="alert"></span>
+            </div>
+            <div class="campo">
+              <label for="categoria">Categoría</label>
+              <select id="categoria" name="categoria" required>
+                <option value="">Selecciona una categoría</option>
+              </select>
+              <span class="error" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" maxlength="100" required>
+            <span class="error" role="alert"></span>
+          </div>
+
+          <div class="campo">
+            <label for="descripcion">Descripción <span class="opcional">(opcional)</span></label>
+            <textarea id="descripcion" name="descripcion" maxlength="500"></textarea>
+            <span class="ayuda">Máximo 500 caracteres.</span>
+            <span class="error" role="alert"></span>
+          </div>
+
+          <div class="fila">
+            <div class="campo">
+              <label for="precio">Precio</label>
+              <input type="number" id="precio" name="precio" min="0" step="0.01" required>
+              <span class="ayuda">Admite decimales. Un precio 0 se registra como producto FREE.</span>
+              <span class="error" role="alert"></span>
+            </div>
+            <div class="campo">
+              <label for="stock">Stock</label>
+              <input type="number" id="stock" name="stock" min="0" step="1" required>
+              <span class="ayuda">Solo números enteros.</span>
+              <span class="error" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="fila">
+            <div class="campo">
+              <label for="stock-critico">Stock crítico <span class="opcional">(opcional)</span></label>
+              <input type="number" id="stock-critico" name="stock-critico" min="0" step="1">
+              <span class="ayuda">Bajo este número se muestra alerta en el panel.</span>
+              <span class="error" role="alert"></span>
+            </div>
+            <div class="campo">
+              <label for="imagen">Imagen <span class="opcional">(opcional)</span></label>
+              <input type="file" id="imagen" name="imagen" accept="image/*">
+              <span class="error" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="mensaje mensaje--error" id="aviso-critico" hidden></div>
+          <button class="boton boton--primario" type="submit">Guardar cambios</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/datos.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/regiones.js"></script>
+  <script src="../js/validaciones.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>
