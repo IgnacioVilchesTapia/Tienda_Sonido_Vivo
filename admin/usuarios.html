@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listado de Usuarios — Admin Sonido Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="contenedor cabecera__barra">
+      <a class="marca" href="../index.html">
+        <span>Admin | Sonido Vivo</span>
+      </a>
+      <nav class="nav-principal">
+        <ul>
+          <li><a href="usuarios.html" aria-current="page">Usuarios</a></li>
+          <li><a href="../index.html">Volver a la tienda</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido" class="seccion">
+    <div class="contenedor">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--esp-3);">
+        <h1>Listado de Usuarios</h1>
+        <a href="usuario-nuevo.html" class="boton boton--primario">Nuevo Usuario</a>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead style="border-bottom: 2px solid var(--linea);">
+            <tr>
+              <th style="padding: var(--esp-2) var(--esp-1);">ID</th>
+              <th style="padding: var(--esp-2) var(--esp-1);">Nombre</th>
+              <th style="padding: var(--esp-2) var(--esp-1);">Correo</th>
+              <th style="padding: var(--esp-2) var(--esp-1);">Rol</th>
+              <th style="padding: var(--esp-2) var(--esp-1);">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-usuarios">
+            <tr>
+              <td style="padding: var(--esp-2) var(--esp-1);">1</td>
+              <td style="padding: var(--esp-2) var(--esp-1);">Administrador Root</td>
+              <td style="padding: var(--esp-2) var(--esp-1);">admin@sonidovivo.cl</td>
+              <td style="padding: var(--esp-2) var(--esp-1);">ADMIN</td>
+              <td style="padding: var(--esp-2) var(--esp-1); display: flex; gap: var(--esp-1);">
+                <a href="usuario-detalle.html?id=1" class="boton boton--linea" style="padding: var(--esp-1);">Ver</a>
+                <a href="usuario-editar.html?id=1" class="boton boton--linea" style="padding: var(--esp-1);">Editar</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>
