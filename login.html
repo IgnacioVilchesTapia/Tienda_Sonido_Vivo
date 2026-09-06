@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Inicia sesión en tu cuenta de Sonido Vivo.">
-  <title>Iniciar Sesión — Sonido Vivo</title>
+  <meta name="description" content="Ingresa a tu cuenta de Sonido Vivo para ver tus pedidos y comprar más rápido.">
+  <title>Iniciar sesión — Sonido Vivo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
   <header class="cabecera">
     <div class="barra-sesion">
       <div class="contenedor">
-        <a href="login.html" aria-current="page">Iniciar sesión</a>
+        <a href="login.html">Iniciar sesión</a>
         <a href="registro.html">Registrar usuario</a>
       </div>
     </div>
@@ -28,7 +28,7 @@
       <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">☰ Menú</button>
       <nav class="nav-principal" id="menu" aria-label="Navegación principal">
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html" aria-current="page">Home</a></li>
           <li><a href="productos.html">Productos</a></li>
           <li><a href="nosotros.html">Nosotros</a></li>
           <li><a href="blogs.html">Blogs</a></li>
@@ -45,32 +45,41 @@
 
   <main id="contenido">
     <section class="seccion">
-      <div class="contenedor" style="max-width: 400px; margin-inline: auto;">
-        
-        <div style="text-align: center; margin-bottom: var(--esp-4);">
-          <h1 style="margin-bottom: var(--esp-1);">Iniciar sesión</h1>
-          <p>Ingresa a tu cuenta para revisar tus pedidos y acceder a tu carrito guardado.</p>
-        </div>
+      <div class="contenedor">
+        <figure class="centrado">
+          <img class="logo-grande" src="assets/img/logo.svg" alt="" width="56" height="56">
+          <figcaption><h1>Sonido Vivo</h1></figcaption>
+        </figure>
 
-        <form id="form-login" style="display: flex; flex-direction: column; gap: var(--esp-3);" novalidate>
-          
-          <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
-            <label for="correo-login" style="font-weight: 500;">Correo electrónico</label>
-            <input type="email" id="correo-login" name="correo" placeholder="tu@correo.cl" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+        <form class="formulario formulario--centrado" id="form-login" novalidate>
+          <h2>Inicio de sesión</h2>
+          <p class="formulario__intro">Usa el correo con el que te registraste.</p>
+          <div class="mensaje" role="status" hidden></div>
+
+          <div class="campo">
+            <label for="correo">Correo</label>
+            <input type="email" id="correo" name="correo" maxlength="100" autocomplete="email"
+                   placeholder="nombre@duoc.cl" list="dominios" required>
+            <datalist id="dominios">
+              <option value="@duoc.cl"></option>
+              <option value="@profesor.duoc.cl"></option>
+              <option value="@gmail.com"></option>
+            </datalist>
+            <span class="ayuda">Solo aceptamos @duoc.cl, @profesor.duoc.cl y @gmail.com.</span>
+            <span class="error" role="alert"></span>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: var(--esp-1);">
-            <label for="password-login" style="font-weight: 500;">Contraseña</label>
-            <input type="password" id="password-login" name="password" placeholder="********" required style="padding: var(--esp-1); border: 1px solid var(--linea); border-radius: var(--radio);">
+          <div class="campo">
+            <label for="clave">Contraseña</label>
+            <input type="password" id="clave" name="clave" minlength="4" maxlength="10"
+                   autocomplete="current-password" required>
+            <span class="ayuda">Entre 4 y 10 caracteres.</span>
+            <span class="error" role="alert"></span>
           </div>
 
-          <button type="submit" class="boton boton--primario" style="margin-top: var(--esp-1); width: 100%;">Ingresar</button>
-          
-          <div style="text-align: center; margin-top: var(--esp-2);">
-            <p>¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a></p>
-          </div>
+          <button class="boton boton--primario" type="submit">Iniciar sesión</button>
+          <p class="ayuda">¿Todavía no tienes cuenta? <a href="registro.html">Regístrate aquí</a>.</p>
         </form>
-
       </div>
     </section>
   </main>
@@ -101,11 +110,12 @@
         </div>
         <div>
           <h3>Novedades por correo</h3>
-          <p>Te avisamos cuando llega stock nuevo.</p>
-          <form class="suscripcion" id="form-suscripcion-pie" novalidate>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
+          <form class="suscripcion" id="form-suscripcion" novalidate>
             <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
             <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">
             <button class="boton boton--primario" type="submit">Suscribirme</button>
+            <span class="error" role="alert"></span>
           </form>
         </div>
       </div>
@@ -119,6 +129,7 @@
   <script src="js/datos.js"></script>
   <script src="js/app.js"></script>
   <script src="js/carrito.js"></script>
-  <script src="js/tienda.js"></script>
+  <script src="js/regiones.js"></script>
+  <script src="js/validaciones.js"></script>
 </body>
 </html>
