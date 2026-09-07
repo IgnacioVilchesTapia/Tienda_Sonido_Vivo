@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Carrito de compras de Sonido Vivo. Revisa tus productos y finaliza tu pedido.">
-  <title>Carrito de Compras — Sonido Vivo</title>
+  <meta name="description" content="Revisa los productos de tu carrito, aplica cupones y confirma tu pedido en Sonido Vivo.">
+  <title>Mi carrito de compras — Sonido Vivo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -29,14 +29,14 @@
       <nav class="nav-principal" id="menu" aria-label="Navegación principal">
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="productos.html">Productos</a></li>
+          <li><a href="productos.html" aria-current="page">Productos</a></li>
           <li><a href="nosotros.html">Nosotros</a></li>
           <li><a href="blogs.html">Blogs</a></li>
           <li><a href="contacto.html">Contacto</a></li>
         </ul>
       </nav>
       <div class="acciones-cabecera">
-        <a class="enlace-carrito" href="carrito.html" aria-current="page">
+        <a class="enlace-carrito" href="carrito.html">
           Carrito <span class="contador-carrito">0</span>
         </a>
       </div>
@@ -46,77 +46,33 @@
   <main id="contenido">
     <section class="seccion">
       <div class="contenedor">
-        <div class="seccion__encabezado">
+        <h1>Mi carrito de compras</h1>
+        <div class="carrito">
           <div>
-            <h1>Tu Carrito de Compras</h1>
-            <p>Revisa los artículos seleccionados antes de proceder al pago.</p>
-          </div>
-        </div>
-
-        <!-- Mensaje cuando el carrito está vacío -->
-        <div id="mensaje-carrito-vacio" class="mensaje" style="text-align: center; padding: var(--esp-5); display: none;">
-          <p style="font-size: 1.25rem; margin-bottom: var(--esp-2);">Tu carrito está vacío.</p>
-          <a href="productos.html" class="boton boton--primario">Ir al catálogo</a>
-        </div>
-
-        <!-- Contenedor del carrito con productos -->
-        <div id="contenedor-carrito" class="carrito-grid" style="display: grid; gap: var(--esp-4); grid-template-columns: 1fr; margin-top: var(--esp-3);">
-          
-          <!-- Tabla de productos -->
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left;">
-              <thead style="border-bottom: 2px solid var(--linea);">
-                <tr>
-                  <th style="padding: var(--esp-2) var(--esp-1);">Producto</th>
-                  <th style="padding: var(--esp-2) var(--esp-1);">Precio</th>
-                  <th style="padding: var(--esp-2) var(--esp-1);">Cantidad</th>
-                  <th style="padding: var(--esp-2) var(--esp-1);">Subtotal</th>
-                  <th style="padding: var(--esp-2) var(--esp-1);">Acción</th>
-                </tr>
-              </thead>
-              <tbody id="tabla-carrito">
-                <!-- Los items del carrito se inyectarán aquí mediante carrito.js -->
-              </tbody>
-            </table>
+            <div id="lineas-carrito"></div>
+            <p><button class="boton boton--linea" type="button" id="vaciar-carrito">Vaciar carrito</button></p>
           </div>
 
-          <!-- Resumen de compra -->
-          <aside class="carrito-resumen" style="background-color: var(--grille); padding: var(--esp-3); border-radius: var(--radio);">
-            <h2 style="margin-bottom: var(--esp-2);">Resumen de la compra</h2>
-            
-            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-1);">
-              <span>Subtotal:</span>
-              <span id="resumen-subtotal" style="font-weight: 500;">$0</span>
-            </div>
+          <aside class="resumen" id="resumen-carrito" hidden>
+            <h2>Resumen</h2>
+            <div class="resumen__linea"><span>Subtotal</span><span id="subtotal">$0</span></div>
+            <div class="resumen__linea"><span>Descuento</span><span id="descuento">-$0</span></div>
+            <div class="resumen__linea"><span>Despacho</span><span id="envio">Gratis</span></div>
+            <div class="resumen__total"><span>Total</span><span id="total">$0</span></div>
 
-            <!-- Sección de cupón -->
-            <div style="margin-bottom: var(--esp-2); border-bottom: 1px solid var(--linea); padding-bottom: var(--esp-2);">
-              <label for="input-cupon" style="display: block; margin-bottom: var(--esp-1); font-size: 0.875rem;">¿Tienes un cupón?</label>
-              <div style="display: flex; gap: var(--esp-1);">
-                <input type="text" id="input-cupon" placeholder="Ej: SONIDOVIVO10" style="flex: 1; padding: var(--esp-1);">
-                <button type="button" id="btn-aplicar-cupon" class="boton boton--linea">Aplicar</button>
+            <form id="form-cupon" novalidate>
+              <div class="campo">
+                <label for="cupon">Cupón de descuento</label>
+                <input type="text" id="cupon" placeholder="SONIDOVIVO10" autocomplete="off">
+                <span class="ayuda">Despacho gratis sobre $150.000.</span>
               </div>
-              <div id="mensaje-cupon" style="font-size: 0.875rem; margin-top: var(--esp-1);"></div>
-            </div>
+              <button class="boton boton--linea" type="submit">Aplicar cupón</button>
+            </form>
 
-            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-1); color: var(--ok);">
-              <span>Descuento:</span>
-              <span id="resumen-descuento">-$0</span>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-2); border-bottom: 1px solid var(--linea); padding-bottom: var(--esp-2);">
-              <span>Despacho:</span>
-              <span id="resumen-despacho">$0</span>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; margin-bottom: var(--esp-3); font-size: 1.25rem; font-weight: 600;">
-              <span>Total:</span>
-              <span id="resumen-total" style="color: var(--ambar-fuerte);">$0</span>
-            </div>
-
-            <button type="button" id="btn-finalizar-compra" class="boton boton--primario" style="width: 100%;">Finalizar Compra</button>
+            <div class="mensaje" id="aviso-cupon" hidden></div>
+            <p><button class="boton boton--primario" type="button" id="pagar">Confirmar pedido</button></p>
+            <div class="mensaje" id="aviso-pedido" role="status" hidden></div>
           </aside>
-
         </div>
       </div>
     </section>
@@ -148,7 +104,7 @@
         </div>
         <div>
           <h3>Novedades por correo</h3>
-          <p>Te avisamos cuando llega stock nuevo.</p>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
           <form class="suscripcion" id="form-suscripcion" novalidate>
             <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
             <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">

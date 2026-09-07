@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Detalle del producto en Sonido Vivo. Conoce sus características, precio y disponibilidad.">
-  <title>Detalle de Producto — Sonido Vivo</title>
+  <meta name="description" content="Ficha técnica, precio y disponibilidad del producto en Sonido Vivo.">
+  <title>Detalle del producto — Sonido Vivo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -46,51 +46,19 @@
   <main id="contenido">
     <section class="seccion">
       <div class="contenedor">
-      
-        <div style="margin-bottom: var(--esp-3);">
-          <a href="productos.html" class="boton boton--linea">← Volver al catálogo</a>
-        </div>
-
-      
-        <div class="detalle-producto" id="contenedor-detalle-producto">
-          
-          <div class="detalle__visual">
-            <img id="detalle-imagen" src="" alt="Cargando imagen..." width="600" height="600">
-          </div>
-
-          <div class="detalle__info">
-            <span id="detalle-categoria" style="color: var(--tinta-suave); font-weight: 500; text-transform: uppercase; font-size: 0.875rem;">Cargando categoría...</span>
-            <h1 id="detalle-nombre" style="margin-top: var(--esp-1); margin-bottom: var(--esp-2);">Cargando producto...</h1>
-            
-            <p id="detalle-precio" style="font-size: 2rem; font-weight: 600; color: var(--ambar-fuerte); margin-bottom: var(--esp-2);"></p>
-            
-            <div id="detalle-stock-contenedor" style="margin-bottom: var(--esp-3);">
-              <span id="detalle-stock">Revisando stock...</span>
-            </div>
-
-            <p id="detalle-descripcion" style="margin-bottom: var(--esp-4);">Cargando descripción del producto...</p>
-
-            <div class="detalle__acciones">
-              <!-- El JS le asignará el data-id o la lógica al hacer clic -->
-              <button id="btn-agregar-detalle" class="boton boton--primario">Añadir al carrito</button>
-            </div>
-            <div id="mensaje-feedback" hidden style="margin-top: var(--esp-1); color: var(--ok); font-weight: 500;">
-              ¡Producto añadido al carrito!
-            </div>
-          </div>
-
-        </div>
+        <nav class="migas" aria-label="Ruta de navegación">
+          <a href="index.html">Home</a> ›
+          <a href="productos.html" id="migas-categoria">Productos</a> ›
+          <span id="migas-producto">Producto</span>
+        </nav>
+        <div class="detalle" id="detalle-producto"></div>
       </div>
     </section>
 
-  
     <section class="seccion seccion--grille">
       <div class="contenedor">
         <h2>Productos relacionados</h2>
-        <p style="margin-bottom: var(--esp-3);">Te podría interesar también de la misma categoría.</p>
-        
-        
-        <div class="grilla-productos" id="productos-relacionados"></div>
+        <div class="grilla-productos" id="relacionados"></div>
       </div>
     </section>
   </main>
@@ -121,7 +89,7 @@
         </div>
         <div>
           <h3>Novedades por correo</h3>
-          <p>Te avisamos cuando llega stock nuevo.</p>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
           <form class="suscripcion" id="form-suscripcion" novalidate>
             <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
             <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">

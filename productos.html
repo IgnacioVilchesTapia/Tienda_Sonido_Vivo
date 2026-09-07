@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Catálogo completo de instrumentos musicales, amplificadores y accesorios en Sonido Vivo.">
-  <title>Catálogo de Productos — Sonido Vivo</title>
+  <meta name="description" content="Catálogo completo de guitarras, bajos, baterías, teclados, amplificadores, micrófonos y accesorios de Sonido Vivo.">
+  <title>Productos — Sonido Vivo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -49,51 +49,34 @@
         <div class="seccion__encabezado">
           <div>
             <h1>Catálogo de Productos</h1>
-            <p>Encuentra guitarras, amplificadores y accesorios con stock actualizado en tiempo real.</p>
+            <p id="conteo-resultados">Cargando productos…</p>
           </div>
         </div>
 
-      
-        <div class="controles-catalogo">
-          
-          <div class="control-grupo">
-            <label for="buscador">Buscar producto:</label>
-            <input type="search" id="buscador" placeholder="Ej. Fender, cable, pedal...">
+        <form class="filtros" role="search" novalidate>
+          <div>
+            <label for="filtro-busqueda">Buscar</label>
+            <input type="search" id="filtro-busqueda" placeholder="Guitarra, Boss, GA001…" autocomplete="off">
           </div>
-
-          <div class="control-grupo">
-            <label for="filtro-categoria">Categoría:</label>
+          <div>
+            <label for="filtro-categoria">Categoría</label>
             <select id="filtro-categoria">
-              <option value="todas">Todas las categorías</option>
-              <option value="Guitarras Eléctricas">Guitarras eléctricas</option>
-              <option value="Amplificadores">Amplificadores</option>
-              <option value="Accesorios">Accesorios</option>
+              <option value="">Todas las categorías</option>
             </select>
           </div>
-
-          <div class="control-grupo">
-            <label for="orden-catalogo">Ordenar por:</label>
-            <select id="orden-catalogo">
-              <option value="defecto">Relevancia</option>
-              <option value="precio-menor">Precio: de menor a mayor</option>
-              <option value="precio-mayor">Precio: de mayor a menor</option>
-              <option value="az">Alfabético: A - Z</option>
-              <option value="za">Alfabético: Z - A</option>
+          <div>
+            <label for="filtro-orden">Ordenar por</label>
+            <select id="filtro-orden">
+              <option value="">Orden del catálogo</option>
+              <option value="precio-asc">Precio: de menor a mayor</option>
+              <option value="precio-desc">Precio: de mayor a menor</option>
+              <option value="nombre">Nombre (A-Z)</option>
             </select>
           </div>
+        </form>
 
-        </div>
-
-     
-        <div class="grilla-productos" id="catalogo-productos">
-        
-        </div>
-
-        
-        <div class="mensaje" id="mensaje-sin-resultados" hidden>
-            No se encontraron productos que coincidan con tu búsqueda.
-        </div>
-
+        <div class="mensaje" id="aviso-carrito" hidden></div>
+        <div class="grilla-productos" id="catalogo"></div>
       </div>
     </section>
   </main>
@@ -124,7 +107,7 @@
         </div>
         <div>
           <h3>Novedades por correo</h3>
-          <p>Te avisamos cuando llega stock nuevo.</p>
+          <p>Te avisamos cuando llega stock nuevo. Sin spam.</p>
           <form class="suscripcion" id="form-suscripcion" novalidate>
             <label class="visualmente-oculto" for="correo-boletin">Tu correo</label>
             <input type="email" id="correo-boletin" name="correo-boletin" placeholder="tu@correo.cl" autocomplete="email">
