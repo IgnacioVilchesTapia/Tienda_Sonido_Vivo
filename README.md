@@ -5,11 +5,10 @@ Fullstack II) — Duoc UC, caso: Sonido Vivo, Viña del Mar.
 
 ## Integrantes
 
-| Integrante |
-|---|---|
-| (Oscar Inaipil) |
-| (Ignacio Vilches) | 
-| (Diego saavedra) | 
+| Integrante | Responsabilidad principal |
+| Oscar Inaipil | Estilos de la tienda, catálogo, carrito y blogs |
+| Ignacio Vilches | Panel de administración y documentación |
+| Diego Saavedra | Vistas de producto, formularios y validaciones |
 
 ## Cómo ejecutar
 
@@ -28,31 +27,61 @@ memoria si el navegador bloquea `localStorage` bajo el protocolo `file://`.
 
 ## Alcance del proyecto
 
-El repositorio se encuentra actualmente en desarrollo.
+Esta primera entrega deja operativo el frontend completo: navegación entre las once
+vistas públicas, catálogo dinámico con buscador y filtros, carrito con persistencia,
+formularios validados y el panel de administración con sus dos mantenedores.
 
-Esta primera etapa deja operativa la experiencia de navegación, consulta de productos y carrito de compras en el cliente. Las etapas siguientes incorporarán los formularios de usuario, validaciones, estilos complementarios y el panel administrativo.
+Las entregas siguientes incorporarán la migración a React, los microservicios en
+Spring Boot con API REST, la base de datos relacional y el despliegue en la nube.
 
 ---
 
-## Estructura del proyecto (hasta Commit 12)
+## Estructura del proyecto
 
-```
-sonido-vivo-frontend/
-├── .gitignore                 Archivos ignorados por Git
-├── README.md                  Documentación y guía de ejecución
-├── index.html                 Home: hero, destacados y pasos de compra
-├── productos.html             Catálogo con buscador, filtros y ordenamiento
-├── detalle-producto.html      Ficha del producto (?codigo=GA001) + relacionados
-├── carrito.html               Vista del carrito de compras y totales
-├── nosotros.html              Historia, video embebido, mapa y equipo
-├── blogs.html                 Listado de noticias
-├── blog-1.html / blog-2.html  Detalle de cada nota
+Tienda_Sonido_Vivo/
+├── .gitignore                    Archivos ignorados por Git
+├── README.md                     Documentación y guía de ejecución
+│
+├── index.html                    Home: hero, destacados y pasos de compra
+├── productos.html                Catálogo con buscador, filtros y ordenamiento
+├── detalle-producto.html         Ficha del producto (?codigo=GA001) + relacionados
+├── carrito.html                  Carrito de compras, cupones y totales
+├── login.html                    Inicio de sesión
+├── registro.html                 Registro público de clientes
+├── contacto.html                 Formulario de contacto
+├── nosotros.html                 Historia de la tienda, video embebido y equipo
+├── blogs.html                    Listado de noticias
+├── blog-1.html / blog-2.html     Detalle de cada nota
+│
+├── admin/                        Panel de administración (acceso restringido)
+│   ├── index.html                Resumen de inventario y alerta de stock crítico
+│   ├── productos.html            Listado del mantenedor de productos
+│   ├── producto-nuevo.html       Alta de producto
+│   ├── producto-editar.html      Edición de producto (?codigo=GA001)
+│   ├── producto-detalle.html     Ficha del producto en el panel
+│   ├── usuarios.html             Listado del mantenedor de usuarios
+│   ├── usuario-nuevo.html        Alta de usuario
+│   ├── usuario-editar.html       Edición de usuario (?run=190110222)
+│   └── usuario-detalle.html      Ficha del usuario en el panel
+│
 ├── css/
-│   └── styles.css             Estilos base (Parte 1: tokens, paleta, tipografías y reset)
-└── js/
-    ├── datos.js               Catálogo base de productos y artículos de blog
-    ├── tienda.js              Render del catálogo, buscador, filtros y detalle
-    └── carrito.js             Lógica del carrito con persistencia en localStorage
+│   ├── styles.css                Hoja externa de la tienda: tokens, componentes y responsive
+│   └── admin.css                 Layout del panel: menú lateral, tablas e insignias
+│
+├── js/
+│   ├── datos.js                  Catálogo de productos, usuarios de ejemplo y blogs
+│   ├── app.js                    Menú responsive, formato de precios y escape de HTML
+│   ├── tienda.js                 Render del catálogo, buscador, filtros y detalle
+│   ├── carrito.js                Carrito con persistencia en localStorage
+│   ├── regiones.js               Regiones y comunas con selects encadenados
+│   ├── validaciones.js           Validación de todos los formularios del sitio
+│   └── admin.js                  Tablas y mantenedores del panel
+│
+├── assets/img/                   Fotografías del catálogo y logotipo
+│
+└── documentos/
+    ├── Planilla_Requerimientos_Historias_Sonido_Vivo.xlsx
+    └── ERS_Sonido_Vivo_v1.docx
 ```
 
 ---
@@ -78,6 +107,12 @@ sonido-vivo-frontend/
    - **Nosotros (`nosotros.html`):** Historia, mapa de ubicación en Viña del Mar y video institucional embebido.
    - **Blog (`blogs.html`, `blog-1.html`, `blog-2.html`):** Artículos y notas informativas.
 
+6. **Panel de administración (`admin/`):**
+   - Resumen de inventario con alerta de productos en stock crítico.
+   - Mantenedor de productos: listado con buscador y filtro, alta, edición y ficha de detalle.
+   - Mantenedor de usuarios: listado con buscador por RUN, nombre o correo, y filtro por perfil.
+   - La baja de un registro modifica el arreglo, no solo la fila de la tabla.
+
 ---
 
 ## Reglas de negocio del carrito (`js/carrito.js`)
@@ -93,10 +128,21 @@ sonido-vivo-frontend/
 9. Sincronización en tiempo real entre pestañas abiertas mediante el evento `storage`.
 10. Respaldo en memoria (`carritoEnMemoria`) en caso de que el navegador bloquee `localStorage` bajo el protocolo `file://` o modo privado.
 
+## Validaciones con JavaScript (`js/validaciones.js`)
+
+Todas se ejecutan al salir del campo (`blur`) y al enviar el formulario. El mensaje
+aparece **bajo el campo correspondiente**; no se usa `alert()` en ningún caso.
+
+| Formulario | Reglas |
+|---|---|
+| Inicio de sesión | Correo requerido, máx. 100, solo `@duoc.cl`, `@profesor.duoc.cl` y `@gmail.com`. Contraseña de 4 a 10 caracteres. |
+| Contacto | Nombre requerido máx. 100. Correo opcional con dominios permitidos. Comentario requerido máx. 500 con contador en vivo. |
+| Registro y usuario | RUN requerido de 7 a 9 caracteres, sin puntos ni guion, validado con módulo 11. Nombre máx. 50, apellidos máx. 100. Fecha de nacimiento opcional sin fechas futuras. Región y comuna encadenadas. Dirección requerida máx. 300. |
+| Producto | Código requerido mín. 3 caracteres. Nombre máx. 100, descripción opcional máx. 500. Precio mín. 0 con decimales (0 = producto FREE). Stock entero mín. 0. Stock crítico opcional. Categoría requerida. |
+
 ---
 
-## Diseño y estilos (Parte 1)
-
+## Diseño y estilos
 
 - Hoja de estilos **externa**; sin estilos en línea ni etiquetas `<style>`.
 - **Tokens de diseño (`:root`):**
@@ -104,6 +150,13 @@ sonido-vivo-frontend/
   - Tipografías: Space Grotesk (títulos) e IBM Plex Sans (texto de lectura).
   - Variables de espaciado y radios base.
 - Reset global y normalización de elementos HTML.
+- **Diseño responsivo** probado en 360 px (menú hamburguesa), 768 px y 1280 px.
+- **Accesibilidad:** enlace para saltar al contenido, foco visible, `aria-current` en la
+  navegación, etiquetas asociadas a cada campo y respeto por `prefers-reduced-motion`.
+  
 
+  ---
 
----
+## Créditos de las imágenes
+
+Las fotografías del catálogo provienen de Unsplash y del navegador de Google. El logotipo construido en SVG
