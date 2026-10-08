@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
 import Layout from './core/Layout';
 import Home from './pages/Home';
 import Productos from './pages/Productos';
@@ -29,22 +30,24 @@ function PaginaNoEncontrada() {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="productos" element={<Productos />} />
-          <Route path="producto/:codigo" element={<ProductoDetalle />} />
-          <Route path="carrito" element={<Carrito />} />
-          <Route path="login" element={<Login />} />
-          <Route path="registro" element={<Registro />} />
-          <Route path="contacto" element={<Contacto />} />
-          <Route path="nosotros" element={<Nosotros />} />
-          <Route path="admin/dashboard" element={<AdminDashboard />} />
-          <Route path="admin/productos" element={<AdminProductos />} />
-          <Route path="admin/usuarios" element={<AdminUsuarios />} />
-          <Route path="*" element={<PaginaNoEncontrada />} />
-        </Route>
-      </Routes>
+      <CartProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="productos" element={<Productos />} />
+            <Route path="producto/:codigo" element={<ProductoDetalle />} />
+            <Route path="carrito" element={<Carrito />} />
+            <Route path="login" element={<Login />} />
+            <Route path="registro" element={<Registro />} />
+            <Route path="contacto" element={<Contacto />} />
+            <Route path="nosotros" element={<Nosotros />} />
+            <Route path="admin/dashboard" element={<AdminDashboard />} />
+            <Route path="admin/productos" element={<AdminProductos />} />
+            <Route path="admin/usuarios" element={<AdminUsuarios />} />
+            <Route path="*" element={<PaginaNoEncontrada />} />
+          </Route>
+        </Routes>
+      </CartProvider>
     </BrowserRouter>
   );
 }

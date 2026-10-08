@@ -1,6 +1,8 @@
 import { Outlet, NavLink, Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 export default function Layout() {
+  const { cantidadTotal } = useCart();
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Top Bar de contacto / promociones */}
@@ -77,6 +79,11 @@ export default function Layout() {
                 <Link to="/carrito" className="btn btn-amber btn-sm px-3 position-relative d-flex align-items-center gap-2">
                   <i className="bi bi-cart3 fs-6"></i>
                   <span>Carrito</span>
+                  {cantidadTotal > 0 && (
+                    <span className="badge bg-danger rounded-pill px-2">
+                      {cantidadTotal}
+                    </span>
+                  )}
                 </Link>
               </div>
             </div>
