@@ -2,16 +2,11 @@
 
 const DOMINIOS_PERMITIDOS = ["@duoc.cl", "@profesor.duoc.cl", "@gmail.com"];
 
-// El enunciado pide "validar si el RUN está correcto", así que además del
-// formato comprobamos el dígito verificador con módulo 11.
-// Ojo: el RUN 19011022K que aparece como ejemplo en el enunciado es solo un
-// ejemplo de FORMATO y no pasa el módulo 11. Si el docente prueba con ese
-// número, cambia esta constante a false para validar únicamente el formato.
+
 const VALIDAR_DIGITO_VERIFICADOR = true;
 
-/* ============================================================
-   1. Utilidades de presentación de errores
-   ============================================================ */
+// 1. Utilidades de presentación de errores
+
 
 function contenedorCampo(input) {
   return input.closest(".campo") || input.parentElement;
@@ -44,10 +39,8 @@ function mostrarAviso(idFormulario, texto, tipo) {
   aviso.focus && aviso.focus();
 }
 
-/* ============================================================
-   2. Validadores reutilizables
-   Cada uno devuelve true/false y deja el mensaje en pantalla.
-   ============================================================ */
+// 2. Validadores reutilizables
+
 
 function validarRequerido(input, etiqueta) {
   if (input.value.trim() === "") {
@@ -77,8 +70,6 @@ function validarCorreo(input, requerido) {
   if (valor.length > 100) {
     return mostrarError(input, "El correo no puede superar los 100 caracteres.");
   }
-  // El formato se revisa antes que el dominio: si el usuario escribió "hola",
-  // el problema es el formato, no el dominio.
   const formatoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
   if (!formatoValido) {
     return mostrarError(input, "El correo no tiene un formato válido. Ejemplo: nombre@duoc.cl");
@@ -101,10 +92,7 @@ function validarClave(input) {
   return marcarValido(input);
 }
 
-/**
- * Valida el RUN chileno sin puntos ni guion (ej: 19011022K).
- * Comprueba largo (7 a 9) y dígito verificador con módulo 11.
- */
+// Valida el run
 function digitoVerificador(cuerpo) {
   let suma = 0;
   let multiplicador = 2;
@@ -118,8 +106,7 @@ function digitoVerificador(cuerpo) {
   return String(resto);
 }
 
-/** Quita puntos y guion y pasa a mayúsculas. Se llama solo al salir del campo
- *  para no mover el cursor mientras el usuario escribe. */
+// Quita punto y guion
 function normalizarRun(input) {
   input.value = input.value.trim().toUpperCase().replace(/[.\-]/g, "");
 }
@@ -148,9 +135,6 @@ function validarRun(input) {
 
 function validarNumero(input, opciones) {
   const o = opciones || {};
-  // Un <input type="number"> devuelve "" cuando el navegador no puede
-  // interpretar lo escrito (por ejemplo "1e--"). Sin esta comprobación un
-  // campo con basura se tomaría como campo vacío.
   if (input.validity && input.validity.badInput) {
     return mostrarError(input, o.etiqueta + " tiene caracteres que no son un número válido.");
   }
@@ -176,8 +160,7 @@ function validarNumero(input, opciones) {
   return marcarValido(input);
 }
 
-/** La fecha es opcional, pero si se escribe no puede estar en el futuro
- *  ni corresponder a una edad imposible. */
+
 function validarNacimiento(input) {
   if (!input || input.value === "") return marcarValido(input);
   const fecha = new Date(input.value + "T00:00:00");
@@ -215,14 +198,11 @@ function validarConfirmacion(input, original, etiqueta) {
   return marcarValido(input);
 }
 
-/* Ejecuta un conjunto de validaciones y devuelve true solo si todas pasan.
-   No se corta en la primera: así el usuario ve todos los errores de una vez. */
+
 function todasValidas(validaciones) {
   return validaciones.map(function (fn) { return fn(); }).every(Boolean);
 }
 
-/* Registra la validación en vivo: al salir del campo y al corregir un campo
-   que ya estaba marcado en rojo. */
 function enVivo(input, fn) {
   if (!input) return;
   input.addEventListener("blur", fn);
@@ -230,10 +210,6 @@ function enVivo(input, fn) {
     if (contenedorCampo(input).classList.contains("campo--error")) fn();
   });
 }
-
-/* ============================================================
-   3. Formularios concretos
-   ============================================================ */
 
 function iniciarFormularioLogin() {
   const form = document.getElementById("form-login");
@@ -294,8 +270,6 @@ function iniciarFormularioContacto() {
   });
 }
 
-/* Registro público y "nuevo usuario" del administrador comparten reglas.
-   El enunciado dice que son el mismo formulario, así que es la misma función. */
 function iniciarFormularioUsuario(idFormulario) {
   const form = document.getElementById(idFormulario);
   if (!form) return;
@@ -321,8 +295,6 @@ function iniciarFormularioUsuario(idFormulario) {
   enVivo(apellidos, function () { return validarRequerido(apellidos, "los apellidos") && validarLargo(apellidos, 0, 100, "Los apellidos"); });
   enVivo(correo, function () { validarCorreo(correo, true); });
   enVivo(direccion, function () { return validarRequerido(direccion, "la dirección") && validarLargo(direccion, 0, 300, "La dirección"); });
-  // Al cambiar la contraseña se revalida también la confirmación: si no,
-  // clave2 seguiría marcada en verde con un valor que ya no coincide.
   if (clave) enVivo(clave, function () {
     validarClave(clave);
     if (clave2 && clave2.value !== "") validarConfirmacion(clave2, clave, "la contraseña");
@@ -420,9 +392,6 @@ function iniciarFormularioProducto(idFormulario) {
   });
 }
 
-/* ============================================================
-   4. Arranque: cada página inicializa solo lo que tiene
-   ============================================================ */
 document.addEventListener("DOMContentLoaded", function () {
   iniciarFormularioLogin();
   iniciarFormularioContacto();

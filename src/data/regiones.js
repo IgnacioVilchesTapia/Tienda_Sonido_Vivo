@@ -23,7 +23,7 @@ const REGIONES = [
  * Al cambiar la región se vuelve a poblar el select de comunas.
  * @param {string} idRegion  id del <select> de región
  * @param {string} idComuna  id del <select> de comuna
- * @param {string} [comunaInicial] comuna que debe quedar seleccionada (modo editar)
+ * @param {string} [comunaInicial] comuna que debe quedar seleccionada
  */
 function conectarRegionComuna(idRegion, idComuna, comunaInicial) {
   const selRegion = document.getElementById(idRegion);

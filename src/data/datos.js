@@ -1,7 +1,4 @@
 // datos.js — catálogo de Sonido Vivo.
-// Fuente: archivo Excel entregado por la tienda (muestra representativa del catálogo de 340 referencias).
-// En la entrega 1 los datos viven en este arreglo; en entregas posteriores vendrán de la API REST.
-
 const CATEGORIAS = [
   "Guitarras Acústicas",
   "Guitarras Eléctricas",
@@ -69,7 +66,7 @@ const PRODUCTOS = [
   {"codigo": "ES005", "categoria": "Estudio y Grabación", "nombre": "Pop Filter para Micrófono", "marca": "Sennheiser", "modelo": "MZP 40", "stock": 8, "stockCritico": 3, "precio": 14990, "descripcion": "Doble malla, brazo flexible con clip.", "imagen": "assets/img/estudio-y-grabacion.jpg"},
 ];
 
-// Blogs de la tienda (contenido editorial, sin backend por ahora).
+// Blogs de la tienda
 const BLOGS = [
   {
     id: 1,
@@ -87,7 +84,7 @@ const BLOGS = [
   }
 ];
 
-// Usuarios de ejemplo para el mantenedor del administrador.
+// Usuarios de ejemplo para el administrador.
 const USUARIOS = [
   { run: "190110222", nombre: "Carla", apellidos: "Pizarro Muñoz", correo: "c.pizarro@duoc.cl", tipo: "Administrador", region: "Región de Valparaíso", comuna: "Viña del Mar", direccion: "Av. San Martín 452", nacimiento: "1994-03-12" },
   { run: "175558888", nombre: "Diego", apellidos: "Rojas Fuentes", correo: "d.rojas@duoc.cl", tipo: "Vendedor", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle Prat 88", nacimiento: "1990-11-02" },
