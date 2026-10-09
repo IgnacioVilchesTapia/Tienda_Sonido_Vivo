@@ -127,7 +127,7 @@ export default function Home() {
               <div key={cat} className="col-md-4 col-sm-6">
                 <Link
                   to={`/productos?categoria=${encodeURIComponent(cat)}`}
-                  className="card text-decoration-none border-0 shadow-sm p-3 text-center bg-white hover-shadow h-100"
+                  className="card text-decoration-none border-0 shadow-sm p-3 text-center bg-white card-producto h-100"
                 >
                   <i className="bi bi-music-note text-amber fs-3 mb-2"></i>
                   <h6 className="fw-bold text-dark mb-0">{cat}</h6>
@@ -137,6 +137,62 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Sección Blog para Músicos */}
+      <section className="py-5 bg-white">
+        <div className="container">
+          <div className="text-center mb-5">
+            <span className="text-amber fw-bold text-uppercase small">Comunidad & Consejos</span>
+            <h2 className="fw-bold mb-2">Artículos para Músicos</h2>
+            <p className="text-muted">Guías prácticas preparadas por nuestros luthiers y especialistas</p>
+          </div>
+
+          <div className="row g-4">
+            {BLOGS.map((nota) => (
+              <div key={nota.id} className="col-md-6">
+                <div className="card h-100 border shadow-sm overflow-hidden flex-md-row">
+                  <img
+                    src={nota.imagen}
+                    alt={nota.titulo}
+                    className="col-md-5 img-fluid"
+                    style={{ objectFit: 'cover', minHeight: 180 }}
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80';
+                    }}
+                  />
+                  <div className="card-body col-md-7 d-flex flex-column p-4">
+                    <span className="badge bg-light text-dark border align-self-start mb-2">Nota #{nota.id}</span>
+                    <h5 className="card-title fw-bold mb-2">{nota.titulo}</h5>
+                    <p className="card-text text-secondary small mb-3">{nota.resumen}</p>
+                    <div className="mt-auto">
+                      <Link to="/nosotros" className="btn btn-outline-dark btn-sm">
+                        Leer más <i className="bi bi-arrow-right ms-1"></i>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Llamado de Visita a la Tienda Física */}
+      <section className="py-5 bg-tolex text-white">
+        <div className="container text-center py-3">
+          <i className="bi bi-geo-alt-fill text-amber display-4 mb-3"></i>
+          <h2 className="fw-bold mb-3">¿Prefieres probar tu instrumento en persona?</h2>
+          <p className="lead text-light opacity-75 mx-auto mb-4" style={{ maxWidth: '700px' }}>
+            Visítanos en nuestra tienda en <strong>Av. San Martín 452, Viña del Mar</strong>. Contamos con salas de prueba acustizadas para que pruebes guitarras, amplificadores y pedales con la asesoría de nuestro equipo.
+          </p>
+          <div className="d-flex justify-content-center gap-3">
+            <Link to="/contacto" className="btn btn-amber btn-lg fw-bold px-4">
+              <i className="bi bi-chat-dots me-2"></i>Contáctanos o Agenda una Prueba
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
+
