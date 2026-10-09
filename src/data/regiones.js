@@ -1,5 +1,5 @@
-
-const REGIONES = [
+// regiones.js — Listado oficial de regiones y comunas de Chile para Sonido Vivo
+export const REGIONES = [
   { nombre: "Región de Arica y Parinacota", comunas: ["Arica", "Camarones", "Putre", "General Lagos"] },
   { nombre: "Región de Tarapacá", comunas: ["Iquique", "Alto Hospicio", "Pozo Almonte", "Pica", "Huara"] },
   { nombre: "Región de Antofagasta", comunas: ["Antofagasta", "Calama", "Tocopilla", "Mejillones", "San Pedro de Atacama"] },
@@ -18,44 +18,7 @@ const REGIONES = [
   { nombre: "Región de Magallanes y de la Antártica Chilena", comunas: ["Punta Arenas", "Puerto Natales", "Porvenir", "Cabo de Hornos"] }
 ];
 
-/**
- * Conecta un select de región con uno de comuna.
- * Al cambiar la región se vuelve a poblar el select de comunas.
- * @param {string} idRegion  id del <select> de región
- * @param {string} idComuna  id del <select> de comuna
- * @param {string} [comunaInicial] comuna que debe quedar seleccionada
- */
-function conectarRegionComuna(idRegion, idComuna, comunaInicial) {
-  const selRegion = document.getElementById(idRegion);
-  const selComuna = document.getElementById(idComuna);
-  if (!selRegion || !selComuna) return;
-
-  // Poblar regiones
-  selRegion.innerHTML = '<option value="">Selecciona una región</option>';
-  REGIONES.forEach(function (r) {
-    const opcion = document.createElement("option");
-    opcion.value = r.nombre;
-    opcion.textContent = r.nombre;
-    selRegion.appendChild(opcion);
-  });
-
-  function cargarComunas() {
-    const region = REGIONES.find(function (r) { return r.nombre === selRegion.value; });
-    selComuna.innerHTML = '<option value="">Selecciona una comuna</option>';
-    selComuna.disabled = !region;
-    if (!region) return;
-    region.comunas.forEach(function (c) {
-      const opcion = document.createElement("option");
-      opcion.value = c;
-      opcion.textContent = c;
-      selComuna.appendChild(opcion);
-    });
-  }
-
-  selRegion.addEventListener("change", cargarComunas);
-  cargarComunas();
-
-  if (comunaInicial) {
-    selComuna.value = comunaInicial;
-  }
-}
+export const obtenerComunasPorRegion = (nombreRegion) => {
+  const encontrada = REGIONES.find((r) => r.nombre === nombreRegion);
+  return encontrada ? encontrada.comunas : [];
+};
