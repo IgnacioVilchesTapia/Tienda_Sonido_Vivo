@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
 export default function Carrito() {
   const {
     items,
@@ -18,9 +17,9 @@ export default function Carrito() {
     quitarCupon
   } = useCart();
 
+  const navigate = useNavigate();
   const [inputCupon, setInputCupon] = useState('');
   const [mensajeCupon, setMensajeCupon] = useState(null);
-  const [compraExitosa, setCompraExitosa] = useState(false);
 
   const handleAplicarCupon = (e) => {
     e.preventDefault();
@@ -36,31 +35,8 @@ export default function Carrito() {
   };
 
   const handleFinalizarCompra = () => {
-    setCompraExitosa(true);
-    vaciarCarrito();
+    navigate('/checkout');
   };
-
-  if (compraExitosa) {
-    return (
-      <div className="container py-5 my-5 text-center">
-        <div className="card shadow-sm border-0 p-5 mx-auto" style={{ maxWidth: '600px' }}>
-          <i className="bi bi-check-circle-fill text-success display-1 mb-3"></i>
-          <h2 className="fw-bold mb-2">¡Gracias por tu compra en Sonido Vivo!</h2>
-          <p className="text-muted mb-4">
-            Hemos recibido tu orden con éxito. Te hemos enviado un correo de confirmación con los detalles del despacho y seguimiento.
-          </p>
-          <div className="p-3 bg-light rounded-3 mb-4 text-start small">
-            <div><strong>Tienda:</strong> Sonido Vivo — Viña del Mar</div>
-            <div><strong>Retiro o Envíos:</strong> Despacho prioritario a todo Chile</div>
-            <div><strong>Consultas:</strong> contacto@sonidovivo.cl o +56 32 245 8890</div>
-          </div>
-          <Link to="/productos" className="btn btn-amber btn-lg fw-bold" onClick={() => setCompraExitosa(false)}>
-            Seguir explorando el catálogo
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   if (items.length === 0) {
     return (

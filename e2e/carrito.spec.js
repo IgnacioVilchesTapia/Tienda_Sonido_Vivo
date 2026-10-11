@@ -52,12 +52,16 @@ test.describe('Carrito de compras', () => {
     await expect(page.getByRole('heading', { name: 'Tu carrito está vacío' })).toBeVisible()
   })
 
-  test('finalizar la compra muestra el mensaje de agradecimiento', async ({ page }) => {
+  test('proceder al pago lleva al checkout y valida los datos', async ({ page }) => {
     await agregarPrimerProducto(page)
     await page.goto('/carrito')
 
     await page.getByRole('button', { name: 'Proceder al Pago' }).click()
 
-    await expect(page.getByRole('heading', { name: /Gracias por tu compra/ })).toBeVisible()
+    await expect(page).toHaveURL(/\/checkout$/)
+    await expect(page.getByRole('heading', { name: 'Información del cliente' })).toBeVisible()
+
+    await page.getByRole('button', { name: /Pagar ahora/ }).click()
+    await expect(page.getByText('El nombre es obligatorio.')).toBeVisible()
   })
 })
