@@ -12,6 +12,21 @@ import Nosotros from './pages/Nosotros';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProductos from './pages/admin/AdminProductos';
 import AdminUsuarios from './pages/admin/AdminUsuarios';
+import Categorias from './pages/Categorias';
+import Ofertas from './pages/Ofertas';
+import Blogs from './pages/Blogs';
+import BlogDetalle from './pages/BlogDetalle';
+import Checkout from './pages/Checkout';
+import CompraExitosa from './pages/CompraExitosa';
+import PagoError from './pages/PagoError';
+import AdminOrdenes from './pages/admin/AdminOrdenes';
+import AdminBoleta from './pages/admin/AdminBoleta';
+import AdminProductoDetalle from './pages/admin/AdminProductoDetalle';
+import AdminCriticos from './pages/admin/AdminCriticos';
+import AdminCategorias from './pages/admin/AdminCategorias';
+import AdminUsuarioDetalle from './pages/admin/AdminUsuarioDetalle';
+import AdminReportes from './pages/admin/AdminReportes';
+import AdminPerfil from './pages/admin/AdminPerfil';
 import './App.css';
 
 function PaginaNoEncontrada() {
@@ -41,9 +56,24 @@ function App() {
             <Route path="registro" element={<Registro />} />
             <Route path="contacto" element={<Contacto />} />
             <Route path="nosotros" element={<Nosotros />} />
+            <Route path="categorias" element={<Categorias />} />
+            <Route path="ofertas" element={<Ofertas />} />
+            <Route path="blogs" element={<Blogs />} />
+            <Route path="blogs/:id" element={<BlogDetalle />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="compra-exitosa" element={<CompraExitosa />} />
+            <Route path="pago-error" element={<PagoError />} />
             <Route path="admin/dashboard" element={<AdminDashboard />} />
             <Route path="admin/productos" element={<AdminProductos />} />
+            <Route path="admin/productos/criticos" element={<AdminCriticos />} />
+            <Route path="admin/productos/:codigo" element={<AdminProductoDetalle />} />
             <Route path="admin/usuarios" element={<AdminUsuarios />} />
+            <Route path="admin/usuarios/:run" element={<AdminUsuarioDetalle />} />
+            <Route path="admin/ordenes" element={<AdminOrdenes />} />
+            <Route path="admin/ordenes/:numero" element={<AdminBoleta />} />
+            <Route path="admin/categorias" element={<AdminCategorias />} />
+            <Route path="admin/reportes" element={<AdminReportes />} />
+            <Route path="admin/perfil" element={<AdminPerfil />} />
             <Route path="*" element={<PaginaNoEncontrada />} />
           </Route>
         </Routes>
@@ -51,6 +81,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;
 
