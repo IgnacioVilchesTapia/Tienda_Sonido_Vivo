@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CATEGORIAS, obtenerProductos } from '../data/datos';
 import { useCart } from '../context/CartContext';
+import ProductoLista from '../components/ProductoLista';
 
 export default function Categorias() {
   const [productos] = useState(() => obtenerProductos());
@@ -55,32 +56,11 @@ export default function Categorias() {
         <div className={'alert ' + (aviso.ok ? 'alert-success' : 'alert-danger')}>{aviso.mensaje}</div>
       )}
 
-      {productosCategoria.length === 0 ? (
-        <p className="text-muted">Esta categoría todavía no tiene productos.</p>
-      ) : (
-        <div className="row g-4">
-          {productosCategoria.map((p) => (
-            <div key={p.codigo} className="col-12 col-sm-6 col-lg-3">
-              <div className="card h-100 shadow-sm">
-                <img src={p.imagen} className="card-img-top img-producto-cover" alt={p.nombre} />
-                <div className="card-body d-flex flex-column">
-                  <h6 className="fw-bold">{p.nombre}</h6>
-                  <p className="text-muted small mb-2">{p.marca} {p.modelo}</p>
-                  <p className="fw-bold fs-5 mt-auto mb-2">${p.precio.toLocaleString('es-CL')}</p>
-                  <div className="d-flex gap-2">
-                    <Link to={'/producto/' + p.codigo} className="btn btn-outline-secondary btn-sm w-50">
-                      Ver
-                    </Link>
-                    <button className="btn btn-amber btn-sm w-50" disabled={p.stock === 0} onClick={() => agregar(p)}>
-                      Agregar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <ProductoLista
+        productos={productosCategoria}
+        onAgregar={agregar}
+        mensajeVacio="Esta categoría todavía no tiene productos."
+      />
     </div>
   );
 }
