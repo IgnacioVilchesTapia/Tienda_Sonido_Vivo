@@ -32,6 +32,8 @@ export default function AdminProductos() {
   const handleEliminar = (codigo) => {
     if (window.confirm(`¿Estás seguro de eliminar el producto ${codigo}?`)) {
       setProductos(productos.filter((p) => p.codigo !== codigo));
+      const i = PRODUCTOS.findIndex((p) => p.codigo === codigo);
+      if (i !== -1) PRODUCTOS.splice(i, 1);
       setMensaje({ tipo: 'success', texto: `Producto ${codigo} eliminado exitosamente.` });
       setTimeout(() => setMensaje(null), 3500);
     }
@@ -63,6 +65,7 @@ export default function AdminProductos() {
     };
 
     setProductos([prodAgregado, ...productos]);
+    PRODUCTOS.unshift(prodAgregado);
     setMostrarModal(false);
     setNuevo({
       codigo: '',
@@ -86,9 +89,12 @@ export default function AdminProductos() {
           <h1 className="h2 fw-bold mb-1">Mantenedor de Productos</h1>
           <p className="text-muted mb-0">Gestión de inventario, altas, bajas y alertas de stock</p>
         </div>
-        <div className="d-flex gap-2">
+        <div className="d-flex flex-wrap gap-2">
           <Link to="/admin/dashboard" className="btn btn-outline-secondary">
             <i className="bi bi-arrow-left me-1"></i> Dashboard
+          </Link>
+          <Link to="/admin/productos/criticos" className="btn btn-outline-danger">
+            Críticos
           </Link>
           <button className="btn btn-amber fw-bold" onClick={() => setMostrarModal(true)}>
             <i className="bi bi-plus-circle me-1"></i> Nuevo Producto
@@ -160,7 +166,10 @@ export default function AdminProductos() {
                         {p.stock} unid. {esCritico && '(Crítico)'}
                       </span>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center text-nowrap">
+                      <Link to={'/admin/productos/' + p.codigo} className="btn btn-outline-primary btn-sm me-1" title="Ver y editar">
+                        <i className="bi bi-pencil"></i>
+                      </Link>
                       <button
                         className="btn btn-outline-danger btn-sm"
                         title="Eliminar producto"

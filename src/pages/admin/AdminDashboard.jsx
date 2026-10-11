@@ -1,6 +1,17 @@
 import { Link } from 'react-router-dom';
 import { PRODUCTOS, USUARIOS } from '../../data/datos';
 
+const secciones = [
+  { ruta: '/admin/ordenes', icono: 'bi-receipt', titulo: 'Órdenes', texto: 'Compras y boletas' },
+  { ruta: '/admin/productos', icono: 'bi-box-seam', titulo: 'Productos', texto: 'Crear, ver y editar productos' },
+  { ruta: '/admin/productos/criticos', icono: 'bi-exclamation-triangle', titulo: 'Productos críticos', texto: 'Stock por reponer' },
+  { ruta: '/admin/categorias', icono: 'bi-tags', titulo: 'Categorías', texto: 'Crear y editar categorías' },
+  { ruta: '/admin/usuarios', icono: 'bi-people', titulo: 'Usuarios', texto: 'Cuentas e historial de compras' },
+  { ruta: '/admin/reportes', icono: 'bi-bar-chart', titulo: 'Reportes', texto: 'Ventas e inventario' },
+  { ruta: '/admin/perfil', icono: 'bi-person-circle', titulo: 'Perfil', texto: 'Mis datos' },
+  { ruta: '/', icono: 'bi-shop', titulo: 'Tienda', texto: 'Ver la tienda' }
+];
+
 export default function AdminDashboard() {
   const criticos = PRODUCTOS.filter((p) => p.stock <= p.stockCritico);
   const totalStock = PRODUCTOS.reduce((acc, p) => acc + p.stock, 0);
@@ -76,26 +87,17 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Accesos rápidos a Mantenedores */}
+      <h4 className="fw-bold mb-3">Accesos</h4>
       <div className="row g-3">
-        <div className="col-md-6">
-          <div className="card p-3 shadow-sm text-center">
-            <h5>Mantenedor de Productos</h5>
-            <p className="text-muted small">Crear, actualizar precios, stock y categorías</p>
-            <Link to="/admin/productos" className="btn btn-outline-primary">
-              <i className="bi bi-box-seam me-1"></i> Gestionar Productos
+        {secciones.map((sec) => (
+          <div key={sec.ruta} className="col-6 col-md-4 col-lg-3">
+            <Link to={sec.ruta} className="card h-100 p-3 shadow-sm text-center text-decoration-none text-dark card-producto">
+              <i className={'bi ' + sec.icono + ' fs-2 text-amber'}></i>
+              <h6 className="fw-bold mt-2 mb-1">{sec.titulo}</h6>
+              <small className="text-muted">{sec.texto}</small>
             </Link>
           </div>
-        </div>
-        <div className="col-md-6">
-          <div className="card p-3 shadow-sm text-center">
-            <h5>Mantenedor de Usuarios</h5>
-            <p className="text-muted small">Control de roles, RUN, datos personales y accesos</p>
-            <Link to="/admin/usuarios" className="btn btn-outline-primary">
-              <i className="bi bi-people me-1"></i> Gestionar Usuarios
-            </Link>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
