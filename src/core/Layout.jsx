@@ -22,7 +22,7 @@ export default function Layout() {
 
       {/* Navbar Principal */}
       <header className="sticky-top shadow-sm">
-        <nav className="navbar navbar-expand-lg navbar-dark bg-tolex py-3">
+        <nav className="navbar navbar-expand-xl navbar-dark bg-tolex py-3">
           <div className="container">
             <Link className="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4 text-white" to="/">
               <span className="bg-warning text-dark rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style={{ width: 38, height: 38 }}>
@@ -44,29 +44,44 @@ export default function Layout() {
             </button>
 
             <div className="collapse navbar-collapse" id="navSonidoVivo">
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+              <ul className="navbar-nav me-auto mb-2 mb-xl-0 ms-xl-3">
                 <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-3 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/">
                     Inicio
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-3 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/productos">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/productos">
                     Catálogo
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-3 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/nosotros">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/categorias">
+                    Categorías
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/ofertas">
+                    Ofertas
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/blogs">
+                    Blog
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/nosotros">
                     Nosotros
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-3 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/contacto">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/contacto">
                     Contacto
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-3 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/admin/dashboard">
+                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/admin/dashboard">
                     <i className="bi bi-shield-lock me-1"></i>Admin
                   </NavLink>
                 </li>
@@ -160,4 +175,4 @@ export default function Layout() {
       </footer>
     </div>
   );
-}
+}

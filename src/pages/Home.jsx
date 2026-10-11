@@ -165,7 +165,7 @@ export default function Home() {
                     <h5 className="card-title fw-bold mb-2">{nota.titulo}</h5>
                     <p className="card-text text-secondary small mb-3">{nota.resumen}</p>
                     <div className="mt-auto">
-                      <Link to="/nosotros" className="btn btn-outline-dark btn-sm">
+                      <Link to={'/blogs/' + nota.id} className="btn btn-outline-dark btn-sm">
                         Leer más <i className="bi bi-arrow-right ms-1"></i>
                       </Link>
                     </div>

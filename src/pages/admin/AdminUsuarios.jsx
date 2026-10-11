@@ -35,6 +35,8 @@ export default function AdminUsuarios() {
   const handleEliminar = (run) => {
     if (window.confirm(`¿Estás seguro de dar de baja al usuario con RUN ${run}?`)) {
       setUsuarios(usuarios.filter((u) => u.run !== run));
+      const i = USUARIOS.findIndex((u) => u.run === run);
+      if (i !== -1) USUARIOS.splice(i, 1);
       setMensaje({ tipo: 'success', texto: `Usuario con RUN ${run} dado de baja exitosamente.` });
       setTimeout(() => setMensaje(null), 3500);
     }
@@ -73,6 +75,7 @@ export default function AdminUsuarios() {
     };
 
     setUsuarios([usuarioAgregado, ...usuarios]);
+    USUARIOS.unshift(usuarioAgregado);
     setMostrarModal(false);
     setNuevo({
       run: '',
@@ -165,7 +168,10 @@ export default function AdminUsuarios() {
                     </span>
                   </td>
                   <td>{u.comuna}, {u.region}</td>
-                  <td className="text-center">
+                  <td className="text-center text-nowrap">
+                    <Link to={'/admin/usuarios/' + u.run} className="btn btn-outline-primary btn-sm me-1" title="Ver usuario">
+                      <i className="bi bi-eye"></i>
+                    </Link>
                     <button
                       className="btn btn-outline-danger btn-sm"
                       title="Dar de baja usuario"
