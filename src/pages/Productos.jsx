@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS } from '../data/datos';
+import { CATEGORIAS, obtenerProductos } from '../data/datos';
 import { useCart } from '../context/CartContext';
 
 export default function Productos() {
@@ -32,7 +32,7 @@ export default function Productos() {
 
   // Filtrado y ordenamiento computado
   const productosFiltrados = useMemo(() => {
-    return PRODUCTOS.filter((p) => {
+    return obtenerProductos().filter((p) => {
       const coincideBusqueda =
         p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
         p.marca.toLowerCase().includes(busqueda.toLowerCase()) ||

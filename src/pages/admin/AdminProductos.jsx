@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS } from '../../data/datos';
+import { CATEGORIAS, obtenerProductos, guardarProducto, eliminarProducto } from '../../data/datos';
 
 export default function AdminProductos() {
-  const [productos, setProductos] = useState(PRODUCTOS);
+  const [productos, setProductos] = useState(() => obtenerProductos());
   const [filtro, setFiltro] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -31,9 +31,8 @@ export default function AdminProductos() {
 
   const handleEliminar = (codigo) => {
     if (window.confirm(`¿Estás seguro de eliminar el producto ${codigo}?`)) {
-      setProductos(productos.filter((p) => p.codigo !== codigo));
-      const i = PRODUCTOS.findIndex((p) => p.codigo === codigo);
-      if (i !== -1) PRODUCTOS.splice(i, 1);
+      const actualizados = eliminarProducto(codigo);
+      setProductos(actualizados);
       setMensaje({ tipo: 'success', texto: `Producto ${codigo} eliminado exitosamente.` });
       setTimeout(() => setMensaje(null), 3500);
     }
@@ -64,8 +63,8 @@ export default function AdminProductos() {
       imagen: '/img/guitarras-acusticas.jpg'
     };
 
-    setProductos([prodAgregado, ...productos]);
-    PRODUCTOS.unshift(prodAgregado);
+    const actualizados = guardarProducto(prodAgregado);
+    setProductos(actualizados);
     setMostrarModal(false);
     setNuevo({
       codigo: '',

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { USUARIOS } from '../../data/datos';
+import { obtenerUsuarios, guardarUsuario, eliminarUsuario } from '../../data/datos';
 import { validarRutChileno, validarEmail } from '../../utils/validaciones';
 import { REGIONES, obtenerComunasPorRegion } from '../../data/regiones';
 
 export default function AdminUsuarios() {
-  const [usuarios, setUsuarios] = useState(USUARIOS);
+  const [usuarios, setUsuarios] = useState(() => obtenerUsuarios());
   const [filtro, setFiltro] = useState('');
   const [perfilFiltro, setPerfilFiltro] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -17,7 +17,7 @@ export default function AdminUsuarios() {
     apellidos: '',
     correo: '',
     tipo: 'Vendedor',
-    region: REGIONES[5].nombre, // Valparaíso
+    region: REGIONES[5].nombre,
     comuna: 'Viña del Mar',
     direccion: ''
   });
@@ -34,9 +34,8 @@ export default function AdminUsuarios() {
 
   const handleEliminar = (run) => {
     if (window.confirm(`¿Estás seguro de dar de baja al usuario con RUN ${run}?`)) {
-      setUsuarios(usuarios.filter((u) => u.run !== run));
-      const i = USUARIOS.findIndex((u) => u.run === run);
-      if (i !== -1) USUARIOS.splice(i, 1);
+      const actualizados = eliminarUsuario(run);
+      setUsuarios(actualizados);
       setMensaje({ tipo: 'success', texto: `Usuario con RUN ${run} dado de baja exitosamente.` });
       setTimeout(() => setMensaje(null), 3500);
     }
@@ -74,8 +73,8 @@ export default function AdminUsuarios() {
       nacimiento: '1995-05-15'
     };
 
-    setUsuarios([usuarioAgregado, ...usuarios]);
-    USUARIOS.unshift(usuarioAgregado);
+    const actualizados = guardarUsuario(usuarioAgregado);
+    setUsuarios(actualizados);
     setMostrarModal(false);
     setNuevo({
       run: '',

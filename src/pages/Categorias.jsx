@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS } from '../data/datos';
+import { CATEGORIAS, obtenerProductos } from '../data/datos';
 import { useCart } from '../context/CartContext';
 
 export default function Categorias() {
+  const [productos] = useState(() => obtenerProductos());
   const [seleccionada, setSeleccionada] = useState(CATEGORIAS[0]);
   const [aviso, setAviso] = useState(null);
   const { agregarAlCarrito } = useCart();
 
-  const productosCategoria = PRODUCTOS.filter((p) => p.categoria === seleccionada);
+  const productosCategoria = productos.filter((p) => p.categoria === seleccionada);
 
   const agregar = (p) => {
     const res = agregarAlCarrito(p, 1);
@@ -23,8 +24,8 @@ export default function Categorias() {
 
       <div className="row g-3 mb-5">
         {CATEGORIAS.map((cat) => {
-          const cantidad = PRODUCTOS.filter((p) => p.categoria === cat).length;
-          const primero = PRODUCTOS.find((p) => p.categoria === cat);
+          const cantidad = productos.filter((p) => p.categoria === cat).length;
+          const primero = productos.find((p) => p.categoria === cat);
           return (
             <div key={cat} className="col-6 col-md-4 col-lg-3">
               <div

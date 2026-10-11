@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
 import { validarTexto, validarEmail } from '../utils/validaciones';
-import { guardarOrden } from '../data/datos';
+import { guardarOrden, obtenerUsuarioActivo } from '../data/datos';
 
 const vacio = {
   nombre: '',
@@ -21,7 +21,23 @@ export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [datos, setDatos] = useState(location.state && location.state.datos ? location.state.datos : vacio);
+  const [datos, setDatos] = useState(() => {
+    if (location.state && location.state.datos) return location.state.datos;
+    const sesion = obtenerUsuarioActivo();
+    if (sesion) {
+      return {
+        nombre: sesion.nombre || '',
+        apellidos: sesion.apellidos || '',
+        correo: sesion.correo || '',
+        calle: sesion.direccion || '',
+        depto: '',
+        region: sesion.region || '',
+        comuna: sesion.comuna || '',
+        indicaciones: ''
+      };
+    }
+    return vacio;
+  });
   const [errores, setErrores] = useState({});
 
   if (items.length === 0) {

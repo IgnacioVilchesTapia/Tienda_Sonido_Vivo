@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS } from '../../data/datos';
+import { CATEGORIAS, obtenerProductoPorCodigo, actualizarProducto } from '../../data/datos';
+
 export default function AdminProductoDetalle() {
   const { codigo } = useParams();
-  const [producto, setProducto] = useState(PRODUCTOS.find((p) => p.codigo === codigo));
+  const [producto, setProducto] = useState(() => obtenerProductoPorCodigo(codigo));
   const [form, setForm] = useState(producto ? { ...producto } : null);
   const [editando, setEditando] = useState(false);
   const [mensaje, setMensaje] = useState('');
@@ -39,9 +40,7 @@ export default function AdminProductoDetalle() {
       stockCritico: parseInt(form.stockCritico) || 3
     };
 
-    const i = PRODUCTOS.findIndex((p) => p.codigo === producto.codigo);
-    if (i !== -1) PRODUCTOS[i] = actualizado;
-
+    actualizarProducto(producto.codigo, actualizado);
     setProducto(actualizado);
     setEditando(false);
     setMensaje('Producto actualizado correctamente');

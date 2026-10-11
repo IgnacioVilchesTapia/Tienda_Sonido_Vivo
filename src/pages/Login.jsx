@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { validarEmail, validarPassword } from '../utils/validaciones';
+import { obtenerUsuarios, guardarUsuarioActivo } from '../data/datos';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,7 +24,18 @@ export default function Login() {
 
     if (Object.keys(nuevosErrores).length > 0) return;
 
-    // Validación simulada de credenciales
+    const listaUsuarios = obtenerUsuarios();
+    const encontrado = listaUsuarios.find((u) => u.correo.toLowerCase() === credenciales.correo.toLowerCase());
+    const sesion = encontrado || {
+      nombre: credenciales.correo.split('@')[0],
+      apellidos: '',
+      correo: credenciales.correo,
+      direccion: '',
+      region: '',
+      comuna: ''
+    };
+    guardarUsuarioActivo(sesion);
+
     if (credenciales.correo.toLowerCase().includes('admin') || credenciales.correo === 'c.pizarro@duoc.cl') {
       navigate('/admin/dashboard');
     } else {

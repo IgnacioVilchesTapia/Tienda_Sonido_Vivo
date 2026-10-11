@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { USUARIOS, obtenerOrdenes } from '../../data/datos';
+import { obtenerUsuarioPorRun, actualizarUsuario, obtenerOrdenes } from '../../data/datos';
 import { REGIONES, obtenerComunasPorRegion } from '../../data/regiones';
 import { validarEmail, validarTexto } from '../../utils/validaciones';
+
 export default function AdminUsuarioDetalle() {
   const { run } = useParams();
-  const [usuario, setUsuario] = useState(USUARIOS.find((u) => u.run === run));
+  const [usuario, setUsuario] = useState(() => obtenerUsuarioPorRun(run));
   const [form, setForm] = useState(usuario ? { ...usuario } : null);
   const [editando, setEditando] = useState(false);
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
+
   if (!usuario) {
     return (
       <div className="container my-5 text-center">
@@ -18,7 +20,9 @@ export default function AdminUsuarioDetalle() {
       </div>
     );
   }
+
   const compras = obtenerOrdenes().filter((o) => o.cliente.correo.toLowerCase() === usuario.correo.toLowerCase());
+
   const cambiar = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -35,8 +39,7 @@ export default function AdminUsuarioDetalle() {
     setErrores(err);
     if (Object.keys(err).length > 0) return;
 
-    const i = USUARIOS.findIndex((u) => u.run === usuario.run);
-    if (i !== -1) USUARIOS[i] = { ...form };
+    actualizarUsuario(usuario.run, form);
     setUsuario({ ...form });
     setEditando(false);
     setMensaje('Datos del usuario actualizados');
