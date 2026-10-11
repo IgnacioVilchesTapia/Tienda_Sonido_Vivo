@@ -73,14 +73,28 @@ export const BLOGS = [
     titulo: "Cómo elegir tu primera guitarra",
     resumen: "Cuerdas de nailon o de acero, tamaño 3/4 o 4/4, y por qué el presupuesto no es lo primero que deberías mirar.",
     imagen: "/img/guitarras-acusticas.jpg",
-    url: "blog-1.html"
+    fecha: "18-08-2026",
+    categoria: "Guitarras Acústicas",
+    contenido: [
+      { subtitulo: "", texto: "La pregunta que más nos hacen en el mesón no es cuál guitarra es mejor, sino cuál conviene para empezar. La respuesta corta: la que puedas tocar sin que te duelan los dedos la primera semana." },
+      { subtitulo: "Nailon o acero", texto: "Las cuerdas de nailon tienen menos tensión y perdonan más los dedos sin callos. Si vienes llegando y quieres tocar canciones acompañando la voz, una clásica como la Yamaha C40 es un punto de partida honesto. Si tu referencia es el rock o el folk con púa, el acero de una folk o dreadnought te va a sonar más cercano a lo que escuchas." },
+      { subtitulo: "El tamaño importa más que la marca", texto: "Una guitarra 4/4 en manos de alguien de diez años es un problema, no un instrumento. Para niños entre 6 y 10 años, un modelo 3/4 como la JR1 hace la diferencia entre practicar y abandonar. Prueba el instrumento sentado: si tienes que estirar el hombro para alcanzar el primer traste, es demasiado grande." },
+      { subtitulo: "Presupuesto: dónde poner la plata", texto: "Una guitarra barata mal ajustada desanima más que una guitarra cara. Antes de subir de rango, gasta en un ajuste de altura de cuerdas y en un afinador de clip. Con eso, un instrumento de entrada suena y se toca mucho mejor de lo que su precio sugiere." }
+    ]
   },
   {
     id: 2,
     titulo: "Cada cuánto cambiar las cuerdas",
     resumen: "Una guía corta para saber cuándo tus cuerdas dejaron de sonar y empezaron a sonar solo a metal viejo.",
     imagen: "/img/accesorios.jpg",
-    url: "blog-2.html"
+    fecha: "02-09-2026",
+    categoria: "Accesorios",
+    contenido: [
+      { subtitulo: "", texto: "No hay un número mágico, pero sí señales claras. Si tus cuerdas perdieron brillo, se desafinan a los diez minutos o dejaron marcas negras en tus dedos, ya pasó el punto." },
+      { subtitulo: "Una referencia según cuánto tocas", texto: "Si tocas una hora al día, un juego rinde entre seis y ocho semanas. Si ensayas con banda tres veces por semana, cuenta un mes. Si tocas en vivo, cambia antes de la fecha y no después: una cuerda cortada a mitad del set arruina un tema entero." },
+      { subtitulo: "El sudor y la costa", texto: "En Viña del Mar hay un factor extra: la humedad. La sal en el aire acelera la oxidación, sobre todo si guardas el instrumento fuera del estuche. Pasar un paño seco por las cuerdas después de tocar es gratis y les suma semanas de vida." },
+      { subtitulo: "Calibre, no solo marca", texto: "Un juego 09-42 se toca fácil y sirve para hacer bendings; un 10-46 suena más grueso y aguanta afinaciones bajas. Cambiar de calibre modifica la tensión del mástil, así que después de un cambio grande conviene revisar el ajuste del alma." }
+    ]
   }
 ];
 
@@ -107,3 +121,102 @@ export const obtenerProductosRelacionados = (categoria, codigoActual, limite = 4
     .slice(0, limite);
 };
 
+export const OFERTAS = [
+  { codigo: "GE001", descuento: 15 },
+  { codigo: "BA001", descuento: 10 },
+  { codigo: "TC001", descuento: 20 },
+  { codigo: "AM001", descuento: 10 },
+  { codigo: "MI001", descuento: 15 },
+  { codigo: "PE001", descuento: 25 },
+  { codigo: "ES002", descuento: 10 },
+  { codigo: "AC006", descuento: 30 }
+];
+
+export const ORDENES = [
+  {
+    numero: "20261005",
+    fecha: "05-10-2026",
+    estado: "Pagada",
+    cliente: { nombre: "Camila", apellidos: "Reyes Díaz", correo: "camila.reyes@duoc.cl" },
+    direccion: { calle: "Av. Pajaritos 3020", depto: "", region: "Región Metropolitana de Santiago", comuna: "Maipú", indicaciones: "" },
+    items: [
+      { codigo: "ES001", nombre: "Interfaz de Audio 2x2 USB", precio: 149990, cantidad: 1 },
+      { codigo: "ES002", nombre: "Auriculares de Estudio", precio: 79990, cantidad: 1 }
+    ],
+    subtotal: 229980,
+    descuento: 0,
+    despacho: 0,
+    total: 229980
+  },
+  {
+    numero: "20261003",
+    fecha: "03-10-2026",
+    estado: "Rechazada",
+    cliente: { nombre: "Camila", apellidos: "Reyes Díaz", correo: "camila.reyes@duoc.cl" },
+    direccion: { calle: "Av. Pajaritos 3020", depto: "", region: "Región Metropolitana de Santiago", comuna: "Maipú", indicaciones: "" },
+    items: [
+      { codigo: "ES001", nombre: "Interfaz de Audio 2x2 USB", precio: 149990, cantidad: 1 },
+      { codigo: "ES002", nombre: "Auriculares de Estudio", precio: 79990, cantidad: 1 }
+    ],
+    subtotal: 229980,
+    descuento: 0,
+    despacho: 0,
+    total: 229980
+  },
+  {
+    numero: "20260930",
+    fecha: "30-09-2026",
+    estado: "Pagada",
+    cliente: { nombre: "Fernanda", apellidos: "Soto Lagos", correo: "fsoto2000@gmail.com" },
+    direccion: { calle: "Irarrázaval 1200", depto: "41", region: "Región Metropolitana de Santiago", comuna: "Ñuñoa", indicaciones: "" },
+    items: [
+      { codigo: "AC001", nombre: "Cuerdas Guitarra Eléctrica 09-42", precio: 8990, cantidad: 2 },
+      { codigo: "AC004", nombre: "Púas de Guitarra x10 (0.73mm)", precio: 3990, cantidad: 1 }
+    ],
+    subtotal: 21970,
+    descuento: 0,
+    despacho: 4990,
+    total: 26960
+  },
+  {
+    numero: "20260921",
+    fecha: "21-09-2026",
+    estado: "Pagada",
+    cliente: { nombre: "Tomás", apellidos: "Herrera Silva", correo: "tomas.herrera@gmail.com" },
+    direccion: { calle: "Los Carrera 715", depto: "", region: "Región de Valparaíso", comuna: "Quilpué", indicaciones: "Dejar en conserjería" },
+    items: [
+      { codigo: "PE001", nombre: "Pedal Distorsión", precio: 79990, cantidad: 1 },
+      { codigo: "PE006", nombre: "Pedal Overdrive", precio: 99990, cantidad: 1 }
+    ],
+    subtotal: 179980,
+    descuento: 0,
+    despacho: 0,
+    total: 179980
+  },
+  {
+    numero: "20260915",
+    fecha: "15-09-2026",
+    estado: "Pagada",
+    cliente: { nombre: "Fernanda", apellidos: "Soto Lagos", correo: "fsoto2000@gmail.com" },
+    direccion: { calle: "Irarrázaval 1200", depto: "41", region: "Región Metropolitana de Santiago", comuna: "Ñuñoa", indicaciones: "" },
+    items: [
+      { codigo: "GA001", nombre: "Guitarra Acústica Folk", precio: 129990, cantidad: 1 },
+      { codigo: "AC006", nombre: "Afinador de Clip", precio: 8990, cantidad: 1 }
+    ],
+    subtotal: 138980,
+    descuento: 0,
+    despacho: 4990,
+    total: 143970
+  }
+];
+
+export function obtenerOrdenes() {
+  const guardadas = JSON.parse(localStorage.getItem("sonidoVivo.ordenes") || "[]");
+  return [...guardadas, ...ORDENES];
+}
+
+export function guardarOrden(orden) {
+  const guardadas = JSON.parse(localStorage.getItem("sonidoVivo.ordenes") || "[]");
+  guardadas.unshift(orden);
+  localStorage.setItem("sonidoVivo.ordenes", JSON.stringify(guardadas));
+}
