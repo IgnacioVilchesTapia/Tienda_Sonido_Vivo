@@ -109,14 +109,15 @@ export const USUARIOS = [
 // Alias para compatibilidad con componentes que importan productosIniciales
 export const productosIniciales = PRODUCTOS;
 
-// Utilidades de consulta rápida sobre el catálogo
 export const obtenerProductoPorCodigo = (codigo) => {
   if (!codigo) return null;
-  return PRODUCTOS.find((p) => p.codigo.toLowerCase() === codigo.toLowerCase()) || null;
+  const lista = obtenerProductos();
+  return lista.find((p) => p.codigo.toLowerCase() === codigo.toLowerCase()) || null;
 };
 
 export const obtenerProductosRelacionados = (categoria, codigoActual, limite = 4) => {
-  return PRODUCTOS
+  const lista = obtenerProductos();
+  return lista
     .filter((p) => p.categoria === categoria && p.codigo !== codigoActual)
     .slice(0, limite);
 };
@@ -210,6 +211,109 @@ export const ORDENES = [
   }
 ];
 
+export function obtenerProductos() {
+  const guardados = localStorage.getItem("sonidoVivo.productos");
+  if (!guardados) {
+    localStorage.setItem("sonidoVivo.productos", JSON.stringify(PRODUCTOS));
+    return PRODUCTOS;
+  }
+  try {
+    return JSON.parse(guardados);
+  } catch (e) {
+    return PRODUCTOS;
+  }
+}
+
+export function guardarProducto(producto) {
+  const lista = obtenerProductos();
+  lista.unshift(producto);
+  localStorage.setItem("sonidoVivo.productos", JSON.stringify(lista));
+  return lista;
+}
+
+export function actualizarProducto(codigo, datosActualizados) {
+  const lista = obtenerProductos();
+  const index = lista.findIndex((p) => p.codigo.toUpperCase() === codigo.toUpperCase());
+  if (index !== -1) {
+    lista[index] = { ...lista[index], ...datosActualizados };
+    localStorage.setItem("sonidoVivo.productos", JSON.stringify(lista));
+    return lista[index];
+  }
+  return null;
+}
+
+export function eliminarProducto(codigo) {
+  const lista = obtenerProductos();
+  const filtrados = lista.filter((p) => p.codigo.toUpperCase() !== codigo.toUpperCase());
+  localStorage.setItem("sonidoVivo.productos", JSON.stringify(filtrados));
+  return filtrados;
+}
+
+export function obtenerUsuarios() {
+  const guardados = localStorage.getItem("sonidoVivo.usuarios");
+  if (!guardados) {
+    localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(USUARIOS));
+    return USUARIOS;
+  }
+  try {
+    return JSON.parse(guardados);
+  } catch (e) {
+    return USUARIOS;
+  }
+}
+
+export function obtenerUsuarioPorRun(run) {
+  const lista = obtenerUsuarios();
+  if (!run) return null;
+  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
+  return lista.find((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() === runLimpio) || null;
+}
+
+export function guardarUsuario(usuario) {
+  const lista = obtenerUsuarios();
+  lista.unshift(usuario);
+  localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(lista));
+  return lista;
+}
+
+export function actualizarUsuario(run, datosActualizados) {
+  const lista = obtenerUsuarios();
+  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
+  const index = lista.findIndex((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() === runLimpio);
+  if (index !== -1) {
+    lista[index] = { ...lista[index], ...datosActualizados };
+    localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(lista));
+    return lista[index];
+  }
+  return null;
+}
+
+export function eliminarUsuario(run) {
+  const lista = obtenerUsuarios();
+  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
+  const filtrados = lista.filter((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() !== runLimpio);
+  localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(filtrados));
+  return filtrados;
+}
+
+export function obtenerUsuarioActivo() {
+  const guardado = localStorage.getItem("sonidoVivo.usuarioActivo");
+  if (!guardado) return null;
+  try {
+    return JSON.parse(guardado);
+  } catch (e) {
+    return null;
+  }
+}
+
+export function guardarUsuarioActivo(usuario) {
+  localStorage.setItem("sonidoVivo.usuarioActivo", JSON.stringify(usuario));
+}
+
+export function cerrarSesion() {
+  localStorage.removeItem("sonidoVivo.usuarioActivo");
+}
+
 export function obtenerOrdenes() {
   const guardadas = JSON.parse(localStorage.getItem("sonidoVivo.ordenes") || "[]");
   return [...guardadas, ...ORDENES];
@@ -220,3 +324,4 @@ export function guardarOrden(orden) {
   guardadas.unshift(orden);
   localStorage.setItem("sonidoVivo.ordenes", JSON.stringify(guardadas));
 }
+
