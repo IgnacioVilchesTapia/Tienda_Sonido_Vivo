@@ -5,23 +5,21 @@ import { useCart } from '../context/CartContext';
 
 export default function ProductoDetalle() {
   const { codigo } = useParams();
-  const [producto, setProducto] = useState(null);
+  const producto = obtenerProductoPorCodigo(codigo);
+  const relacionados = producto ? obtenerProductosRelacionados(producto.categoria, producto.codigo, 4) : [];
   const [cantidad, setCantidad] = useState(1);
-  const [relacionados, setRelacionados] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [codigoVisto, setCodigoVisto] = useState(codigo);
 
   const { agregarAlCarrito } = useCart();
 
-  useEffect(() => {
-    const encontrado = obtenerProductoPorCodigo(codigo);
-    setProducto(encontrado);
+  if (codigoVisto !== codigo) {
+    setCodigoVisto(codigo);
     setCantidad(1);
     setFeedback(null);
+  }
 
-    if (encontrado) {
-      const rels = obtenerProductosRelacionados(encontrado.categoria, encontrado.codigo, 4);
-      setRelacionados(rels);
-    }
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [codigo]);
 
@@ -53,7 +51,6 @@ export default function ProductoDetalle() {
 
   return (
     <div className="container my-5">
-      {/* Breadcrumbs */}
       <nav aria-label="breadcrumb" className="mb-4">
         <ol className="breadcrumb small">
           <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">Inicio</Link></li>
@@ -63,7 +60,6 @@ export default function ProductoDetalle() {
         </ol>
       </nav>
 
-      {/* Alerta de Feedback */}
       {feedback && (
         <div className={`alert alert-${feedback.tipo} alert-dismissible fade show shadow-sm mb-4`} role="alert">
           <i className={`bi ${feedback.tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2`}></i>
@@ -75,7 +71,6 @@ export default function ProductoDetalle() {
         </div>
       )}
 
-      {/* Ficha Principal */}
       <div className="card shadow-sm border-0 p-4 mb-5 rounded-3">
         <div className="row g-4 align-items-center">
           <div className="col-lg-6 text-center">
@@ -108,7 +103,6 @@ export default function ProductoDetalle() {
               <span className="text-muted small">IVA incluido</span>
             </div>
 
-            {/* Disponibilidad / Stock */}
             <div className="mb-3">
               {sinStock ? (
                 <span className="badge bg-secondary px-3 py-2 fs-6">Agotado temporalmente</span>
@@ -129,7 +123,6 @@ export default function ProductoDetalle() {
               {producto.descripcion}
             </p>
 
-            {/* Selector de cantidad y botón */}
             <div className="d-flex align-items-center gap-3 mb-4">
               <div className="d-flex align-items-center border rounded bg-white">
                 <button
@@ -161,7 +154,6 @@ export default function ProductoDetalle() {
               </button>
             </div>
 
-            {/* Beneficios de compra */}
             <div className="border-top pt-3 small text-muted">
               <div className="row g-2">
                 <div className="col-sm-6">
@@ -182,7 +174,6 @@ export default function ProductoDetalle() {
         </div>
       </div>
 
-      {/* Productos Relacionados */}
       {relacionados.length > 0 && (
         <section className="mt-5">
           <div className="d-flex justify-content-between align-items-center mb-3">

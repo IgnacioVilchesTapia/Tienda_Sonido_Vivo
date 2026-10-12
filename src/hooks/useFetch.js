@@ -1,20 +1,12 @@
 import { useState, useEffect } from 'react';
 
-/**
- * Custom Hook para consumo de endpoints REST (preparado para Spring Boot)
- * @param {string} url - Ruta o endpoint de la API
- * @param {RequestInit} [options] - Opciones de fetch (headers, method, etc.)
- */
 export function useFetch(url, options = {}) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(!!url);
-  const [error, setError] = useState(null);
+  const [respuesta, setRespuesta] = useState({ url: null, data: null, error: null });
 
   useEffect(() => {
     if (!url) return;
 
-    let isMounted = true;
-    setLoading(true);
+    let activo = true;
 
     fetch(url, options)
       .then((res) => {
@@ -24,28 +16,23 @@ export function useFetch(url, options = {}) {
         return res.json();
       })
       .then((resultado) => {
-        if (isMounted) {
-          setData(resultado);
-          setError(null);
+        if (activo) {
+          setRespuesta({ url: url, data: resultado, error: null });
         }
       })
       .catch((err) => {
-        if (isMounted) {
-          setError(err.message || 'Error desconocido al obtener datos');
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
+        if (activo) {
+          setRespuesta({ url: url, data: null, error: err.message || 'Error desconocido al obtener datos' });
         }
       });
 
     return () => {
-      isMounted = false;
+      activo = false;
     };
   }, [url]);
 
-  return { data, loading, error };
-}
+  const loading = !!url && respuesta.url !== url;
 
+  return { data: respuesta.data, loading: loading, error: respuesta.error };
+}
 export default useFetch;
