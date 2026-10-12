@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS, obtenerOrdenes } from '../../data/datos';
+import { obtenerProductos, obtenerCategorias, obtenerOrdenes } from '../../data/datos';
 export default function AdminReportes() {
+  const productos = obtenerProductos();
   const pagadas = obtenerOrdenes().filter((o) => o.estado === 'Pagada');
 
   let totalVentas = 0;
@@ -12,7 +13,7 @@ export default function AdminReportes() {
   const vendidos = {};
   pagadas.forEach((o) => {
     o.items.forEach((it) => {
-      const prod = PRODUCTOS.find((p) => p.codigo === it.codigo);
+      const prod = productos.find((p) => p.codigo === it.codigo);
       const cat = prod ? prod.categoria : 'Otros';
       ventasCategoria[cat] = (ventasCategoria[cat] || 0) + it.precio * it.cantidad;
       vendidos[it.nombre] = (vendidos[it.nombre] || 0) + it.cantidad;
@@ -26,8 +27,8 @@ export default function AdminReportes() {
     .sort((a, b) => b.cantidad - a.cantidad)
     .slice(0, 5);
 
-  const inventario = CATEGORIAS.map((cat) => {
-    const prods = PRODUCTOS.filter((p) => p.categoria === cat);
+  const inventario = obtenerCategorias().map((cat) => {
+    const prods = productos.filter((p) => p.categoria === cat);
     let unidades = 0;
     let valor = 0;
     prods.forEach((p) => {

@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS } from '../../data/datos';
+import { obtenerProductos, actualizarProducto, obtenerCategorias, guardarCategorias } from '../../data/datos';
+
 export default function AdminCategorias() {
-  const [lista, setLista] = useState([...CATEGORIAS]);
+  const [lista, setLista] = useState(() => obtenerCategorias());
+  const [productos, setProductos] = useState(() => obtenerProductos());
   const [nueva, setNueva] = useState('');
   const [editando, setEditando] = useState('');
   const [nombreEditado, setNombreEditado] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const contar = (cat) => PRODUCTOS.filter((p) => p.categoria === cat).length;
+  const contar = (cat) => productos.filter((p) => p.categoria === cat).length;
   const existe = (nombre) => lista.some((c) => c.toLowerCase() === nombre.toLowerCase());
 
   const agregar = (e) => {
@@ -21,8 +23,9 @@ export default function AdminCategorias() {
       alert('Esa categoría ya existe');
       return;
     }
-    CATEGORIAS.push(nombre);
-    setLista([...CATEGORIAS]);
+    const nuevaLista = [...lista, nombre];
+    guardarCategorias(nuevaLista);
+    setLista(nuevaLista);
     setNueva('');
     setMensaje('Categoría "' + nombre + '" creada');
   };
@@ -42,12 +45,13 @@ export default function AdminCategorias() {
       alert('Esa categoría ya existe');
       return;
     }
-    const i = CATEGORIAS.indexOf(cat);
-    CATEGORIAS[i] = nombre;
-    PRODUCTOS.forEach((p, idx) => {
-      if (p.categoria === cat) PRODUCTOS[idx] = { ...p, categoria: nombre };
+    const nuevaLista = lista.map((c) => (c === cat ? nombre : c));
+    guardarCategorias(nuevaLista);
+    productos.forEach((p) => {
+      if (p.categoria === cat) actualizarProducto(p.codigo, { categoria: nombre });
     });
-    setLista([...CATEGORIAS]);
+    setProductos(obtenerProductos());
+    setLista(nuevaLista);
     setEditando('');
     setMensaje('Categoría actualizada');
   };

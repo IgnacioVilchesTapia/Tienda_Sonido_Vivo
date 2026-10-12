@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CATEGORIAS, obtenerProductoPorCodigo, actualizarProducto } from '../../data/datos';
+import { obtenerProductoPorCodigo, actualizarProducto, obtenerCategorias } from '../../data/datos';
 
 export default function AdminProductoDetalle() {
   const { codigo } = useParams();
   const [producto, setProducto] = useState(() => obtenerProductoPorCodigo(codigo));
+  const [categorias] = useState(() => obtenerCategorias());
   const [form, setForm] = useState(producto ? { ...producto } : null);
   const [editando, setEditando] = useState(false);
   const [mensaje, setMensaje] = useState('');
@@ -121,7 +122,7 @@ export default function AdminProductoDetalle() {
             <div className="col-md-6">
               <label className="form-label small fw-semibold">Categoría</label>
               <select name="categoria" className="form-select" value={form.categoria} onChange={cambiar}>
-                {CATEGORIAS.map((c) => (
+                {categorias.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>

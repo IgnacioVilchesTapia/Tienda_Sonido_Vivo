@@ -1,11 +1,26 @@
-import { Outlet, NavLink, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
+import { obtenerUsuarioActivo, cerrarSesion } from '../data/datos';
 export default function Layout() {
   const { cantidadTotal } = useCart();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState(() => obtenerUsuarioActivo());
+  const [ruta, setRuta] = useState(pathname);
+
+  if (ruta !== pathname) {
+    setRuta(pathname);
+    setUsuario(obtenerUsuarioActivo());
+  }
+  const salir = () => {
+    cerrarSesion();
+    setUsuario(null);
+    navigate('/');
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* Top Bar de contacto / promociones */}
       <div className="bg-tolex-dark text-white py-1 small border-bottom border-secondary border-opacity-25">
         <div className="container d-flex justify-content-between align-items-center">
           <div>
@@ -20,7 +35,6 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Navbar Principal */}
       <header className="sticky-top shadow-sm">
         <nav className="navbar navbar-expand-xl navbar-dark bg-tolex py-3">
           <div className="container">
@@ -88,9 +102,20 @@ export default function Layout() {
               </ul>
 
               <div className="d-flex align-items-center gap-2">
-                <Link to="/login" className="btn btn-outline-light btn-sm px-3">
-                  <i className="bi bi-person me-1"></i> Mi Cuenta
-                </Link>
+                {usuario ? (
+                  <>
+                    <span className="text-white small text-nowrap d-xl-none d-xxl-inline">
+                      <i className="bi bi-person-circle text-amber me-1"></i>Hola, {usuario.nombre}
+                    </span>
+                    <button className="btn btn-outline-light btn-sm px-3 text-nowrap" title={usuario.correo} onClick={salir}>
+                      <i className="bi bi-box-arrow-right me-1"></i> Salir
+                    </button>
+                  </>
+                ) : (
+                  <Link to="/login" className="btn btn-outline-light btn-sm px-3">
+                    <i className="bi bi-person me-1"></i> Mi Cuenta
+                  </Link>
+                )}
                 <Link to="/carrito" className="btn btn-amber btn-sm px-3 position-relative d-flex align-items-center gap-2">
                   <i className="bi bi-cart3 fs-6"></i>
                   <span>Carrito</span>
@@ -106,12 +131,10 @@ export default function Layout() {
         </nav>
       </header>
 
-      {/* Contenido Principal con Outlet */}
       <main className="flex-grow-1">
         <Outlet />
       </main>
 
-      {/* Footer Institucional */}
       <footer className="bg-tolex text-light pt-5 pb-3 mt-auto border-top border-secondary border-opacity-25">
         <div className="container">
           <div className="row g-4">

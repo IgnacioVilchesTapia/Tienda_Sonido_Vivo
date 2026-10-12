@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, CATEGORIAS, BLOGS } from '../data/datos';
+import { obtenerProductos, obtenerCategorias, BLOGS } from '../data/datos';
 
 export default function Home() {
-  const destacados = PRODUCTOS.slice(0, 4);
+  const destacados = obtenerProductos().slice(0, 4);
+  const categorias = obtenerCategorias().slice(0, 6);
 
   return (
     <div>
-      {/* Hero Banner */}
       <section className="bg-tolex text-white py-5 position-relative overflow-hidden">
         <div className="container py-lg-4">
           <div className="row align-items-center gy-4">
@@ -46,7 +46,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Franja de Beneficios */}
       <section className="py-4 bg-white border-bottom shadow-sm">
         <div className="container">
           <div className="row g-4 text-center">
@@ -74,7 +73,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Productos Destacados */}
       <section className="py-5">
         <div className="container">
           <div className="d-flex justify-content-between align-items-end mb-4">
@@ -115,7 +113,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categorías Principales */}
       <section className="py-5 bg-light border-top border-bottom">
         <div className="container">
           <div className="text-center mb-4">
@@ -123,7 +120,7 @@ export default function Home() {
             <p className="text-muted">Encuentra exactamente lo que necesitas para tu sonido</p>
           </div>
           <div className="row g-3 justify-content-center">
-            {CATEGORIAS.slice(0, 6).map((cat) => (
+            {categorias.map((cat) => (
               <div key={cat} className="col-md-4 col-sm-6">
                 <Link
                   to={`/productos?categoria=${encodeURIComponent(cat)}`}
@@ -138,7 +135,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sección Blog para Músicos */}
       <section className="py-5 bg-white">
         <div className="container">
           <div className="text-center mb-5">
@@ -177,7 +173,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Llamado de Visita a la Tienda Física */}
       <section className="py-5 bg-tolex text-white">
         <div className="container text-center py-3">
           <i className="bi bi-geo-alt-fill text-amber display-4 mb-3"></i>

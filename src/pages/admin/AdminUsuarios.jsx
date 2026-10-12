@@ -56,13 +56,13 @@ export default function AdminUsuarios() {
       return;
     }
 
-    if (usuarios.some((u) => u.run === nuevo.run.replace(/[\.\s-]/g, '').toUpperCase())) {
+    if (usuarios.some((u) => u.run === nuevo.run.replace(/[.\s-]/g, '').toUpperCase())) {
       alert(`El RUN ya se encuentra registrado.`);
       return;
     }
 
     const usuarioAgregado = {
-      run: nuevo.run.replace(/[\.\s-]/g, '').toUpperCase(),
+      run: nuevo.run.replace(/[.\s-]/g, '').toUpperCase(),
       nombre: nuevo.nombre,
       apellidos: nuevo.apellidos,
       correo: nuevo.correo,
@@ -114,7 +114,6 @@ export default function AdminUsuarios() {
         </div>
       )}
 
-      {/* Barra de Filtros */}
       <div className="card shadow-sm p-3 mb-4 bg-white border-0">
         <div className="row g-3">
           <div className="col-md-7">
@@ -141,7 +140,6 @@ export default function AdminUsuarios() {
         </div>
       </div>
 
-      {/* Tabla de Usuarios */}
       <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -189,7 +187,6 @@ export default function AdminUsuarios() {
         </div>
       </div>
 
-      {/* Modal Nuevo Usuario */}
       {mostrarModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} tabIndex="-1">
           <div className="modal-dialog modal-lg modal-dialog-centered">
