@@ -1,4 +1,3 @@
-// datos.js — catálogo de Sonido Vivo.
 export const CATEGORIAS = [
   "Guitarras Acústicas",
   "Guitarras Eléctricas",
@@ -11,7 +10,6 @@ export const CATEGORIAS = [
   "Accesorios",
   "Estudio y Grabación"
 ];
-
 export const PRODUCTOS = [
   {"codigo": "GA001", "categoria": "Guitarras Acústicas", "nombre": "Guitarra Acústica Folk", "marca": "Yamaha", "modelo": "F310", "stock": 8, "stockCritico": 3, "precio": 129990, "descripcion": "Tapa de abeto, aros y fondo de meranti. Ideal para iniciantes.", "imagen": "/img/guitarras-acusticas.jpg"},
   {"codigo": "GA002", "categoria": "Guitarras Acústicas", "nombre": "Guitarra Acústica Dreadnought", "marca": "Fender", "modelo": "CD-60S", "stock": 5, "stockCritico": 3, "precio": 189990, "descripcion": "Tapa de abeto macizo, brazo de caoba. Sonido cálido y proyectado.", "imagen": "/img/guitarras-acusticas.jpg"},
@@ -66,7 +64,6 @@ export const PRODUCTOS = [
   {"codigo": "ES005", "categoria": "Estudio y Grabación", "nombre": "Pop Filter para Micrófono", "marca": "Sennheiser", "modelo": "MZP 40", "stock": 8, "stockCritico": 3, "precio": 14990, "descripcion": "Doble malla, brazo flexible con clip.", "imagen": "/img/estudio-y-grabacion.jpg"},
 ];
 
-// Blogs de la tienda
 export const BLOGS = [
   {
     id: 1,
@@ -97,17 +94,12 @@ export const BLOGS = [
     ]
   }
 ];
-
-// Usuarios de ejemplo para el administrador.
 export const USUARIOS = [
   { run: "190110222", nombre: "Carla", apellidos: "Pizarro Muñoz", correo: "c.pizarro@duoc.cl", tipo: "Administrador", region: "Región de Valparaíso", comuna: "Viña del Mar", direccion: "Av. San Martín 452", nacimiento: "1994-03-12" },
   { run: "175558888", nombre: "Diego", apellidos: "Rojas Fuentes", correo: "d.rojas@duoc.cl", tipo: "Vendedor", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle Prat 88", nacimiento: "1990-11-02" },
   { run: "213334441", nombre: "Fernanda", apellidos: "Soto Lagos", correo: "fsoto2000@gmail.com", tipo: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Ñuñoa", direccion: "Irarrázaval 1200, depto 41", nacimiento: "2000-07-25" },
   { run: "165552229", nombre: "Matías", apellidos: "Contreras Vera", correo: "m.contreras@profesor.duoc.cl", tipo: "Vendedor", region: "Región del Biobío", comuna: "Concepción", direccion: "Barros Arana 340", nacimiento: "1988-01-30" }
 ];
-
-// Alias para compatibilidad con componentes que importan productosIniciales
-export const productosIniciales = PRODUCTOS;
 
 export const obtenerProductoPorCodigo = (codigo) => {
   if (!codigo) return null;
@@ -121,7 +113,6 @@ export const obtenerProductosRelacionados = (categoria, codigoActual, limite = 4
     .filter((p) => p.categoria === categoria && p.codigo !== codigoActual)
     .slice(0, limite);
 };
-
 export const OFERTAS = [
   { codigo: "GE001", descuento: 15 },
   { codigo: "BA001", descuento: 10 },
@@ -215,15 +206,14 @@ export function obtenerProductos() {
   const guardados = localStorage.getItem("sonidoVivo.productos");
   if (!guardados) {
     localStorage.setItem("sonidoVivo.productos", JSON.stringify(PRODUCTOS));
-    return PRODUCTOS;
+    return [...PRODUCTOS];
   }
   try {
     return JSON.parse(guardados);
-  } catch (e) {
-    return PRODUCTOS;
+  } catch {
+    return [...PRODUCTOS];
   }
 }
-
 export function guardarProducto(producto) {
   const lista = obtenerProductos();
   lista.unshift(producto);
@@ -249,24 +239,38 @@ export function eliminarProducto(codigo) {
   return filtrados;
 }
 
+export function obtenerCategorias() {
+  const guardadas = localStorage.getItem("sonidoVivo.categorias");
+  if (!guardadas) return [...CATEGORIAS];
+  try {
+    return JSON.parse(guardadas);
+  } catch {
+    return [...CATEGORIAS];
+  }
+}
+
+export function guardarCategorias(lista) {
+  localStorage.setItem("sonidoVivo.categorias", JSON.stringify(lista));
+}
+
 export function obtenerUsuarios() {
   const guardados = localStorage.getItem("sonidoVivo.usuarios");
   if (!guardados) {
     localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(USUARIOS));
-    return USUARIOS;
+    return [...USUARIOS];
   }
   try {
     return JSON.parse(guardados);
-  } catch (e) {
-    return USUARIOS;
+  } catch {
+    return [...USUARIOS];
   }
 }
 
 export function obtenerUsuarioPorRun(run) {
   const lista = obtenerUsuarios();
   if (!run) return null;
-  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
-  return lista.find((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() === runLimpio) || null;
+  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
+  return lista.find((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() === runLimpio) || null;
 }
 
 export function guardarUsuario(usuario) {
@@ -278,8 +282,8 @@ export function guardarUsuario(usuario) {
 
 export function actualizarUsuario(run, datosActualizados) {
   const lista = obtenerUsuarios();
-  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
-  const index = lista.findIndex((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() === runLimpio);
+  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
+  const index = lista.findIndex((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() === runLimpio);
   if (index !== -1) {
     lista[index] = { ...lista[index], ...datosActualizados };
     localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(lista));
@@ -290,8 +294,8 @@ export function actualizarUsuario(run, datosActualizados) {
 
 export function eliminarUsuario(run) {
   const lista = obtenerUsuarios();
-  const runLimpio = run.replace(/[\.\s-]/g, '').toUpperCase();
-  const filtrados = lista.filter((u) => u.run.replace(/[\.\s-]/g, '').toUpperCase() !== runLimpio);
+  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
+  const filtrados = lista.filter((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() !== runLimpio);
   localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(filtrados));
   return filtrados;
 }
@@ -301,7 +305,7 @@ export function obtenerUsuarioActivo() {
   if (!guardado) return null;
   try {
     return JSON.parse(guardado);
-  } catch (e) {
+  } catch {
     return null;
   }
 }

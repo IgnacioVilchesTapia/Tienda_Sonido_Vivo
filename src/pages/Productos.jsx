@@ -1,28 +1,21 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CATEGORIAS, obtenerProductos } from '../data/datos';
+import { obtenerProductos, obtenerCategorias } from '../data/datos';
 import { useCart } from '../context/CartContext';
 
 export default function Productos() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const categoriaURL = searchParams.get('categoria') || '';
+  const categoria = searchParams.get('categoria') || '';
 
+  const [productos] = useState(() => obtenerProductos());
+  const [categorias] = useState(() => obtenerCategorias());
   const [busqueda, setBusqueda] = useState('');
-  const [categoria, setCategoria] = useState(categoriaURL);
   const [orden, setOrden] = useState('');
   const [notificacion, setNotificacion] = useState(null);
 
   const { agregarAlCarrito } = useCart();
 
-  // Sincronizar parámetro de URL si cambia externamente
-  useEffect(() => {
-    if (categoriaURL) {
-      setCategoria(categoriaURL);
-    }
-  }, [categoriaURL]);
-
   const handleCambioCategoria = (nuevaCat) => {
-    setCategoria(nuevaCat);
     if (nuevaCat) {
       setSearchParams({ categoria: nuevaCat });
     } else {
@@ -30,9 +23,8 @@ export default function Productos() {
     }
   };
 
-  // Filtrado y ordenamiento computado
   const productosFiltrados = useMemo(() => {
-    return obtenerProductos().filter((p) => {
+    return productos.filter((p) => {
       const coincideBusqueda =
         p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
         p.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -48,7 +40,7 @@ export default function Productos() {
       if (orden === 'nombre') return a.nombre.localeCompare(b.nombre);
       return 0;
     });
-  }, [busqueda, categoria, orden]);
+  }, [productos, busqueda, categoria, orden]);
 
   const handleAgregar = (producto) => {
     const res = agregarAlCarrito(producto, 1);
@@ -61,22 +53,19 @@ export default function Productos() {
 
   const limpiarFiltros = () => {
     setBusqueda('');
-    setCategoria('');
     setOrden('');
     setSearchParams({});
   };
 
   return (
     <div className="container my-5">
-      {/* Encabezado */}
       <div className="mb-4">
         <h1 className="display-6 fw-bold mb-2">Catálogo de Instrumentos</h1>
         <p className="text-muted">
-          Mostrando <strong>{productosFiltrados.length}</strong> de {PRODUCTOS.length} productos disponibles
+          Mostrando <strong>{productosFiltrados.length}</strong> de {productos.length} productos disponibles
         </p>
       </div>
 
-      {/* Alerta de feedback */}
       {notificacion && (
         <div className={`alert alert-${notificacion.tipo} alert-dismissible fade show shadow-sm`} role="alert">
           <i className={`bi ${notificacion.tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2`}></i>
@@ -85,7 +74,6 @@ export default function Productos() {
         </div>
       )}
 
-      {/* Barra de Filtros */}
       <div className="card shadow-sm border-0 bg-white p-3 mb-4 rounded-3">
         <div className="row g-3 align-items-end">
           <div className="col-12 col-md-5">
@@ -111,7 +99,7 @@ export default function Productos() {
               onChange={(e) => handleCambioCategoria(e.target.value)}
             >
               <option value="">Todas las categorías</option>
-              {CATEGORIAS.map((cat) => (
+              {categorias.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -147,7 +135,6 @@ export default function Productos() {
         )}
       </div>
 
-      {/* Grilla de Productos */}
       {productosFiltrados.length === 0 ? (
         <div className="text-center py-5 my-4 bg-white rounded-3 shadow-sm border">
           <i className="bi bi-search display-1 text-muted opacity-50 mb-3"></i>

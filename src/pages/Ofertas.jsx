@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, OFERTAS } from '../data/datos';
+import { obtenerProductos, OFERTAS } from '../data/datos';
 import { useCart } from '../context/CartContext';
 export default function Ofertas() {
   const { agregarAlCarrito } = useCart();
      const [mensaje, setMensaje] = useState('');
         const [tipo, setTipo] = useState('success');
 
+  const productos = obtenerProductos();
+
   const productosOferta = OFERTAS.map((o) => {
-    const p = PRODUCTOS.find((prod) => prod.codigo === o.codigo);
+    const p = productos.find((prod) => prod.codigo === o.codigo);
     if (!p) return null;
     const precioOferta = Math.round((p.precio - (p.precio * o.descuento) / 100) / 10) * 10;
     return { ...p, descuento: o.descuento, precioOferta: precioOferta };

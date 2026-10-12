@@ -14,7 +14,11 @@ import {
   obtenerUsuarioPorRun,
   obtenerUsuarioActivo,
   guardarUsuarioActivo,
-  cerrarSesion
+  cerrarSesion,
+  obtenerCategorias,
+  guardarCategorias,
+  obtenerOrdenes,
+  guardarOrden
 } from './datos';
 import { REGIONES, obtenerComunasPorRegion } from './regiones';
 
@@ -120,6 +124,41 @@ describe('datos.js', () => {
       expect(obtenerUsuarioActivo().correo).toBe('test@duoc.cl');
       cerrarSesion();
       expect(obtenerUsuarioActivo()).toBeNull();
+    });
+  });
+
+  describe('categorias con localStorage', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('usa las categorias base si no hay nada guardado', () => {
+      expect(obtenerCategorias()).toEqual(CATEGORIAS);
+    });
+
+    it('guarda una categoria nueva sin cambiar la lista base', () => {
+      guardarCategorias([...CATEGORIAS, 'Instrumentos de viento']);
+      expect(obtenerCategorias()).toContain('Instrumentos de viento');
+      expect(CATEGORIAS).not.toContain('Instrumentos de viento');
+    });
+
+    it('si lo guardado esta malo vuelve a las categorias base', () => {
+      localStorage.setItem('sonidoVivo.categorias', 'no es json');
+      expect(obtenerCategorias()).toEqual(CATEGORIAS);
+    });
+  });
+
+  describe('ordenes con localStorage', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('una orden nueva queda primera junto a las de ejemplo', () => {
+      const antes = obtenerOrdenes().length;
+      guardarOrden({ numero: '99999999', estado: 'Pagada', total: 10000, items: [] });
+      const lista = obtenerOrdenes();
+      expect(lista.length).toBe(antes + 1);
+      expect(lista[0].numero).toBe('99999999');
     });
   });
 });

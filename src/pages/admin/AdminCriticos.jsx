@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { PRODUCTOS } from '../../data/datos';
+import { obtenerProductos } from '../../data/datos';
 
 export default function AdminCriticos() {
-  const criticos = PRODUCTOS.filter((p) => p.stock <= p.stockCritico).sort((a, b) => a.stock - b.stock);
+  const criticos = obtenerProductos().filter((p) => p.stock <= p.stockCritico).sort((a, b) => a.stock - b.stock);
   return (
     <div className="container my-5">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">

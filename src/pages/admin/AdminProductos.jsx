@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CATEGORIAS, obtenerProductos, guardarProducto, eliminarProducto } from '../../data/datos';
+import { obtenerProductos, guardarProducto, eliminarProducto, obtenerCategorias } from '../../data/datos';
 
 export default function AdminProductos() {
   const [productos, setProductos] = useState(() => obtenerProductos());
+  const [categorias] = useState(() => obtenerCategorias());
   const [filtro, setFiltro] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -12,7 +13,7 @@ export default function AdminProductos() {
     nombre: '',
     marca: '',
     modelo: '',
-    categoria: CATEGORIAS[0],
+    categoria: categorias[0],
     precio: '',
     stock: '',
     stockCritico: '3',
@@ -38,6 +39,11 @@ export default function AdminProductos() {
     }
   };
 
+  const imagenCategoria = (cat) => {
+    const otro = productos.find((p) => p.categoria === cat);
+    return otro ? otro.imagen : '/img/accesorios.jpg';
+  };
+
   const handleGuardarNuevo = (e) => {
     e.preventDefault();
     if (!nuevo.codigo || !nuevo.nombre || !nuevo.precio || !nuevo.stock) {
@@ -60,7 +66,7 @@ export default function AdminProductos() {
       stock: parseInt(nuevo.stock, 10),
       stockCritico: parseInt(nuevo.stockCritico, 10) || 3,
       descripcion: nuevo.descripcion || 'Instrumento musical revisado por el taller de Sonido Vivo.',
-      imagen: '/img/guitarras-acusticas.jpg'
+      imagen: imagenCategoria(nuevo.categoria)
     };
 
     const actualizados = guardarProducto(prodAgregado);
@@ -71,7 +77,7 @@ export default function AdminProductos() {
       nombre: '',
       marca: '',
       modelo: '',
-      categoria: CATEGORIAS[0],
+      categoria: categorias[0],
       precio: '',
       stock: '',
       stockCritico: '3',
@@ -108,7 +114,6 @@ export default function AdminProductos() {
         </div>
       )}
 
-      {/* Filtros */}
       <div className="card shadow-sm p-3 mb-4 bg-white border-0">
         <div className="row g-3">
           <div className="col-md-7">
@@ -127,7 +132,7 @@ export default function AdminProductos() {
               onChange={(e) => setCategoriaFiltro(e.target.value)}
             >
               <option value="">Todas las categorías</option>
-              {CATEGORIAS.map((cat) => (
+              {categorias.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -135,7 +140,6 @@ export default function AdminProductos() {
         </div>
       </div>
 
-      {/* Tabla */}
       <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -188,7 +192,6 @@ export default function AdminProductos() {
         </div>
       </div>
 
-      {/* Modal Nuevo Producto */}
       {mostrarModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} tabIndex="-1">
           <div className="modal-dialog modal-lg modal-dialog-centered">
@@ -251,7 +254,7 @@ export default function AdminProductos() {
                         value={nuevo.categoria}
                         onChange={(e) => setNuevo({ ...nuevo, categoria: e.target.value })}
                       >
-                        {CATEGORIAS.map((cat) => (
+                        {categorias.map((cat) => (
                           <option key={cat} value={cat}>{cat}</option>
                         ))}
                       </select>

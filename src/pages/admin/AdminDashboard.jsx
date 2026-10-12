@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PRODUCTOS, USUARIOS } from '../../data/datos';
+import { obtenerProductos, obtenerUsuarios, obtenerUsuarioActivo } from '../../data/datos';
 
 const secciones = [
   { ruta: '/admin/ordenes', icono: 'bi-receipt', titulo: 'Órdenes', texto: 'Compras y boletas' },
@@ -13,8 +13,11 @@ const secciones = [
 ];
 
 export default function AdminDashboard() {
-  const criticos = PRODUCTOS.filter((p) => p.stock <= p.stockCritico);
-  const totalStock = PRODUCTOS.reduce((acc, p) => acc + p.stock, 0);
+  const productos = obtenerProductos();
+  const usuarios = obtenerUsuarios();
+  const sesion = obtenerUsuarioActivo();
+  const criticos = productos.filter((p) => p.stock <= p.stockCritico);
+  const totalStock = productos.reduce((acc, p) => acc + p.stock, 0);
 
   return (
     <div className="container my-5">
@@ -23,15 +26,18 @@ export default function AdminDashboard() {
           <h1 className="h2 fw-bold mb-1">Panel de Control — Sonido Vivo</h1>
           <p className="text-muted mb-0">Resumen operativo de inventario y personal</p>
         </div>
-        <span className="badge bg-success px-3 py-2">Sistema Operativo</span>
+        {sesion && (
+          <span className="badge bg-success px-3 py-2">
+            <i className="bi bi-person-check me-1"></i>{sesion.nombre}
+          </span>
+        )}
       </div>
 
-      {/* Tarjetas de Métricas */}
       <div className="row g-4 mb-4">
         <div className="col-md-4">
           <div className="card shadow-sm border-0 border-start border-primary border-4 p-3">
             <span className="text-muted small fw-semibold">TOTAL PRODUCTOS</span>
-            <h3 className="fw-bold my-2">{PRODUCTOS.length}</h3>
+            <h3 className="fw-bold my-2">{productos.length}</h3>
             <span className="text-secondary small">{totalStock} unidades en inventario</span>
           </div>
         </div>
@@ -45,13 +51,12 @@ export default function AdminDashboard() {
         <div className="col-md-4">
           <div className="card shadow-sm border-0 border-start border-success border-4 p-3">
             <span className="text-muted small fw-semibold">USUARIOS REGISTRADOS</span>
-            <h3 className="fw-bold my-2">{USUARIOS.length}</h3>
+            <h3 className="fw-bold my-2">{usuarios.length}</h3>
             <span className="text-secondary small">Administradores, vendedores y clientes</span>
           </div>
         </div>
       </div>
 
-      {/* Alerta de Stock Crítico */}
       <div className="card shadow-sm mb-4">
         <div className="card-header bg-danger text-white d-flex justify-content-between align-items-center">
           <span className="fw-bold"><i className="bi bi-exclamation-triangle-fill me-2"></i>Alerta de Inventario Crítico</span>

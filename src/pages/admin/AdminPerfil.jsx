@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { USUARIOS } from '../../data/datos';
+import { obtenerUsuarios, actualizarUsuario, obtenerUsuarioActivo, guardarUsuarioActivo } from '../../data/datos';
 import { validarEmail, validarPassword, validarTexto } from '../../utils/validaciones';
+
 export default function AdminPerfil() {
-  const [admin, setAdmin] = useState(USUARIOS.find((u) => u.tipo === 'Administrador'));
+  const [admin, setAdmin] = useState(() => {
+    const sesion = obtenerUsuarioActivo();
+    const usuarios = obtenerUsuarios();
+    const logeado = sesion ? usuarios.find((u) => u.correo === sesion.correo && u.tipo === 'Administrador') : null;
+    return logeado || usuarios.find((u) => u.tipo === 'Administrador');
+  });
   const [datos, setDatos] = useState(admin ? { ...admin } : null);
   const [claves, setClaves] = useState({ actual: '', nueva: '', repetir: '' });
   const [errores, setErrores] = useState({});
@@ -30,8 +36,9 @@ export default function AdminPerfil() {
     setErrores(err);
     if (Object.keys(err).length > 0) return;
 
-    const i = USUARIOS.findIndex((u) => u.run === admin.run);
-    USUARIOS[i] = { ...datos };
+    actualizarUsuario(admin.run, datos);
+    const sesion = obtenerUsuarioActivo();
+    if (sesion && sesion.correo === admin.correo) guardarUsuarioActivo({ ...datos });
     setAdmin({ ...datos });
     setMensaje('Perfil actualizado');
   };
