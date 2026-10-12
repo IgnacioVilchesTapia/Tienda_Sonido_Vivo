@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { validarRutChileno, validarEmail, validarPassword, validarTexto } from '../utils/validaciones';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
+import { obtenerUsuarios, guardarUsuario } from '../data/datos';
 
 export default function Registro() {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ export default function Registro() {
         setErrores((prev) => ({ ...prev, run: res.mensaje }));
       } else {
         setErrores((prev) => {
-          const { run, ...resto } = prev;
+          const resto = { ...prev };
+          delete resto.run;
           return resto;
         });
       }
@@ -66,9 +68,29 @@ export default function Registro() {
     const resDir = validarTexto(formulario.direccion, 5, 300, 'La dirección');
     if (!resDir.esValido) nuevosErrores.direccion = resDir.mensaje;
 
+    const usuarios = obtenerUsuarios();
+    const run = formulario.run.replace(/[.\s-]/g, '').toUpperCase();
+    if (!nuevosErrores.run && usuarios.some((u) => u.run === run)) {
+      nuevosErrores.run = 'Ya existe una cuenta con este RUN.';
+    }
+    if (!nuevosErrores.email && usuarios.some((u) => u.correo.toLowerCase() === formulario.email.toLowerCase())) {
+      nuevosErrores.email = 'Ya existe una cuenta con este correo.';
+    }
+
     setErrores(nuevosErrores);
 
     if (Object.keys(nuevosErrores).length === 0) {
+      guardarUsuario({
+        run: run,
+        nombre: formulario.nombre,
+        apellidos: formulario.apellidos,
+        correo: formulario.email,
+        tipo: 'Cliente',
+        region: formulario.region,
+        comuna: formulario.comuna,
+        direccion: formulario.direccion,
+        nacimiento: ''
+      });
       alert('¡Cuenta creada con éxito en Sonido Vivo! Redirigiendo a inicio de sesión…');
       navigate('/login');
     }
@@ -84,7 +106,6 @@ export default function Registro() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="row g-3">
-            {/* RUN */}
             <div className="col-12">
               <label className="form-label small fw-semibold text-muted">RUN (sin puntos ni guion)</label>
               <input
@@ -101,7 +122,6 @@ export default function Registro() {
               </div>
             </div>
 
-            {/* Nombre y Apellidos */}
             <div className="col-md-6">
               <label className="form-label small fw-semibold text-muted">Nombre</label>
               <input
@@ -126,7 +146,6 @@ export default function Registro() {
               {errores.apellidos && <div className="invalid-feedback">{errores.apellidos}</div>}
             </div>
 
-            {/* Correo y Clave */}
             <div className="col-md-6">
               <label className="form-label small fw-semibold text-muted">Correo Electrónico</label>
               <input
@@ -151,7 +170,6 @@ export default function Registro() {
               {errores.clave && <div className="invalid-feedback">{errores.clave}</div>}
             </div>
 
-            {/* Región y Comuna encadenadas */}
             <div className="col-md-6">
               <label className="form-label small fw-semibold text-muted">Región</label>
               <select
@@ -183,7 +201,6 @@ export default function Registro() {
               {errores.comuna && <div className="invalid-feedback">{errores.comuna}</div>}
             </div>
 
-            {/* Dirección */}
             <div className="col-12">
               <label className="form-label small fw-semibold text-muted">Dirección de Despacho</label>
               <input

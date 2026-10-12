@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
 import { validarTexto, validarEmail } from '../utils/validaciones';
-import { guardarOrden, obtenerUsuarioActivo } from '../data/datos';
+import { guardarOrden, obtenerUsuarioActivo, obtenerProductoPorCodigo, actualizarProducto } from '../data/datos';
 
 const vacio = {
   nombre: '',
@@ -106,6 +106,10 @@ export default function Checkout() {
     guardarOrden(orden);
 
     if (pagoAprobado) {
+      items.forEach((it) => {
+        const prod = obtenerProductoPorCodigo(it.codigo);
+        if (prod) actualizarProducto(prod.codigo, { stock: Math.max(0, prod.stock - it.cantidad) });
+      });
       vaciarCarrito();
       navigate('/compra-exitosa', { state: { orden: orden } });
     } else {
