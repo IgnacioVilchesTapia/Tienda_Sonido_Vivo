@@ -2,13 +2,23 @@ import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { obtenerProductos, obtenerCategorias } from '../data/datos';
 import { useCart } from '../context/CartContext';
+import { useFetch } from '../hooks/useFetch';
+import { API_URL } from '../services/config';
 
 export default function Productos() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoria = searchParams.get('categoria') || '';
 
-  const [productos] = useState(() => obtenerProductos());
-  const [categorias] = useState(() => obtenerCategorias());
+  const { data: productosApi, loading: cargando, error: errorApi } = useFetch(`${API_URL}/productos`);
+  const { data: categoriasApi } = useFetch(`${API_URL}/categorias`);
+  const [productosLocales] = useState(() => obtenerProductos());
+  const [categoriasLocales] = useState(() => obtenerCategorias());
+
+  const productos = useMemo(
+    () => productosApi ?? (errorApi ? productosLocales : []),
+    [productosApi, errorApi, productosLocales]
+  );
+  const categorias = categoriasApi ? categoriasApi.map((c) => c.nombre) : categoriasLocales;
   const [busqueda, setBusqueda] = useState('');
   const [orden, setOrden] = useState('');
   const [notificacion, setNotificacion] = useState(null);
@@ -64,6 +74,23 @@ export default function Productos() {
         <p className="text-muted">
           Mostrando <strong>{productosFiltrados.length}</strong> de {productos.length} productos disponibles
         </p>
+        {cargando && (
+          <p className="small text-muted mb-0">
+            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+            Cargando el catálogo desde el servidor...
+          </p>
+        )}
+        {productosApi && (
+          <p className="small text-success mb-0">
+            <i className="bi bi-cloud-check me-1"></i>Catálogo en línea
+          </p>
+        )}
+        {errorApi && (
+          <div className="alert alert-warning py-2 small mb-0" role="alert">
+            <i className="bi bi-wifi-off me-1"></i>
+            No se pudo conectar con el servidor. Se muestran los datos guardados en este navegador.
+          </div>
+        )}
       </div>
 
       {notificacion && (
