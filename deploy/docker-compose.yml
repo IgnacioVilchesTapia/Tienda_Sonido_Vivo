@@ -1,0 +1,43 @@
+name: sonido-vivo
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: tienda_sonido_vivo
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-sonidovivo2026}
+      TZ: America/Santiago
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  backend:
+    build: ..
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/tienda_sonido_vivo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-sonidovivo2026}
+      TZ: America/Santiago
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ${FRONTEND_DIR:-../../Tienda_Sonido_Vivo}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
