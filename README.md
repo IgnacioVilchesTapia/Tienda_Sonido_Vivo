@@ -43,6 +43,13 @@ Para correrlas una sola vez y sin abrir la ventana de Chrome:
 npm run test:karma:ci
 ```
 
+## Backend y despliegue
+
+El catálogo (`/productos`) y el detalle de producto ya piden los productos y categorías al backend (rama `backend` de este repo) en `/api/v1`. Si el backend no responde, el catálogo muestra un aviso y usa los datos guardados en el navegador.
+
+- En desarrollo: levantar el backend en `localhost:8080` y `npm run dev`; Vite reenvía `/api` al backend.
+- En AWS: el `Dockerfile` compila la app y la sirve con nginx (`nginx.conf`), que reenvía `/api` y Swagger al contenedor del backend. Los pasos están en el README de la rama `backend`.
+
 ## Carpetas
 
 - `src/pages`: vistas de la tienda
@@ -51,7 +58,8 @@ npm run test:karma:ci
 - `src/context`: CartContext, el estado del carrito
 - `src/core`: Layout con el menú y el footer
 - `src/data`: datos de la tienda y regiones de Chile
-- `src/hooks`: useFetch, para cuando esté la API
+- `src/hooks`: useFetch, para las llamadas a la API
+- `src/services`: dirección base de la API (`config.js`)
 - `src/utils`: validaciones de los formularios
 - `docs`: ERS y planilla de requerimientos
 

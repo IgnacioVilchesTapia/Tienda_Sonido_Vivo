@@ -2,11 +2,24 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { obtenerProductoPorCodigo, obtenerProductosRelacionados } from '../data/datos';
 import { useCart } from '../context/CartContext';
+import { useFetch } from '../hooks/useFetch';
+import { API_URL } from '../services/config';
 
 export default function ProductoDetalle() {
   const { codigo } = useParams();
-  const producto = obtenerProductoPorCodigo(codigo);
-  const relacionados = producto ? obtenerProductosRelacionados(producto.categoria, producto.codigo, 4) : [];
+
+  const { data: productoApi, loading: cargando, error: errorApi } = useFetch(`${API_URL}/productos/${encodeURIComponent(codigo)}`);
+  const producto = productoApi ?? (errorApi ? obtenerProductoPorCodigo(codigo) : null);
+
+  const urlRelacionados = producto ? `${API_URL}/productos?categoria=${encodeURIComponent(producto.categoria)}` : null;
+  const { data: mismaCategoria } = useFetch(urlRelacionados);
+
+  let relacionados = [];
+  if (producto && mismaCategoria) {
+    relacionados = mismaCategoria.filter((p) => p.codigo !== producto.codigo).slice(0, 4);
+  } else if (producto) {
+    relacionados = obtenerProductosRelacionados(producto.categoria, producto.codigo, 4);
+  }
   const [cantidad, setCantidad] = useState(1);
   const [feedback, setFeedback] = useState(null);
   const [codigoVisto, setCodigoVisto] = useState(codigo);
@@ -32,6 +45,15 @@ export default function ProductoDetalle() {
     });
     setTimeout(() => setFeedback(null), 4000);
   };
+
+  if (!producto && cargando) {
+    return (
+      <div className="container py-5 my-5 text-center">
+        <span className="spinner-border text-warning" role="status"></span>
+        <p className="text-muted mt-3">Cargando producto...</p>
+      </div>
+    );
+  }
 
   if (!producto) {
     return (
