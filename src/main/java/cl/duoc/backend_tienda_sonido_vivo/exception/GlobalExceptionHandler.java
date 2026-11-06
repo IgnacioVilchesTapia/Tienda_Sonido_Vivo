@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,6 +33,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictoException.class)
     public ResponseEntity<ErrorRespuesta> conflicto(ConflictoException ex, HttpServletRequest request) {
         return responder(HttpStatus.CONFLICT, "Conflicto", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorRespuesta> credenciales(CredencialesInvalidasException ex, HttpServletRequest request) {
+        return responder(HttpStatus.UNAUTHORIZED, "No autorizado", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorRespuesta> sinPermiso(AccessDeniedException ex, HttpServletRequest request) {
+        return responder(HttpStatus.FORBIDDEN, "Prohibido", "No tiene permisos para esta acción", request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
