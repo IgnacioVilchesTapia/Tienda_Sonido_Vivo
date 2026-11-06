@@ -21,7 +21,7 @@ services:
     build: ..
     restart: unless-stopped
     environment:
-      DB_URL: jdbc:mysql://mysql:3306/tienda_sonido_vivo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+      DB_URL: jdbc:mysql://mysql:3306/tienda_sonido_vivo?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
       DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD:-sonidovivo2026}
       TZ: America/Santiago
