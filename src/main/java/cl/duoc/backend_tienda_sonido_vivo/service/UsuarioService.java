@@ -68,6 +68,9 @@ public class UsuarioService {
     @Transactional
     public UsuarioDTO actualizarPerfil(String correo, UsuarioFormDTO dto) {
         Usuario usuario = buscarPorCorreo(correo);
+        if (!usuario.getCorreo().equalsIgnoreCase(dto.correo().trim())) {
+            throw new IllegalArgumentException("El correo no se puede cambiar desde el perfil");
+        }
         copiarDatos(dto, usuario);
         return UsuarioDTO.desde(usuarioRepository.save(usuario));
     }
