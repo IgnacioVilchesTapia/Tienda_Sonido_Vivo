@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { validarEmail, validarPassword } from '../utils/validaciones';
-import { obtenerUsuarios, guardarUsuarioActivo } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
+import { mensajeDeError } from '../services/api';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const [credenciales, setCredenciales] = useState({ correo: '', clave: '' });
   const [errores, setErrores] = useState({});
   const [errorGlobal, setErrorGlobal] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorGlobal('');
 
@@ -24,22 +28,20 @@ export default function Login() {
 
     if (Object.keys(nuevosErrores).length > 0) return;
 
-    const listaUsuarios = obtenerUsuarios();
-    const encontrado = listaUsuarios.find((u) => u.correo.toLowerCase() === credenciales.correo.toLowerCase());
-    const sesion = encontrado || {
-      nombre: credenciales.correo.split('@')[0],
-      apellidos: '',
-      correo: credenciales.correo,
-      direccion: '',
-      region: '',
-      comuna: ''
-    };
-    guardarUsuarioActivo(sesion);
-
-    if (credenciales.correo.toLowerCase().includes('admin') || credenciales.correo === 'c.pizarro@duoc.cl') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/');
+    setEnviando(true);
+    try {
+      const usuario = await login(credenciales.correo.trim(), credenciales.clave);
+      const desde = location.state && location.state.desde;
+      if (desde) {
+        navigate(desde, { replace: true });
+      } else if (usuario.rol === 'ADMIN' || usuario.rol === 'VENDEDOR') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      setErrorGlobal(mensajeDeError(error));
+      setEnviando(false);
     }
   };
 
@@ -88,8 +90,8 @@ export default function Login() {
             {errores.clave && <div className="invalid-feedback">{errores.clave}</div>}
           </div>
 
-          <button type="submit" className="btn btn-amber w-100 fw-bold py-2 mb-3">
-            Ingresar a Sonido Vivo
+          <button type="submit" className="btn btn-amber w-100 fw-bold py-2 mb-3" disabled={enviando}>
+            {enviando ? 'Ingresando…' : 'Ingresar a Sonido Vivo'}
           </button>
         </form>
 

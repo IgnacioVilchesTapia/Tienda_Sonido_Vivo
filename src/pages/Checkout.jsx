@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
 import { validarTexto, validarEmail } from '../utils/validaciones';
-import { guardarOrden, obtenerUsuarioActivo, obtenerProductoPorCodigo, actualizarProducto } from '../data/datos';
+import { guardarOrden, obtenerProductoPorCodigo, actualizarProducto } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
 
 const vacio = {
   nombre: '',
@@ -20,10 +21,10 @@ export default function Checkout() {
   const { items, subtotal, descuento, costoDespacho, total, vaciarCarrito } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const { usuario: sesion } = useAuth();
 
   const [datos, setDatos] = useState(() => {
     if (location.state && location.state.datos) return location.state.datos;
-    const sesion = obtenerUsuarioActivo();
     if (sesion) {
       return {
         nombre: sesion.nombre || '',

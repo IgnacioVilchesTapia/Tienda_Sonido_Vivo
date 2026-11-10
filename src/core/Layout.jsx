@@ -1,21 +1,13 @@
-import { useState } from 'react';
-import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { obtenerUsuarioActivo, cerrarSesion } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
 export default function Layout() {
   const { cantidadTotal } = useCart();
-  const { pathname } = useLocation();
+  const { usuario, logout } = useAuth();
   const navigate = useNavigate();
-  const [usuario, setUsuario] = useState(() => obtenerUsuarioActivo());
-  const [ruta, setRuta] = useState(pathname);
 
-  if (ruta !== pathname) {
-    setRuta(pathname);
-    setUsuario(obtenerUsuarioActivo());
-  }
   const salir = () => {
-    cerrarSesion();
-    setUsuario(null);
+    logout();
     navigate('/');
   };
 

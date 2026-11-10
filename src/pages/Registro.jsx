@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { validarRutChileno, validarEmail, validarPassword, validarTexto } from '../utils/validaciones';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
-import { obtenerUsuarios, guardarUsuario } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
+import { mensajeDeError } from '../services/api';
 
 export default function Registro() {
   const navigate = useNavigate();
+  const { registrar } = useAuth();
 
   const [formulario, setFormulario] = useState({
     run: '',
@@ -19,6 +21,8 @@ export default function Registro() {
   });
 
   const [errores, setErrores] = useState({});
+  const [errorGlobal, setErrorGlobal] = useState('');
+  const [enviando, setEnviando] = useState(false);
   const [comunasDisponibles, setComunasDisponibles] = useState([]);
 
   const handleCambioRegion = (e) => {
@@ -42,8 +46,9 @@ export default function Registro() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorGlobal('');
 
     const nuevosErrores = {};
 
@@ -68,31 +73,25 @@ export default function Registro() {
     const resDir = validarTexto(formulario.direccion, 5, 300, 'La dirección');
     if (!resDir.esValido) nuevosErrores.direccion = resDir.mensaje;
 
-    const usuarios = obtenerUsuarios();
-    const run = formulario.run.replace(/[.\s-]/g, '').toUpperCase();
-    if (!nuevosErrores.run && usuarios.some((u) => u.run === run)) {
-      nuevosErrores.run = 'Ya existe una cuenta con este RUN.';
-    }
-    if (!nuevosErrores.email && usuarios.some((u) => u.correo.toLowerCase() === formulario.email.toLowerCase())) {
-      nuevosErrores.email = 'Ya existe una cuenta con este correo.';
-    }
-
     setErrores(nuevosErrores);
+    if (Object.keys(nuevosErrores).length > 0) return;
 
-    if (Object.keys(nuevosErrores).length === 0) {
-      guardarUsuario({
-        run: run,
-        nombre: formulario.nombre,
-        apellidos: formulario.apellidos,
-        correo: formulario.email,
-        tipo: 'Cliente',
+    setEnviando(true);
+    try {
+      await registrar({
+        run: formulario.run.replace(/[.\s-]/g, '').toUpperCase(),
+        nombre: formulario.nombre.trim(),
+        apellidos: formulario.apellidos.trim(),
+        correo: formulario.email.trim(),
+        password: formulario.clave,
         region: formulario.region,
         comuna: formulario.comuna,
-        direccion: formulario.direccion,
-        nacimiento: ''
+        direccion: formulario.direccion.trim()
       });
-      alert('¡Cuenta creada con éxito en Sonido Vivo! Redirigiendo a inicio de sesión…');
-      navigate('/login');
+      navigate('/');
+    } catch (error) {
+      setErrorGlobal(mensajeDeError(error));
+      setEnviando(false);
     }
   };
 
@@ -103,6 +102,12 @@ export default function Registro() {
           <h2 className="fw-bold mb-1">Registro de Usuario</h2>
           <p className="text-muted small">Crea tu cuenta para comprar instrumentos y gestionar despachos</p>
         </div>
+
+        {errorGlobal && (
+          <div className="alert alert-danger py-2 small" role="alert">
+            {errorGlobal}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="row g-3">
@@ -214,8 +219,8 @@ export default function Registro() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-amber w-100 fw-bold py-2 mt-4 shadow-sm">
-            Crear Cuenta de Cliente
+          <button type="submit" className="btn btn-amber w-100 fw-bold py-2 mt-4 shadow-sm" disabled={enviando}>
+            {enviando ? 'Creando la cuenta…' : 'Crear Cuenta de Cliente'}
           </button>
         </form>
 
