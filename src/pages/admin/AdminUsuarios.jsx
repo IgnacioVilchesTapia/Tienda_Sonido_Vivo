@@ -1,26 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerUsuarios, guardarUsuario, eliminarUsuario } from '../../data/datos';
-import { validarRutChileno, validarEmail } from '../../utils/validaciones';
+import { validarRutChileno, validarEmail, validarPassword } from '../../utils/validaciones';
 import { REGIONES, obtenerComunasPorRegion } from '../../data/regiones';
+import { listarUsuarios, crearUsuario, eliminarUsuario, ROLES, etiquetaRol } from '../../services/usuarioService';
+import { mensajeDeError } from '../../services/api';
+
+const usuarioVacio = {
+  run: '',
+  nombre: '',
+  apellidos: '',
+  correo: '',
+  password: '',
+  rol: 'VENDEDOR',
+  region: REGIONES[5].nombre,
+  comuna: 'Viña del Mar',
+  direccion: ''
+};
 
 export default function AdminUsuarios() {
-  const [usuarios, setUsuarios] = useState(() => obtenerUsuarios());
+  const [usuarios, setUsuarios] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorCarga, setErrorCarga] = useState('');
   const [filtro, setFiltro] = useState('');
   const [perfilFiltro, setPerfilFiltro] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensaje, setMensaje] = useState(null);
+  const [nuevo, setNuevo] = useState(usuarioVacio);
 
-  const [nuevo, setNuevo] = useState({
-    run: '',
-    nombre: '',
-    apellidos: '',
-    correo: '',
-    tipo: 'Vendedor',
-    region: REGIONES[5].nombre,
-    comuna: 'Viña del Mar',
-    direccion: ''
-  });
+  useEffect(() => {
+    listarUsuarios()
+      .then((lista) => setUsuarios(lista))
+      .catch((error) => setErrorCarga(mensajeDeError(error)))
+      .finally(() => setCargando(false));
+  }, []);
+
+  const mostrarMensaje = (tipo, texto) => {
+    setMensaje({ tipo: tipo, texto: texto });
+    setTimeout(() => setMensaje(null), 3500);
+  };
 
   const filtrados = usuarios.filter((u) => {
     const coincideTexto =
@@ -28,20 +45,22 @@ export default function AdminUsuarios() {
       u.apellidos.toLowerCase().includes(filtro.toLowerCase()) ||
       u.run.includes(filtro) ||
       u.correo.toLowerCase().includes(filtro.toLowerCase());
-    const coincidePerfil = perfilFiltro ? u.tipo === perfilFiltro : true;
+    const coincidePerfil = perfilFiltro ? u.rol === perfilFiltro : true;
     return coincideTexto && coincidePerfil;
   });
 
-  const handleEliminar = (run) => {
-    if (window.confirm(`¿Estás seguro de dar de baja al usuario con RUN ${run}?`)) {
-      const actualizados = eliminarUsuario(run);
-      setUsuarios(actualizados);
-      setMensaje({ tipo: 'success', texto: `Usuario con RUN ${run} dado de baja exitosamente.` });
-      setTimeout(() => setMensaje(null), 3500);
+  const handleEliminar = async (run) => {
+    if (!window.confirm(`¿Estás seguro de dar de baja al usuario con RUN ${run}?`)) return;
+    try {
+      await eliminarUsuario(run);
+      setUsuarios(usuarios.filter((u) => u.run !== run));
+      mostrarMensaje('success', `Usuario con RUN ${run} dado de baja exitosamente.`);
+    } catch (error) {
+      mostrarMensaje('danger', mensajeDeError(error));
     }
   };
 
-  const handleGuardarNuevo = (e) => {
+  const handleGuardarNuevo = async (e) => {
     e.preventDefault();
 
     const resRut = validarRutChileno(nuevo.run);
@@ -56,38 +75,25 @@ export default function AdminUsuarios() {
       return;
     }
 
-    if (usuarios.some((u) => u.run === nuevo.run.replace(/[.\s-]/g, '').toUpperCase())) {
-      alert(`El RUN ya se encuentra registrado.`);
+    const resClave = validarPassword(nuevo.password);
+    if (!resClave.esValido) {
+      alert(resClave.mensaje);
       return;
     }
 
-    const usuarioAgregado = {
-      run: nuevo.run.replace(/[.\s-]/g, '').toUpperCase(),
-      nombre: nuevo.nombre,
-      apellidos: nuevo.apellidos,
-      correo: nuevo.correo,
-      tipo: nuevo.tipo,
-      region: nuevo.region,
-      comuna: nuevo.comuna,
-      direccion: nuevo.direccion || 'Av. San Martín 452, Viña del Mar',
-      nacimiento: '1995-05-15'
-    };
-
-    const actualizados = guardarUsuario(usuarioAgregado);
-    setUsuarios(actualizados);
-    setMostrarModal(false);
-    setNuevo({
-      run: '',
-      nombre: '',
-      apellidos: '',
-      correo: '',
-      tipo: 'Vendedor',
-      region: REGIONES[5].nombre,
-      comuna: 'Viña del Mar',
-      direccion: ''
-    });
-    setMensaje({ tipo: 'success', texto: `Usuario ${usuarioAgregado.nombre} ${usuarioAgregado.apellidos} registrado con éxito.` });
-    setTimeout(() => setMensaje(null), 3500);
+    try {
+      const creado = await crearUsuario({
+        ...nuevo,
+        run: nuevo.run.replace(/[.\s-]/g, '').toUpperCase(),
+        direccion: nuevo.direccion || 'Av. San Martín 452, Viña del Mar'
+      });
+      setUsuarios([creado, ...usuarios]);
+      setMostrarModal(false);
+      setNuevo(usuarioVacio);
+      mostrarMensaje('success', `Usuario ${creado.nombre} ${creado.apellidos} registrado con éxito.`);
+    } catch (error) {
+      alert(mensajeDeError(error));
+    }
   };
 
   return (
@@ -132,13 +138,16 @@ export default function AdminUsuarios() {
               onChange={(e) => setPerfilFiltro(e.target.value)}
             >
               <option value="">Todos los perfiles</option>
-              <option value="Administrador">Administrador</option>
-              <option value="Vendedor">Vendedor</option>
-              <option value="Cliente">Cliente</option>
+              {ROLES.map((r) => (
+                <option key={r.valor} value={r.valor}>{r.etiqueta}</option>
+              ))}
             </select>
           </div>
         </div>
       </div>
+
+      {cargando && <div className="alert alert-info">Cargando usuarios desde el servidor...</div>}
+      {errorCarga && <div className="alert alert-danger">{errorCarga}</div>}
 
       <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
         <div className="table-responsive">
@@ -160,8 +169,8 @@ export default function AdminUsuarios() {
                   <td>{u.nombre} {u.apellidos}</td>
                   <td>{u.correo}</td>
                   <td>
-                    <span className={`badge ${u.tipo === 'Administrador' ? 'bg-danger' : u.tipo === 'Vendedor' ? 'bg-primary' : 'bg-secondary'}`}>
-                      {u.tipo}
+                    <span className={`badge ${u.rol === 'ADMIN' ? 'bg-danger' : u.rol === 'VENDEDOR' ? 'bg-primary' : 'bg-secondary'}`}>
+                      {etiquetaRol(u.rol)}
                     </span>
                   </td>
                   <td>{u.comuna}, {u.region}</td>
@@ -215,12 +224,12 @@ export default function AdminUsuarios() {
                       <label className="form-label small fw-semibold">Perfil de Usuario *</label>
                       <select
                         className="form-select"
-                        value={nuevo.tipo}
-                        onChange={(e) => setNuevo({ ...nuevo, tipo: e.target.value })}
+                        value={nuevo.rol}
+                        onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value })}
                       >
-                        <option value="Administrador">Administrador</option>
-                        <option value="Vendedor">Vendedor</option>
-                        <option value="Cliente">Cliente</option>
+                        {ROLES.map((r) => (
+                          <option key={r.valor} value={r.valor}>{r.etiqueta}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="col-md-6">
@@ -245,7 +254,7 @@ export default function AdminUsuarios() {
                         onChange={(e) => setNuevo({ ...nuevo, apellidos: e.target.value })}
                       />
                     </div>
-                    <div className="col-12">
+                    <div className="col-md-6">
                       <label className="form-label small fw-semibold">Correo Institucional *</label>
                       <input
                         type="email"
@@ -254,6 +263,17 @@ export default function AdminUsuarios() {
                         required
                         value={nuevo.correo}
                         onChange={(e) => setNuevo({ ...nuevo, correo: e.target.value })}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold">Contraseña inicial *</label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        placeholder="4 a 10 caracteres"
+                        required
+                        value={nuevo.password}
+                        onChange={(e) => setNuevo({ ...nuevo, password: e.target.value })}
                       />
                     </div>
                     <div className="col-md-6">

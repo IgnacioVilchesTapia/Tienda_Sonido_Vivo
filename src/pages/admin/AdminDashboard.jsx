@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerProductos, obtenerUsuarios, obtenerUsuarioActivo } from '../../data/datos';
+import { obtenerProductos } from '../../data/datos';
+import { useAuth } from '../../context/AuthContext';
+import { listarUsuarios } from '../../services/usuarioService';
 
 const secciones = [
   { ruta: '/admin/ordenes', icono: 'bi-receipt', titulo: 'Órdenes', texto: 'Compras y boletas' },
@@ -14,8 +17,16 @@ const secciones = [
 
 export default function AdminDashboard() {
   const productos = obtenerProductos();
-  const usuarios = obtenerUsuarios();
-  const sesion = obtenerUsuarioActivo();
+  const { usuario: sesion, tieneRol } = useAuth();
+  const esAdmin = tieneRol('ADMIN');
+  const [totalUsuarios, setTotalUsuarios] = useState(null);
+
+  useEffect(() => {
+    if (!esAdmin) return;
+    listarUsuarios()
+      .then((lista) => setTotalUsuarios(lista.length))
+      .catch(() => setTotalUsuarios(null));
+  }, [esAdmin]);
   const criticos = productos.filter((p) => p.stock <= p.stockCritico);
   const totalStock = productos.reduce((acc, p) => acc + p.stock, 0);
 
@@ -51,7 +62,7 @@ export default function AdminDashboard() {
         <div className="col-md-4">
           <div className="card shadow-sm border-0 border-start border-success border-4 p-3">
             <span className="text-muted small fw-semibold">USUARIOS REGISTRADOS</span>
-            <h3 className="fw-bold my-2">{usuarios.length}</h3>
+            <h3 className="fw-bold my-2">{totalUsuarios === null ? '—' : totalUsuarios}</h3>
             <span className="text-secondary small">Administradores, vendedores y clientes</span>
           </div>
         </div>

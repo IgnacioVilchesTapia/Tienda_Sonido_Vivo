@@ -1,21 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { obtenerUsuarioPorRun, actualizarUsuario, obtenerOrdenes } from '../../data/datos';
+import { obtenerOrdenes } from '../../data/datos';
 import { REGIONES, obtenerComunasPorRegion } from '../../data/regiones';
 import { validarEmail, validarTexto } from '../../utils/validaciones';
+import { obtenerUsuario, actualizarUsuario, ROLES, etiquetaRol } from '../../services/usuarioService';
+import { mensajeDeError } from '../../services/api';
 
 export default function AdminUsuarioDetalle() {
   const { run } = useParams();
-  const [usuario, setUsuario] = useState(() => obtenerUsuarioPorRun(run));
-  const [form, setForm] = useState(usuario ? { ...usuario } : null);
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [errorCarga, setErrorCarga] = useState('');
+  const [form, setForm] = useState(null);
   const [editando, setEditando] = useState(false);
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+    obtenerUsuario(run)
+      .then((datos) => setUsuario(datos))
+      .catch((error) => setErrorCarga(mensajeDeError(error)))
+      .finally(() => setCargando(false));
+  }, [run]);
+
+  if (cargando) {
+    return <div className="container my-5 text-center text-muted">Cargando usuario...</div>;
+  }
 
   if (!usuario) {
     return (
       <div className="container my-5 text-center">
         <h2 className="fw-bold">Usuario no encontrado</h2>
+        <p className="text-muted">{errorCarga}</p>
         <Link to="/admin/usuarios" className="btn btn-amber mt-3">Volver a usuarios</Link>
       </div>
     );
@@ -27,7 +43,7 @@ export default function AdminUsuarioDetalle() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const guardar = (e) => {
+  const guardar = async (e) => {
     e.preventDefault();
     const err = {};
     const n = validarTexto(form.nombre, 2, 50, 'El nombre');
@@ -39,10 +55,15 @@ export default function AdminUsuarioDetalle() {
     setErrores(err);
     if (Object.keys(err).length > 0) return;
 
-    actualizarUsuario(usuario.run, form);
-    setUsuario({ ...form });
-    setEditando(false);
-    setMensaje('Datos del usuario actualizados');
+    try {
+      const actualizado = await actualizarUsuario(usuario.run, form);
+      setUsuario(actualizado);
+      setEditando(false);
+      setErrores({});
+      setMensaje('Datos del usuario actualizados');
+    } catch (error) {
+      setErrores({ general: mensajeDeError(error) });
+    }
   };
 
   return (
@@ -63,6 +84,7 @@ export default function AdminUsuarioDetalle() {
       </div>
 
       {mensaje && <div className="alert alert-success">{mensaje}</div>}
+      {errores.general && <div className="alert alert-danger">{errores.general}</div>}
 
       {!editando ? (
         <div className="card shadow-sm border-0 p-4 mb-4">
@@ -70,7 +92,7 @@ export default function AdminUsuarioDetalle() {
             <div className="col-md-6">
               <p className="mb-2"><strong>RUN:</strong> {usuario.run}</p>
               <p className="mb-2"><strong>Correo:</strong> {usuario.correo}</p>
-              <p className="mb-2"><strong>Perfil:</strong> <span className="badge bg-secondary">{usuario.tipo}</span></p>
+              <p className="mb-2"><strong>Perfil:</strong> <span className="badge bg-secondary">{etiquetaRol(usuario.rol)}</span></p>
               <p className="mb-2"><strong>Fecha de nacimiento:</strong> {usuario.nacimiento || 'Sin dato'}</p>
             </div>
             <div className="col-md-6">
@@ -104,10 +126,10 @@ export default function AdminUsuarioDetalle() {
             </div>
             <div className="col-md-6">
               <label className="form-label small fw-semibold">Perfil</label>
-              <select name="tipo" className="form-select" value={form.tipo} onChange={cambiar}>
-                <option value="Administrador">Administrador</option>
-                <option value="Vendedor">Vendedor</option>
-                <option value="Cliente">Cliente</option>
+              <select name="rol" className="form-select" value={form.rol} onChange={cambiar}>
+                {ROLES.map((r) => (
+                  <option key={r.valor} value={r.valor}>{r.etiqueta}</option>
+                ))}
               </select>
             </div>
             <div className="col-md-6">
