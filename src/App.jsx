@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import Layout from './core/Layout';
 import Home from './pages/Home';
 import Productos from './pages/Productos';
@@ -45,39 +46,41 @@ function PaginaNoEncontrada() {
 function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="productos" element={<Productos />} />
-            <Route path="producto/:codigo" element={<ProductoDetalle />} />
-            <Route path="carrito" element={<Carrito />} />
-            <Route path="login" element={<Login />} />
-            <Route path="registro" element={<Registro />} />
-            <Route path="contacto" element={<Contacto />} />
-            <Route path="nosotros" element={<Nosotros />} />
-            <Route path="categorias" element={<Categorias />} />
-            <Route path="ofertas" element={<Ofertas />} />
-            <Route path="blogs" element={<Blogs />} />
-            <Route path="blogs/:id" element={<BlogDetalle />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route path="compra-exitosa" element={<CompraExitosa />} />
-            <Route path="pago-error" element={<PagoError />} />
-            <Route path="admin/dashboard" element={<AdminDashboard />} />
-            <Route path="admin/productos" element={<AdminProductos />} />
-            <Route path="admin/productos/criticos" element={<AdminCriticos />} />
-            <Route path="admin/productos/:codigo" element={<AdminProductoDetalle />} />
-            <Route path="admin/usuarios" element={<AdminUsuarios />} />
-            <Route path="admin/usuarios/:run" element={<AdminUsuarioDetalle />} />
-            <Route path="admin/ordenes" element={<AdminOrdenes />} />
-            <Route path="admin/ordenes/:numero" element={<AdminBoleta />} />
-            <Route path="admin/categorias" element={<AdminCategorias />} />
-            <Route path="admin/reportes" element={<AdminReportes />} />
-            <Route path="admin/perfil" element={<AdminPerfil />} />
-            <Route path="*" element={<PaginaNoEncontrada />} />
-          </Route>
-        </Routes>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="productos" element={<Productos />} />
+              <Route path="producto/:codigo" element={<ProductoDetalle />} />
+              <Route path="carrito" element={<Carrito />} />
+              <Route path="login" element={<Login />} />
+              <Route path="registro" element={<Registro />} />
+              <Route path="contacto" element={<Contacto />} />
+              <Route path="nosotros" element={<Nosotros />} />
+              <Route path="categorias" element={<Categorias />} />
+              <Route path="ofertas" element={<Ofertas />} />
+              <Route path="blogs" element={<Blogs />} />
+              <Route path="blogs/:id" element={<BlogDetalle />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="compra-exitosa" element={<CompraExitosa />} />
+              <Route path="pago-error" element={<PagoError />} />
+              <Route path="admin/dashboard" element={<AdminDashboard />} />
+              <Route path="admin/productos" element={<AdminProductos />} />
+              <Route path="admin/productos/criticos" element={<AdminCriticos />} />
+              <Route path="admin/productos/:codigo" element={<AdminProductoDetalle />} />
+              <Route path="admin/usuarios" element={<AdminUsuarios />} />
+              <Route path="admin/usuarios/:run" element={<AdminUsuarioDetalle />} />
+              <Route path="admin/ordenes" element={<AdminOrdenes />} />
+              <Route path="admin/ordenes/:numero" element={<AdminBoleta />} />
+              <Route path="admin/categorias" element={<AdminCategorias />} />
+              <Route path="admin/reportes" element={<AdminReportes />} />
+              <Route path="admin/perfil" element={<AdminPerfil />} />
+              <Route path="*" element={<PaginaNoEncontrada />} />
+            </Route>
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
