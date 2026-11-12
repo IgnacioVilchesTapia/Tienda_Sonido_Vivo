@@ -16,4 +16,3 @@ public record CompraDTO(
         DireccionDTO direccion
 ) {
 }
-s

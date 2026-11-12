@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorRespuesta> datosRelacionados(DataIntegrityViolationException ex, HttpServletRequest request) {
         return responder(HttpStatus.CONFLICT, "Conflicto", "No se puede eliminar porque tiene boletas asociadas", request);
     }
-
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorRespuesta> credenciales(CredencialesInvalidasException ex, HttpServletRequest request) {
         return responder(HttpStatus.UNAUTHORIZED, "No autorizado", ex.getMessage(), request);
