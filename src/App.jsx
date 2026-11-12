@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import Layout from './core/Layout';
 import Home from './pages/Home';
 import Productos from './pages/Productos';
@@ -27,7 +28,13 @@ import AdminCategorias from './pages/admin/AdminCategorias';
 import AdminUsuarioDetalle from './pages/admin/AdminUsuarioDetalle';
 import AdminReportes from './pages/admin/AdminReportes';
 import AdminPerfil from './pages/admin/AdminPerfil';
+import AccesoDenegado from './pages/AccesoDenegado';
+import RutaProtegida from './components/RutaProtegida';
 import './App.css';
+
+const SOLO_ADMIN = ['ADMIN'];
+const PERSONAL = ['ADMIN', 'VENDEDOR'];
+const SOLO_CLIENTE = ['CLIENTE'];
 
 function PaginaNoEncontrada() {
   return (
@@ -45,39 +52,42 @@ function PaginaNoEncontrada() {
 function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="productos" element={<Productos />} />
-            <Route path="producto/:codigo" element={<ProductoDetalle />} />
-            <Route path="carrito" element={<Carrito />} />
-            <Route path="login" element={<Login />} />
-            <Route path="registro" element={<Registro />} />
-            <Route path="contacto" element={<Contacto />} />
-            <Route path="nosotros" element={<Nosotros />} />
-            <Route path="categorias" element={<Categorias />} />
-            <Route path="ofertas" element={<Ofertas />} />
-            <Route path="blogs" element={<Blogs />} />
-            <Route path="blogs/:id" element={<BlogDetalle />} />
-            <Route path="checkout" element={<Checkout />} />
-            <Route path="compra-exitosa" element={<CompraExitosa />} />
-            <Route path="pago-error" element={<PagoError />} />
-            <Route path="admin/dashboard" element={<AdminDashboard />} />
-            <Route path="admin/productos" element={<AdminProductos />} />
-            <Route path="admin/productos/criticos" element={<AdminCriticos />} />
-            <Route path="admin/productos/:codigo" element={<AdminProductoDetalle />} />
-            <Route path="admin/usuarios" element={<AdminUsuarios />} />
-            <Route path="admin/usuarios/:run" element={<AdminUsuarioDetalle />} />
-            <Route path="admin/ordenes" element={<AdminOrdenes />} />
-            <Route path="admin/ordenes/:numero" element={<AdminBoleta />} />
-            <Route path="admin/categorias" element={<AdminCategorias />} />
-            <Route path="admin/reportes" element={<AdminReportes />} />
-            <Route path="admin/perfil" element={<AdminPerfil />} />
-            <Route path="*" element={<PaginaNoEncontrada />} />
-          </Route>
-        </Routes>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="productos" element={<Productos />} />
+              <Route path="producto/:codigo" element={<ProductoDetalle />} />
+              <Route path="carrito" element={<Carrito />} />
+              <Route path="login" element={<Login />} />
+              <Route path="registro" element={<Registro />} />
+              <Route path="contacto" element={<Contacto />} />
+              <Route path="nosotros" element={<Nosotros />} />
+              <Route path="categorias" element={<Categorias />} />
+              <Route path="ofertas" element={<Ofertas />} />
+              <Route path="blogs" element={<Blogs />} />
+              <Route path="blogs/:id" element={<BlogDetalle />} />
+              <Route path="checkout" element={<RutaProtegida roles={SOLO_CLIENTE}><Checkout /></RutaProtegida>} />
+              <Route path="compra-exitosa" element={<CompraExitosa />} />
+              <Route path="pago-error" element={<PagoError />} />
+              <Route path="admin/dashboard" element={<RutaProtegida roles={PERSONAL}><AdminDashboard /></RutaProtegida>} />
+              <Route path="admin/productos" element={<RutaProtegida roles={PERSONAL}><AdminProductos /></RutaProtegida>} />
+              <Route path="admin/productos/criticos" element={<RutaProtegida roles={SOLO_ADMIN}><AdminCriticos /></RutaProtegida>} />
+              <Route path="admin/productos/:codigo" element={<RutaProtegida roles={PERSONAL}><AdminProductoDetalle /></RutaProtegida>} />
+              <Route path="admin/usuarios" element={<RutaProtegida roles={SOLO_ADMIN}><AdminUsuarios /></RutaProtegida>} />
+              <Route path="admin/usuarios/:run" element={<RutaProtegida roles={SOLO_ADMIN}><AdminUsuarioDetalle /></RutaProtegida>} />
+              <Route path="admin/ordenes" element={<RutaProtegida roles={PERSONAL}><AdminOrdenes /></RutaProtegida>} />
+              <Route path="admin/ordenes/:numero" element={<RutaProtegida roles={PERSONAL}><AdminBoleta /></RutaProtegida>} />
+              <Route path="admin/categorias" element={<RutaProtegida roles={SOLO_ADMIN}><AdminCategorias /></RutaProtegida>} />
+              <Route path="admin/reportes" element={<RutaProtegida roles={SOLO_ADMIN}><AdminReportes /></RutaProtegida>} />
+              <Route path="admin/perfil" element={<RutaProtegida roles={SOLO_ADMIN}><AdminPerfil /></RutaProtegida>} />
+                <Route path="acceso-denegado" element={<AccesoDenegado />} />
+              <Route path="*" element={<PaginaNoEncontrada />} />
+            </Route>
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

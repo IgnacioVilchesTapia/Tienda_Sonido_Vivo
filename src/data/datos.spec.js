@@ -7,14 +7,6 @@ import {
   guardarProducto,
   actualizarProducto,
   eliminarProducto,
-  obtenerUsuarios,
-  guardarUsuario,
-  actualizarUsuario,
-  eliminarUsuario,
-  obtenerUsuarioPorRun,
-  obtenerUsuarioActivo,
-  guardarUsuarioActivo,
-  cerrarSesion,
   obtenerCategorias,
   guardarCategorias,
   obtenerOrdenes,
@@ -23,6 +15,8 @@ import {
 import { REGIONES, obtenerComunasPorRegion } from './regiones';
 
 describe('datos.js', () => {
+  beforeEach(() => localStorage.clear());
+
   it('los códigos de producto son únicos', () => {
     const codigos = PRODUCTOS.map((p) => p.codigo);
     expect(new Set(codigos).size).toBe(codigos.length);
@@ -87,43 +81,6 @@ describe('datos.js', () => {
     it('permite eliminar un producto por codigo', () => {
       eliminarProducto('GA001');
       expect(obtenerProductoPorCodigo('GA001')).toBeNull();
-    });
-  });
-
-  describe('CRUD de usuarios y sesion con localStorage', () => {
-    beforeEach(() => {
-      localStorage.clear();
-    });
-
-    it('inicializa usuarios si localStorage esta vacio', () => {
-      const usrs = obtenerUsuarios();
-      expect(usrs.length).toBeGreaterThan(0);
-    });
-
-    it('permite guardar y obtener usuario por run', () => {
-      const nuevoUsr = { run: '112223334', nombre: 'Prueba', correo: 'prueba@duoc.cl' };
-      guardarUsuario(nuevoUsr);
-      expect(obtenerUsuarioPorRun('112223334')).toBeTruthy();
-      expect(obtenerUsuarioPorRun('11.222.333-4')).toBeTruthy();
-    });
-
-    it('permite actualizar datos de usuario', () => {
-      actualizarUsuario('190110222', { nombre: 'Carla Editada' });
-      const usr = obtenerUsuarioPorRun('190110222');
-      expect(usr.nombre).toBe('Carla Editada');
-    });
-
-    it('permite eliminar usuario por run', () => {
-      eliminarUsuario('190110222');
-      expect(obtenerUsuarioPorRun('190110222')).toBeNull();
-    });
-
-    it('maneja la sesion del usuario activo', () => {
-      expect(obtenerUsuarioActivo()).toBeNull();
-      guardarUsuarioActivo({ correo: 'test@duoc.cl', nombre: 'Test' });
-      expect(obtenerUsuarioActivo().correo).toBe('test@duoc.cl');
-      cerrarSesion();
-      expect(obtenerUsuarioActivo()).toBeNull();
     });
   });
 

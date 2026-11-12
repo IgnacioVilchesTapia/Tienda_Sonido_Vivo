@@ -94,12 +94,6 @@ export const BLOGS = [
     ]
   }
 ];
-export const USUARIOS = [
-  { run: "190110222", nombre: "Carla", apellidos: "Pizarro Muñoz", correo: "c.pizarro@duoc.cl", tipo: "Administrador", region: "Región de Valparaíso", comuna: "Viña del Mar", direccion: "Av. San Martín 452", nacimiento: "1994-03-12" },
-  { run: "175558888", nombre: "Diego", apellidos: "Rojas Fuentes", correo: "d.rojas@duoc.cl", tipo: "Vendedor", region: "Región de Valparaíso", comuna: "Valparaíso", direccion: "Calle Prat 88", nacimiento: "1990-11-02" },
-  { run: "213334441", nombre: "Fernanda", apellidos: "Soto Lagos", correo: "fsoto2000@gmail.com", tipo: "Cliente", region: "Región Metropolitana de Santiago", comuna: "Ñuñoa", direccion: "Irarrázaval 1200, depto 41", nacimiento: "2000-07-25" },
-  { run: "165552229", nombre: "Matías", apellidos: "Contreras Vera", correo: "m.contreras@profesor.duoc.cl", tipo: "Vendedor", region: "Región del Biobío", comuna: "Concepción", direccion: "Barros Arana 340", nacimiento: "1988-01-30" }
-];
 
 export const obtenerProductoPorCodigo = (codigo) => {
   if (!codigo) return null;
@@ -251,71 +245,6 @@ export function obtenerCategorias() {
 
 export function guardarCategorias(lista) {
   localStorage.setItem("sonidoVivo.categorias", JSON.stringify(lista));
-}
-
-export function obtenerUsuarios() {
-  const guardados = localStorage.getItem("sonidoVivo.usuarios");
-  if (!guardados) {
-    localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(USUARIOS));
-    return [...USUARIOS];
-  }
-  try {
-    return JSON.parse(guardados);
-  } catch {
-    return [...USUARIOS];
-  }
-}
-
-export function obtenerUsuarioPorRun(run) {
-  const lista = obtenerUsuarios();
-  if (!run) return null;
-  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
-  return lista.find((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() === runLimpio) || null;
-}
-
-export function guardarUsuario(usuario) {
-  const lista = obtenerUsuarios();
-  lista.unshift(usuario);
-  localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(lista));
-  return lista;
-}
-
-export function actualizarUsuario(run, datosActualizados) {
-  const lista = obtenerUsuarios();
-  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
-  const index = lista.findIndex((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() === runLimpio);
-  if (index !== -1) {
-    lista[index] = { ...lista[index], ...datosActualizados };
-    localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(lista));
-    return lista[index];
-  }
-  return null;
-}
-
-export function eliminarUsuario(run) {
-  const lista = obtenerUsuarios();
-  const runLimpio = run.replace(/[.\s-]/g, '').toUpperCase();
-  const filtrados = lista.filter((u) => u.run.replace(/[.\s-]/g, '').toUpperCase() !== runLimpio);
-  localStorage.setItem("sonidoVivo.usuarios", JSON.stringify(filtrados));
-  return filtrados;
-}
-
-export function obtenerUsuarioActivo() {
-  const guardado = localStorage.getItem("sonidoVivo.usuarioActivo");
-  if (!guardado) return null;
-  try {
-    return JSON.parse(guardado);
-  } catch {
-    return null;
-  }
-}
-
-export function guardarUsuarioActivo(usuario) {
-  localStorage.setItem("sonidoVivo.usuarioActivo", JSON.stringify(usuario));
-}
-
-export function cerrarSesion() {
-  localStorage.removeItem("sonidoVivo.usuarioActivo");
 }
 
 export function obtenerOrdenes() {

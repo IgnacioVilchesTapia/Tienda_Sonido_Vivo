@@ -1,49 +1,58 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerUsuarios, actualizarUsuario, obtenerUsuarioActivo, guardarUsuarioActivo } from '../../data/datos';
-import { validarEmail, validarPassword, validarTexto } from '../../utils/validaciones';
+import { validarPassword, validarTexto } from '../../utils/validaciones';
+import { useAuth } from '../../context/AuthContext';
+import { actualizarMiPerfil, etiquetaRol } from '../../services/usuarioService';
+import { iniciarSesion } from '../../services/authService';
+import { mensajeDeError } from '../../services/api';
 
 export default function AdminPerfil() {
-  const [admin, setAdmin] = useState(() => {
-    const sesion = obtenerUsuarioActivo();
-    const usuarios = obtenerUsuarios();
-    const logeado = sesion ? usuarios.find((u) => u.correo === sesion.correo && u.tipo === 'Administrador') : null;
-    return logeado || usuarios.find((u) => u.tipo === 'Administrador');
-  });
-  const [datos, setDatos] = useState(admin ? { ...admin } : null);
+  const { usuario, actualizarUsuarioSesion } = useAuth();
+  const [admin, setAdmin] = useState(usuario);
+  const [datos, setDatos] = useState(usuario ? { ...usuario } : null);
   const [claves, setClaves] = useState({ actual: '', nueva: '', repetir: '' });
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
+  const [error, setError] = useState('');
 
   if (!admin) {
     return (
       <div className="container my-5 text-center">
-        <h2 className="fw-bold">No hay un administrador registrado</h2>
-        <Link to="/admin/dashboard" className="btn btn-amber mt-3">Volver</Link>
+        <h2 className="fw-bold">Debes iniciar sesión para ver tu perfil</h2>
+        <Link to="/login" className="btn btn-amber mt-3">Iniciar sesión</Link>
       </div>
     );
   }
 
-  const guardarDatos = (e) => {
+  const guardarPerfil = async (cambios, textoExito) => {
+    setError('');
+    try {
+      const actualizado = await actualizarMiPerfil({ ...admin, ...cambios });
+      actualizarUsuarioSesion(actualizado);
+      setAdmin(actualizado);
+      setDatos({ ...actualizado });
+      setMensaje(textoExito);
+      return true;
+    } catch (err) {
+      setError(mensajeDeError(err));
+      return false;
+    }
+  };
+
+  const guardarDatos = async (e) => {
     e.preventDefault();
     const err = {};
     const n = validarTexto(datos.nombre, 2, 50, 'El nombre');
     if (!n.esValido) err.nombre = n.mensaje;
     const a = validarTexto(datos.apellidos, 2, 100, 'Los apellidos');
     if (!a.esValido) err.apellidos = a.mensaje;
-    const c = validarEmail(datos.correo);
-    if (!c.esValido) err.correo = c.mensaje;
     setErrores(err);
     if (Object.keys(err).length > 0) return;
 
-    actualizarUsuario(admin.run, datos);
-    const sesion = obtenerUsuarioActivo();
-    if (sesion && sesion.correo === admin.correo) guardarUsuarioActivo({ ...datos });
-    setAdmin({ ...datos });
-    setMensaje('Perfil actualizado');
+    await guardarPerfil({ nombre: datos.nombre, apellidos: datos.apellidos, direccion: datos.direccion }, 'Perfil actualizado');
   };
 
-  const cambiarClave = (e) => {
+  const cambiarClave = async (e) => {
     e.preventDefault();
     if (claves.actual === '') {
       alert('Ingresa tu contraseña actual');
@@ -58,8 +67,16 @@ export default function AdminPerfil() {
       alert('Las contraseñas no coinciden');
       return;
     }
-    setClaves({ actual: '', nueva: '', repetir: '' });
-    setMensaje('Contraseña cambiada');
+    try {
+      await iniciarSesion(admin.correo, claves.actual);
+    } catch {
+      setError('La contraseña actual no es correcta');
+      return;
+    }
+    const cambio = await guardarPerfil({ password: claves.nueva }, 'Contraseña cambiada');
+    if (cambio) {
+      setClaves({ actual: '', nueva: '', repetir: '' });
+    }
   };
 
   return (
@@ -70,6 +87,8 @@ export default function AdminPerfil() {
           <i className="bi bi-arrow-left me-1"></i> Dashboard
         </Link>
       </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
 
       {mensaje && (
         <div className="alert alert-success alert-dismissible">
@@ -89,7 +108,7 @@ export default function AdminPerfil() {
             </div>
             <h5 className="fw-bold mb-0">{admin.nombre} {admin.apellidos}</h5>
             <p className="text-muted small">{admin.correo}</p>
-            <span className="badge bg-danger align-self-center">{admin.tipo}</span>
+            <span className="badge bg-danger align-self-center">{etiquetaRol(admin.rol)}</span>
             <hr />
             <p className="small text-muted mb-0">RUN {admin.run}</p>
             <p className="small text-muted">{admin.comuna}, {admin.region}</p>
@@ -112,12 +131,12 @@ export default function AdminPerfil() {
               </div>
               <div className="col-md-6">
                 <label className="form-label small">Correo</label>
-                <input className={'form-control ' + (errores.correo ? 'is-invalid' : '')} value={datos.correo} onChange={(e) => setDatos({ ...datos, correo: e.target.value })} />
-                <div className="invalid-feedback">{errores.correo}</div>
+                <input className="form-control" value={datos.correo} disabled />
+                <div className="form-text small">El correo es tu usuario para entrar; no se cambia desde aquí.</div>
               </div>
               <div className="col-md-6">
                 <label className="form-label small">Dirección</label>
-                <input className="form-control" value={datos.direccion} onChange={(e) => setDatos({ ...datos, direccion: e.target.value })} />
+                <input className="form-control" value={datos.direccion || ''} onChange={(e) => setDatos({ ...datos, direccion: e.target.value })} />
               </div>
             </div>
             <button type="submit" className="btn btn-amber fw-bold mt-3 align-self-start">Guardar datos</button>

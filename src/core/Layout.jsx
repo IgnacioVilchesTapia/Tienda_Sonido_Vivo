@@ -1,21 +1,14 @@
-import { useState } from 'react';
-import { Outlet, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { obtenerUsuarioActivo, cerrarSesion } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
+import SoloRol from '../components/SoloRol';
 export default function Layout() {
   const { cantidadTotal } = useCart();
-  const { pathname } = useLocation();
+  const { usuario, logout } = useAuth();
   const navigate = useNavigate();
-  const [usuario, setUsuario] = useState(() => obtenerUsuarioActivo());
-  const [ruta, setRuta] = useState(pathname);
 
-  if (ruta !== pathname) {
-    setRuta(pathname);
-    setUsuario(obtenerUsuarioActivo());
-  }
   const salir = () => {
-    cerrarSesion();
-    setUsuario(null);
+    logout();
     navigate('/');
   };
 
@@ -94,11 +87,13 @@ export default function Layout() {
                     Contacto
                   </NavLink>
                 </li>
-                <li className="nav-item">
-                  <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/admin/dashboard">
-                    <i className="bi bi-shield-lock me-1"></i>Admin
-                  </NavLink>
-                </li>
+                <SoloRol roles={['ADMIN', 'VENDEDOR']}>
+                  <li className="nav-item">
+                    <NavLink className={({ isActive }) => `nav-link px-xl-1 px-xxl-2 ${isActive ? 'active text-amber fw-semibold' : ''}`} to="/admin/dashboard">
+                      <i className="bi bi-shield-lock me-1"></i>Admin
+                    </NavLink>
+                  </li>
+                </SoloRol>
               </ul>
 
               <div className="d-flex align-items-center gap-2">
@@ -166,9 +161,13 @@ export default function Layout() {
             <div className="col-6 col-md-3">
               <h6 className="text-uppercase text-amber fw-bold small mb-3">Administración</h6>
               <ul className="list-unstyled small mb-0 d-flex flex-column gap-2">
-                <li><Link to="/admin/dashboard" className="text-decoration-none text-light opacity-75 hover-opacity-100">Panel de Control</Link></li>
-                <li><Link to="/admin/productos" className="text-decoration-none text-light opacity-75 hover-opacity-100">Mantenedor de Productos</Link></li>
-                <li><Link to="/admin/usuarios" className="text-decoration-none text-light opacity-75 hover-opacity-100">Mantenedor de Usuarios</Link></li>
+                <SoloRol roles={['ADMIN', 'VENDEDOR']}>
+                  <li><Link to="/admin/dashboard" className="text-decoration-none text-light opacity-75 hover-opacity-100">Panel de Control</Link></li>
+                  <li><Link to="/admin/productos" className="text-decoration-none text-light opacity-75 hover-opacity-100">Mantenedor de Productos</Link></li>
+                </SoloRol>
+                <SoloRol roles={['ADMIN']}>
+                  <li><Link to="/admin/usuarios" className="text-decoration-none text-light opacity-75 hover-opacity-100">Mantenedor de Usuarios</Link></li>
+                </SoloRol>
                 <li><Link to="/login" className="text-decoration-none text-light opacity-75 hover-opacity-100">Acceso Trabajadores</Link></li>
               </ul>
             </div>
