@@ -3,7 +3,9 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { REGIONES, obtenerComunasPorRegion } from '../data/regiones';
 import { validarTexto, validarEmail } from '../utils/validaciones';
-import { guardarOrden, obtenerUsuarioActivo, obtenerProductoPorCodigo, actualizarProducto } from '../data/datos';
+import { useAuth } from '../context/AuthContext';
+import { crearCompra } from '../services/boletaService';
+import { mensajeDeError } from '../services/api';
 
 const vacio = {
   nombre: '',
@@ -17,13 +19,13 @@ const vacio = {
 };
 
 export default function Checkout() {
-  const { items, subtotal, descuento, costoDespacho, total, vaciarCarrito } = useCart();
+  const { items, cupon, total, vaciarCarrito } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const { usuario: sesion } = useAuth();
 
   const [datos, setDatos] = useState(() => {
     if (location.state && location.state.datos) return location.state.datos;
-    const sesion = obtenerUsuarioActivo();
     if (sesion) {
       return {
         nombre: sesion.nombre || '',
@@ -39,14 +41,16 @@ export default function Checkout() {
     return vacio;
   });
   const [errores, setErrores] = useState({});
+  const [errorServidor, setErrorServidor] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   if (items.length === 0) {
     return (
-      <div className="container my-5 text-center">
-        <h2 className="fw-bold">No tienes productos en el carrito</h2>
-        <p className="text-muted">Agrega algo antes de ir a pagar.</p>
-        <Link to="/productos" className="btn btn-amber">Ir al catálogo</Link>
-      </div>
+        <div className="container my-5 text-center">
+          <h2 className="fw-bold">No tienes productos en el carrito</h2>
+          <p className="text-muted">Agrega algo antes de ir a pagar.</p>
+          <Link to="/productos" className="btn btn-amber">Ir al catálogo</Link>
+        </div>
     );
   }
 
@@ -58,8 +62,9 @@ export default function Checkout() {
     setDatos({ ...datos, region: e.target.value, comuna: '' });
   };
 
-  const pagar = (e) => {
+  const pagar = async (e) => {
     e.preventDefault();
+    setErrorServidor('');
     const err = {};
 
     const n = validarTexto(datos.nombre, 2, 50, 'El nombre');
@@ -76,63 +81,58 @@ export default function Checkout() {
     setErrores(err);
     if (Object.keys(err).length > 0) return;
 
-    const pagoAprobado = Math.random() > 0.3;
-
-    const orden = {
-      numero: String(Date.now()).slice(-8),
-      fecha: new Date().toLocaleDateString('es-CL'),
-      estado: pagoAprobado ? 'Pagada' : 'Rechazada',
-      cliente: { nombre: datos.nombre, apellidos: datos.apellidos, correo: datos.correo },
-      direccion: {
-        calle: datos.calle,
-        depto: datos.depto,
-        region: datos.region,
-        comuna: datos.comuna,
-        indicaciones: datos.indicaciones
-      },
-      items: items.map((it) => ({
-        codigo: it.codigo,
-        nombre: it.nombre,
-        precio: it.precio,
-        cantidad: it.cantidad,
-        imagen: it.imagen
-      })),
-      subtotal: subtotal,
-      descuento: descuento,
-      despacho: costoDespacho,
-      total: total
+    const direccion = {
+      calle: datos.calle,
+      depto: datos.depto,
+      region: datos.region,
+      comuna: datos.comuna,
+      indicaciones: datos.indicaciones
     };
 
-    guardarOrden(orden);
+    const pagoAprobado = Math.random() > 0.3;
+    if (!pagoAprobado) {
+      const ordenRechazada = {
+        numero: 'sin número',
+        cliente: { nombre: datos.nombre, apellidos: datos.apellidos, correo: datos.correo },
+        direccion: direccion,
+        items: items.map((it) => ({ codigo: it.codigo, nombre: it.nombre, precio: it.precio, cantidad: it.cantidad })),
+        total: total
+      };
+      navigate('/pago-error', { state: { orden: ordenRechazada, datos: datos } });
+      return;
+    }
 
-    if (pagoAprobado) {
-      items.forEach((it) => {
-        const prod = obtenerProductoPorCodigo(it.codigo);
-        if (prod) actualizarProducto(prod.codigo, { stock: Math.max(0, prod.stock - it.cantidad) });
+    setEnviando(true);
+    try {
+      const boleta = await crearCompra({
+        items: items.map((it) => ({ codigo: it.codigo, cantidad: it.cantidad })),
+        cupon: cupon || null,
+        direccion: direccion
       });
       vaciarCarrito();
-      navigate('/compra-exitosa', { state: { orden: orden } });
-    } else {
-      navigate('/pago-error', { state: { orden: orden, datos: datos } });
+      navigate('/compra-exitosa', { state: { boleta: boleta } });
+    } catch (error) {
+      setErrorServidor(mensajeDeError(error));
+      setEnviando(false);
     }
   };
 
   return (
-    <div className="container my-5">
-      <div className="card shadow-sm border-0 p-4 mx-auto" style={{ maxWidth: 820 }}>
-        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <div>
-            <h3 className="fw-bold mb-0">Carrito de compra</h3>
-            <small className="text-muted">Revisa tus productos y completa tus datos</small>
-          </div>
-          <span className="btn btn-primary disabled opacity-100">
+      <div className="container my-5">
+        <div className="card shadow-sm border-0 p-4 mx-auto" style={{ maxWidth: 820 }}>
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+              <h3 className="fw-bold mb-0">Carrito de compra</h3>
+              <small className="text-muted">Revisa tus productos y completa tus datos</small>
+            </div>
+            <span className="btn btn-primary disabled opacity-100">
             Total a pagar: <strong>${total.toLocaleString('es-CL')}</strong>
           </span>
-        </div>
+          </div>
 
-        <div className="table-responsive mb-4">
-          <table className="table table-sm align-middle">
-            <thead>
+          <div className="table-responsive mb-4">
+            <table className="table table-sm align-middle">
+              <thead>
               <tr>
                 <th>Imagen</th>
                 <th>Nombre</th>
@@ -140,95 +140,102 @@ export default function Checkout() {
                 <th>Cantidad</th>
                 <th>Subtotal</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               {items.map((it) => (
-                <tr key={it.codigo}>
-                  <td><img src={it.imagen} alt={it.nombre} width="45" height="45" className="rounded" style={{ objectFit: 'cover' }} /></td>
-                  <td>{it.nombre}</td>
-                  <td>${it.precio.toLocaleString('es-CL')}</td>
-                  <td>{it.cantidad}</td>
-                  <td>${(it.precio * it.cantidad).toLocaleString('es-CL')}</td>
-                </tr>
+                  <tr key={it.codigo}>
+                    <td><img src={it.imagen} alt={it.nombre} width="45" height="45" className="rounded" style={{ objectFit: 'cover' }} /></td>
+                    <td>{it.nombre}</td>
+                    <td>${it.precio.toLocaleString('es-CL')}</td>
+                    <td>{it.cantidad}</td>
+                    <td>${(it.precio * it.cantidad).toLocaleString('es-CL')}</td>
+                  </tr>
               ))}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
+
+          {errorServidor && (
+              <div className="alert alert-danger" role="alert">
+                {errorServidor}
+              </div>
+          )}
+
+          <form onSubmit={pagar} noValidate>
+            <h5 className="fw-bold">Información del cliente</h5>
+            <p className="small text-muted">Completa la siguiente información</p>
+            <div className="row g-3 mb-4">
+              <div className="col-md-6">
+                <label className="form-label small">Nombre*</label>
+                <input name="nombre" className={'form-control ' + (errores.nombre ? 'is-invalid' : '')} value={datos.nombre} onChange={cambiar} />
+                <div className="invalid-feedback">{errores.nombre}</div>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Apellidos*</label>
+                <input name="apellidos" className={'form-control ' + (errores.apellidos ? 'is-invalid' : '')} value={datos.apellidos} onChange={cambiar} />
+                <div className="invalid-feedback">{errores.apellidos}</div>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Correo*</label>
+                <input name="correo" type="email" className={'form-control ' + (errores.correo ? 'is-invalid' : '')} value={datos.correo} onChange={cambiar} />
+                <div className="invalid-feedback">{errores.correo}</div>
+              </div>
+            </div>
+
+            <h5 className="fw-bold">Dirección de entrega de los productos</h5>
+            <p className="small text-muted">Ingrese dirección de forma detallada</p>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label small">Calle*</label>
+                <input name="calle" className={'form-control ' + (errores.calle ? 'is-invalid' : '')} value={datos.calle} onChange={cambiar} />
+                <div className="invalid-feedback">{errores.calle}</div>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Departamento (opcional)</label>
+                <input name="depto" className="form-control" placeholder="Ej: 603" value={datos.depto} onChange={cambiar} />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Región*</label>
+                <select name="region" className={'form-select ' + (errores.region ? 'is-invalid' : '')} value={datos.region} onChange={cambiarRegion}>
+                  <option value="">Selecciona una región</option>
+                  {REGIONES.map((r) => (
+                      <option key={r.nombre} value={r.nombre}>{r.nombre}</option>
+                  ))}
+                </select>
+                <div className="invalid-feedback">{errores.region}</div>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label small">Comuna*</label>
+                <select name="comuna" className={'form-select ' + (errores.comuna ? 'is-invalid' : '')} value={datos.comuna} onChange={cambiar} disabled={datos.region === ''}>
+                  <option value="">Selecciona una comuna</option>
+                  {obtenerComunasPorRegion(datos.region).map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <div className="invalid-feedback">{errores.comuna}</div>
+              </div>
+              <div className="col-12">
+                <label className="form-label small">Indicaciones para la entrega (opcional)</label>
+                <textarea
+                    name="indicaciones"
+                    className="form-control"
+                    rows="3"
+                    placeholder="Ej: entre calles, color del edificio, no tiene timbre."
+                    value={datos.indicaciones}
+                    onChange={cambiar}
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <Link to="/carrito" className="btn btn-outline-secondary">Volver al carrito</Link>
+              <button type="submit" className="btn btn-success fw-bold" disabled={enviando}>
+                {enviando ? 'Procesando la compra…' : 'Pagar ahora $' + total.toLocaleString('es-CL')}
+              </button>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={pagar} noValidate>
-          <h5 className="fw-bold">Información del cliente</h5>
-          <p className="small text-muted">Completa la siguiente información</p>
-          <div className="row g-3 mb-4">
-            <div className="col-md-6">
-              <label className="form-label small">Nombre*</label>
-              <input name="nombre" className={'form-control ' + (errores.nombre ? 'is-invalid' : '')} value={datos.nombre} onChange={cambiar} />
-              <div className="invalid-feedback">{errores.nombre}</div>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label small">Apellidos*</label>
-              <input name="apellidos" className={'form-control ' + (errores.apellidos ? 'is-invalid' : '')} value={datos.apellidos} onChange={cambiar} />
-              <div className="invalid-feedback">{errores.apellidos}</div>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label small">Correo*</label>
-              <input name="correo" type="email" className={'form-control ' + (errores.correo ? 'is-invalid' : '')} value={datos.correo} onChange={cambiar} />
-              <div className="invalid-feedback">{errores.correo}</div>
-            </div>
-          </div>
-
-          <h5 className="fw-bold">Dirección de entrega de los productos</h5>
-          <p className="small text-muted">Ingrese dirección de forma detallada</p>
-          <div className="row g-3">
-            <div className="col-md-6">
-              <label className="form-label small">Calle*</label>
-              <input name="calle" className={'form-control ' + (errores.calle ? 'is-invalid' : '')} value={datos.calle} onChange={cambiar} />
-              <div className="invalid-feedback">{errores.calle}</div>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label small">Departamento (opcional)</label>
-              <input name="depto" className="form-control" placeholder="Ej: 603" value={datos.depto} onChange={cambiar} />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label small">Región*</label>
-              <select name="region" className={'form-select ' + (errores.region ? 'is-invalid' : '')} value={datos.region} onChange={cambiarRegion}>
-                <option value="">Selecciona una región</option>
-                {REGIONES.map((r) => (
-                  <option key={r.nombre} value={r.nombre}>{r.nombre}</option>
-                ))}
-              </select>
-              <div className="invalid-feedback">{errores.region}</div>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label small">Comuna*</label>
-              <select name="comuna" className={'form-select ' + (errores.comuna ? 'is-invalid' : '')} value={datos.comuna} onChange={cambiar} disabled={datos.region === ''}>
-                <option value="">Selecciona una comuna</option>
-                {obtenerComunasPorRegion(datos.region).map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              <div className="invalid-feedback">{errores.comuna}</div>
-            </div>
-            <div className="col-12">
-              <label className="form-label small">Indicaciones para la entrega (opcional)</label>
-              <textarea
-                name="indicaciones"
-                className="form-control"
-                rows="3"
-                placeholder="Ej: entre calles, color del edificio, no tiene timbre."
-                value={datos.indicaciones}
-                onChange={cambiar}
-              ></textarea>
-            </div>
-          </div>
-
-          <div className="d-flex justify-content-between align-items-center mt-4">
-            <Link to="/carrito" className="btn btn-outline-secondary">Volver al carrito</Link>
-            <button type="submit" className="btn btn-success fw-bold">
-              Pagar ahora ${total.toLocaleString('es-CL')}
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
   );
 }
+
