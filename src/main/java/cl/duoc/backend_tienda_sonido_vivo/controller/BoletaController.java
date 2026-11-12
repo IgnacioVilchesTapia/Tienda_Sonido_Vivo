@@ -74,5 +74,4 @@ public class BoletaController {
     @Operation(summary = "Anula una boleta", description = "No la borra: la deja ANULADA y devuelve el stock")
     public BoletaDTO anular(@PathVariable Long numero) {
         return boletaService.anular(numero);
-    }
 }
