@@ -1,16 +1,23 @@
-import { useState } from 'react';
-import { obtenerProductos, obtenerCategorias } from '../data/datos';
+import { useState, useMemo } from 'react';
+import { useCatalogo } from '../hooks/useCatalogo';
 import { useCart } from '../context/CartContext';
 import ProductoLista from '../components/ProductoLista';
 
 export default function Categorias() {
-  const [productos] = useState(() => obtenerProductos());
-  const [categorias] = useState(() => obtenerCategorias());
-  const [seleccionada, setSeleccionada] = useState(categorias[0]);
+  const { productos, categorias, cargando } = useCatalogo();
+  const [seleccionada, setSeleccionada] = useState('');
   const [aviso, setAviso] = useState(null);
   const { agregarAlCarrito } = useCart();
 
-  const productosCategoria = productos.filter((p) => p.categoria === seleccionada);
+  const listaCategorias = useMemo(() => {
+    return categorias.map((c) => (typeof c === 'string' ? c : c.nombre));
+  }, [categorias]);
+
+  const catActual = seleccionada || listaCategorias[0] || '';
+
+  const productosCategoria = useMemo(() => {
+    return productos.filter((p) => p.categoria === catActual);
+  }, [productos, catActual]);
 
   const agregar = (p) => {
     const res = agregarAlCarrito(p, 1);
@@ -23,44 +30,62 @@ export default function Categorias() {
       <h1 className="fw-bold mb-1">Categorías</h1>
       <p className="text-muted mb-4">Elige una categoría para ver sus productos</p>
 
-      <div className="row g-3 mb-5">
-        {categorias.map((cat) => {
-          const cantidad = productos.filter((p) => p.categoria === cat).length;
-          const primero = productos.find((p) => p.categoria === cat);
-          return (
-            <div key={cat} className="col-6 col-md-4 col-lg-3">
-              <div
-                className={'card h-100 text-center card-producto ' + (seleccionada === cat ? 'border-warning border-2' : '')}
-                style={{ cursor: 'pointer' }}
-                onClick={() => setSeleccionada(cat)}
-              >
-                <img
-                  src={primero ? primero.imagen : '/img/accesorios.jpg'}
-                  className="card-img-top"
-                  alt={cat}
-                  style={{ height: 110, objectFit: 'cover' }}
-                />
-                <div className="card-body p-2">
-                  <h6 className="fw-bold mb-0">{cat}</h6>
-                  <small className="text-muted">{cantidad} productos</small>
+      {cargando ? (
+        <div className="text-center py-5 text-muted">Cargando categorías...</div>
+      ) : (
+        <>
+          <div className="row g-3 mb-5">
+            {listaCategorias.map((cat) => {
+              const cantidad = productos.filter((p) => p.categoria === cat).length;
+              const primero = productos.find((p) => p.categoria === cat);
+              const esActiva = cat === catActual;
+              return (
+                <div key={cat} className="col-md-4 col-sm-6">
+                  <div
+                    onClick={() => setSeleccionada(cat)}
+                    className={`card h-100 p-3 cursor-pointer border ${
+                      esActiva ? 'border-amber shadow' : 'border-light-subtle'
+                    }`}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      {primero && (
+                        <img
+                          src={primero.imagen}
+                          alt={cat}
+                          style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                          className="rounded"
+                          onError={(e) => {
+                            e.target.src =
+                              'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80';
+                          }}
+                        />
+                      )}
+                      <div>
+                        <h6 className="fw-bold mb-1">{cat}</h6>
+                        <span className="badge bg-secondary">{cantidad} productos</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+
+          <div className="mb-4">
+            <h3 className="fw-bold">{catActual}</h3>
+            <p className="text-muted small">Mostrando {productosCategoria.length} instrumentos disponibles</p>
+          </div>
+
+          {aviso && (
+            <div className={`alert alert-${aviso.ok ? 'success' : 'danger'} py-2 mb-4`}>
+              {aviso.mensaje}
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      <h2 className="fw-bold mb-3">{seleccionada}</h2>
-
-      {aviso && (
-        <div className={'alert ' + (aviso.ok ? 'alert-success' : 'alert-danger')}>{aviso.mensaje}</div>
+          <ProductoLista productos={productosCategoria} onAgregar={agregar} />
+        </>
       )}
-
-      <ProductoLista
-        productos={productosCategoria}
-        onAgregar={agregar}
-        mensajeVacio="Esta categoría todavía no tiene productos."
-      />
     </div>
   );
 }

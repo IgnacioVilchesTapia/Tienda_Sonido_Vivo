@@ -1,9 +1,15 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerProductos, obtenerCategorias, BLOGS } from '../data/datos';
+import { useCatalogo } from '../hooks/useCatalogo';
+import { BLOGS } from '../data/datos';
 
 export default function Home() {
-  const destacados = obtenerProductos().slice(0, 4);
-  const categorias = obtenerCategorias().slice(0, 6);
+  const { productos, categorias } = useCatalogo();
+
+  const destacados = useMemo(() => productos.slice(0, 4), [productos]);
+  const categoriasLista = useMemo(() => {
+    return categorias.map((c) => (typeof c === 'string' ? c : c.nombre)).slice(0, 6);
+  }, [categorias]);
 
   return (
     <div>
@@ -120,7 +126,7 @@ export default function Home() {
             <p className="text-muted">Encuentra exactamente lo que necesitas para tu sonido</p>
           </div>
           <div className="row g-3 justify-content-center">
-            {categorias.map((cat) => (
+            {categoriasLista.map((cat) => (
               <div key={cat} className="col-md-4 col-sm-6">
                 <Link
                   to={`/productos?categoria=${encodeURIComponent(cat)}`}
@@ -190,4 +196,3 @@ export default function Home() {
     </div>
   );
 }
-
