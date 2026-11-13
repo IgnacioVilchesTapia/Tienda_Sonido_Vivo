@@ -1,8 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerProductos } from '../../data/datos';
+import { listarCriticos } from '../../services/productoService';
+import { obtenerProductos as obtenerProductosLocales } from '../../data/datos';
 
 export default function AdminCriticos() {
-  const criticos = obtenerProductos().filter((p) => p.stock <= p.stockCritico).sort((a, b) => a.stock - b.stock);
+  const [criticos, setCriticos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    let cancelado = false;
+    async function cargar() {
+      setCargando(true);
+      try {
+        const datos = await listarCriticos();
+        if (!cancelado) {
+          const ordenados = [...datos].sort((a, b) => a.stock - b.stock);
+          setCriticos(ordenados);
+        }
+      } catch {
+        if (!cancelado) {
+          const locales = obtenerProductosLocales()
+            .filter((p) => p.stock <= p.stockCritico)
+            .sort((a, b) => a.stock - b.stock);
+          setCriticos(locales);
+        }
+      } finally {
+        if (!cancelado) {
+          setCargando(false);
+        }
+      }
+    }
+    cargar();
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
   return (
     <div className="container my-5">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -13,7 +46,9 @@ export default function AdminCriticos() {
         <Link to="/admin/productos" className="btn btn-outline-secondary">Volver a productos</Link>
       </div>
 
-      {criticos.length === 0 ? (
+      {cargando ? (
+        <div className="text-center py-5 text-muted">Cargando productos con stock crítico...</div>
+      ) : criticos.length === 0 ? (
         <div className="alert alert-success">No hay productos en stock crítico.</div>
       ) : (
         <div className="card shadow-sm border-0">
