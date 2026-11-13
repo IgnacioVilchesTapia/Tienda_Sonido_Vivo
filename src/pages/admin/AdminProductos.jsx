@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerProductos, guardarProducto, eliminarProducto, obtenerCategorias } from '../../data/datos';
+import { listarProductos, crearProducto, eliminarProducto } from '../../services/productoService';
+import { listarCategorias } from '../../services/categoriaService';
+import { mensajeDeError } from '../../services/api';
+import { obtenerProductos as obtenerProductosLocales, obtenerCategorias as obtenerCategoriasLocales } from '../../data/datos';
 
 export default function AdminProductos() {
-  const [productos, setProductos] = useState(() => obtenerProductos());
-  const [categorias] = useState(() => obtenerCategorias());
+  const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [filtro, setFiltro] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -13,13 +17,42 @@ export default function AdminProductos() {
     nombre: '',
     marca: '',
     modelo: '',
-    categoria: categorias[0],
+    categoria: '',
     precio: '',
     stock: '',
     stockCritico: '3',
     descripcion: ''
   });
   const [mensaje, setMensaje] = useState(null);
+
+  const cargarDatos = useCallback(async () => {
+    setCargando(true);
+    try {
+      const [prods, cats] = await Promise.all([
+        listarProductos(),
+        listarCategorias()
+      ]);
+      setProductos(prods);
+      const nombresCats = cats.map((c) => (typeof c === 'string' ? c : c.nombre));
+      setCategorias(nombresCats);
+      if (nombresCats.length > 0) {
+        setNuevo((prev) => ({ ...prev, categoria: nombresCats[0] }));
+      }
+    } catch {
+      setProductos(obtenerProductosLocales());
+      const nombresCats = obtenerCategoriasLocales();
+      setCategorias(nombresCats);
+      if (nombresCats.length > 0) {
+        setNuevo((prev) => ({ ...prev, categoria: nombresCats[0] }));
+      }
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
 
   const filtrados = productos.filter((p) => {
     const coincideTexto =
@@ -30,11 +63,15 @@ export default function AdminProductos() {
     return coincideTexto && coincideCat;
   });
 
-  const handleEliminar = (codigo) => {
-    if (window.confirm(`¿Estás seguro de eliminar el producto ${codigo}?`)) {
-      const actualizados = eliminarProducto(codigo);
-      setProductos(actualizados);
+  const handleEliminar = async (codigo) => {
+    if (!window.confirm(`¿Estás seguro de eliminar el producto ${codigo}?`)) return;
+    try {
+      await eliminarProducto(codigo);
+      setProductos((prev) => prev.filter((p) => p.codigo !== codigo));
       setMensaje({ tipo: 'success', texto: `Producto ${codigo} eliminado exitosamente.` });
+    } catch (err) {
+      setMensaje({ tipo: 'danger', texto: mensajeDeError(err) });
+    } finally {
       setTimeout(() => setMensaje(null), 3500);
     }
   };
@@ -44,7 +81,7 @@ export default function AdminProductos() {
     return otro ? otro.imagen : '/img/accesorios.jpg';
   };
 
-  const handleGuardarNuevo = (e) => {
+  const handleGuardarNuevo = async (e) => {
     e.preventDefault();
     if (!nuevo.codigo || !nuevo.nombre || !nuevo.precio || !nuevo.stock) {
       alert('Por favor completa todos los campos requeridos.');
@@ -61,30 +98,36 @@ export default function AdminProductos() {
       nombre: nuevo.nombre,
       marca: nuevo.marca || 'Genérica',
       modelo: nuevo.modelo || 'Estándar',
-      categoria: nuevo.categoria,
+      categoria: nuevo.categoria || categorias[0],
       precio: parseInt(nuevo.precio, 10),
       stock: parseInt(nuevo.stock, 10),
       stockCritico: parseInt(nuevo.stockCritico, 10) || 3,
+      descuento: 0,
       descripcion: nuevo.descripcion || 'Instrumento musical revisado por el taller de Sonido Vivo.',
       imagen: imagenCategoria(nuevo.categoria)
     };
 
-    const actualizados = guardarProducto(prodAgregado);
-    setProductos(actualizados);
-    setMostrarModal(false);
-    setNuevo({
-      codigo: '',
-      nombre: '',
-      marca: '',
-      modelo: '',
-      categoria: categorias[0],
-      precio: '',
-      stock: '',
-      stockCritico: '3',
-      descripcion: ''
-    });
-    setMensaje({ tipo: 'success', texto: `Producto ${prodAgregado.codigo} creado con éxito.` });
-    setTimeout(() => setMensaje(null), 3500);
+    try {
+      const creado = await crearProducto(prodAgregado);
+      setProductos((prev) => [creado, ...prev]);
+      setMostrarModal(false);
+      setNuevo({
+        codigo: '',
+        nombre: '',
+        marca: '',
+        modelo: '',
+        categoria: categorias[0] || '',
+        precio: '',
+        stock: '',
+        stockCritico: '3',
+        descripcion: ''
+      });
+      setMensaje({ tipo: 'success', texto: `Producto ${prodAgregado.codigo} creado con éxito.` });
+    } catch (err) {
+      setMensaje({ tipo: 'danger', texto: mensajeDeError(err) });
+    } finally {
+      setTimeout(() => setMensaje(null), 3500);
+    }
   };
 
   return (
@@ -140,57 +183,61 @@ export default function AdminProductos() {
         </div>
       </div>
 
-      <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0">
-            <thead className="table-dark">
-              <tr>
-                <th>Código</th>
-                <th>Producto</th>
-                <th>Marca / Modelo</th>
-                <th>Categoría</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th className="text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtrados.map((p) => {
-                const esCritico = p.stock <= p.stockCritico;
-                return (
-                  <tr key={p.codigo}>
-                    <td className="fw-bold font-monospace">{p.codigo}</td>
-                    <td>{p.nombre}</td>
-                    <td>{p.marca} {p.modelo}</td>
-                    <td><span className="badge bg-secondary">{p.categoria}</span></td>
-                    <td className="fw-semibold">${p.precio.toLocaleString('es-CL')}</td>
-                    <td>
-                      <span className={`badge ${esCritico ? 'bg-danger' : 'bg-success'}`}>
-                        {p.stock} unid. {esCritico && '(Crítico)'}
-                      </span>
-                    </td>
-                    <td className="text-center text-nowrap">
-                      <Link to={'/admin/productos/' + p.codigo} className="btn btn-outline-primary btn-sm me-1" title="Ver y editar">
-                        <i className="bi bi-pencil"></i>
-                      </Link>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        title="Eliminar producto"
-                        onClick={() => handleEliminar(p.codigo)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {cargando ? (
+        <div className="text-center py-5 text-muted">Cargando inventario...</div>
+      ) : (
+        <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="table-dark">
+                <tr>
+                  <th>Código</th>
+                  <th>Producto</th>
+                  <th>Marca / Modelo</th>
+                  <th>Categoría</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th className="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtrados.map((p) => {
+                  const esCritico = p.stock <= p.stockCritico;
+                  return (
+                    <tr key={p.codigo}>
+                      <td className="fw-bold font-monospace">{p.codigo}</td>
+                      <td>{p.nombre}</td>
+                      <td>{p.marca} {p.modelo}</td>
+                      <td><span className="badge bg-secondary">{p.categoria}</span></td>
+                      <td className="fw-semibold">${p.precio.toLocaleString('es-CL')}</td>
+                      <td>
+                        <span className={`badge ${esCritico ? 'bg-danger' : 'bg-success'}`}>
+                          {p.stock} unid. {esCritico && '(Crítico)'}
+                        </span>
+                      </td>
+                      <td className="text-center text-nowrap">
+                        <Link to={'/admin/productos/' + p.codigo} className="btn btn-outline-primary btn-sm me-1" title="Ver y editar">
+                          <i className="bi bi-pencil"></i>
+                        </Link>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          title="Eliminar producto"
+                          onClick={() => handleEliminar(p.codigo)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="card-footer bg-white text-muted small p-3">
+            Mostrando {filtrados.length} de {productos.length} productos en el inventario.
+          </div>
         </div>
-        <div className="card-footer bg-white text-muted small p-3">
-          Mostrando {filtrados.length} de {productos.length} productos en el inventario.
-        </div>
-      </div>
+      )}
 
       {mostrarModal && (
         <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} tabIndex="-1">
