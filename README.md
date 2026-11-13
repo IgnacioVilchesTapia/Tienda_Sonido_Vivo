@@ -18,14 +18,14 @@ API REST de la tienda Sonido Vivo para DSY1104 Desarrollo Fullstack II (Duoc UC)
 
 ## Qué tiene hoy
 
-- Catálogo: CRUD de productos y categorías en `/api/v1`
+- Catálogo: CRUD de productos y categorías en `/api/v1` y catálogo paginado en `/api/v2/productos`
 - `data.sql` carga las 10 categorías y los 51 productos de la tienda al iniciar (si un producto base se borra, vuelve a aparecer al reiniciar)
 - Seguridad con Spring Security y JWT: login, registro, refresh, perfil propio y CRUD de usuarios solo para ADMIN
+- Boletas y compras: registro de compras con control de stock, cupones, despacho e historial de órdenes
+- Reportes operativos: resumen de ventas por categoría, productos más vendidos e inventario valorizado (solo ADMIN)
 - Contraseñas guardadas con BCrypt; RUN validado con dígito verificador y correos solo `@duoc.cl`, `@profesor.duoc.cl` o `@gmail.com`
 - Errores en JSON con el mismo formato: `status`, `error`, `mensaje`, `ruta` (también el 401 y el 403)
 - Pruebas unitarias de los servicios (JUnit + Mockito) y de los controladores (MockMvc), incluidas las de seguridad
-
-Lo que falta, según el plan de trabajo: boletas y reportes.
 
 ## Seguridad
 
@@ -69,11 +69,17 @@ La clave con que se firman los tokens se lee de la variable `JWT_SECRETO` (míni
 | POST | `/api/v1/productos` | Crea un producto |
 | PUT | `/api/v1/productos/{codigo}` | Actualiza un producto |
 | DELETE | `/api/v1/productos/{codigo}` | Elimina un producto |
+| GET | `/api/v2/productos?pagina=0&limite=10` | Lista productos paginados (v2 pública) |
 | GET | `/api/v1/categorias` | Lista categorías |
 | GET | `/api/v1/categorias/{id}` | Detalle de una categoría |
 | POST | `/api/v1/categorias` | Crea una categoría |
 | PUT | `/api/v1/categorias/{id}` | Cambia el nombre |
 | DELETE | `/api/v1/categorias/{id}` | Elimina (409 si tiene productos) |
+| POST | `/api/v1/boletas` | Registra una compra con boleta |
+| GET | `/api/v1/boletas` | Lista todas las boletas (ADMIN, VENDEDOR) |
+| GET | `/api/v1/boletas/mis-compras` | Boletas del usuario autenticado |
+| PUT | `/api/v1/boletas/{numero}/estado` | Cambia estado de la boleta (ADMIN, VENDEDOR) |
+| GET | `/api/v1/reportes` | Resumen de ventas e inventario (ADMIN) |
 
 Swagger: `http://localhost:8080/swagger-ui.html`
 
