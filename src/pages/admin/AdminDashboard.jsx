@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerProductos } from '../../data/datos';
+import { obtenerProductos as obtenerProductosLocales } from '../../data/datos';
 import { useAuth } from '../../context/AuthContext';
 import { listarUsuarios } from '../../services/usuarioService';
+import { listarProductos, listarCriticos } from '../../services/productoService';
 
 const secciones = [
   { ruta: '/admin/ordenes', icono: 'bi-receipt', titulo: 'Órdenes', texto: 'Compras y boletas', roles: ['ADMIN', 'VENDEDOR'] },
@@ -16,10 +17,37 @@ const secciones = [
 ];
 
 export default function AdminDashboard() {
-  const productos = obtenerProductos();
   const { usuario: sesion, tieneRol } = useAuth();
   const esAdmin = tieneRol('ADMIN');
+  const [productos, setProductos] = useState([]);
+  const [criticos, setCriticos] = useState([]);
   const [totalUsuarios, setTotalUsuarios] = useState(null);
+
+  useEffect(() => {
+    let cancelado = false;
+    async function cargar() {
+      try {
+        const [prods, crits] = await Promise.all([
+          listarProductos(),
+          listarCriticos()
+        ]);
+        if (!cancelado) {
+          setProductos(prods);
+          setCriticos(crits);
+        }
+      } catch {
+        if (!cancelado) {
+          const locales = obtenerProductosLocales();
+          setProductos(locales);
+          setCriticos(locales.filter((p) => p.stock <= p.stockCritico));
+        }
+      }
+    }
+    cargar();
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!esAdmin) return;
@@ -27,8 +55,8 @@ export default function AdminDashboard() {
       .then((lista) => setTotalUsuarios(lista.length))
       .catch(() => setTotalUsuarios(null));
   }, [esAdmin]);
-  const criticos = productos.filter((p) => p.stock <= p.stockCritico);
-  const totalStock = productos.reduce((acc, p) => acc + p.stock, 0);
+
+  const totalStock = productos.reduce((acc, p) => acc + (p.stock || 0), 0);
 
   return (
     <div className="container my-5">

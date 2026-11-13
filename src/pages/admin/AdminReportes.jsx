@@ -1,42 +1,74 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { obtenerReporte } from '../../services/reporteService';
 import { obtenerProductos, obtenerCategorias, obtenerOrdenes } from '../../data/datos';
+
 export default function AdminReportes() {
-  const productos = obtenerProductos();
-  const pagadas = obtenerOrdenes().filter((o) => o.estado === 'Pagada');
+  const [datos, setDatos] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
-  let totalVentas = 0;
-  pagadas.forEach((o) => {
-    totalVentas += o.total;
-  });
-  const promedio = pagadas.length > 0 ? Math.round(totalVentas / pagadas.length) : 0;
-  const ventasCategoria = {};
-  const vendidos = {};
-  pagadas.forEach((o) => {
-    o.items.forEach((it) => {
-      const prod = productos.find((p) => p.codigo === it.codigo);
-      const cat = prod ? prod.categoria : 'Otros';
-      ventasCategoria[cat] = (ventasCategoria[cat] || 0) + it.precio * it.cantidad;
-      vendidos[it.nombre] = (vendidos[it.nombre] || 0) + it.cantidad;
-    });
-  });
+  useEffect(() => {
+    let cancelado = false;
+    async function cargar() {
+      setCargando(true);
+      try {
+        const res = await obtenerReporte();
+        if (!cancelado) setDatos(res);
+      } catch {
+        if (!cancelado) {
+          const prods = obtenerProductos();
+          const pagadas = obtenerOrdenes().filter((o) => o.estado === 'Pagada');
+          let totalVentas = 0;
+          pagadas.forEach((o) => { totalVentas += o.total; });
+          const promedio = pagadas.length > 0 ? Math.round(totalVentas / pagadas.length) : 0;
+          const ventasCategoria = {};
+          const vendidos = {};
+          pagadas.forEach((o) => {
+            o.items.forEach((it) => {
+              const prod = prods.find((p) => p.codigo === it.codigo);
+              const cat = prod ? prod.categoria : 'Otros';
+              ventasCategoria[cat] = (ventasCategoria[cat] || 0) + it.precio * it.cantidad;
+              vendidos[it.nombre] = (vendidos[it.nombre] || 0) + it.cantidad;
+            });
+          });
+          const topProductos = Object.keys(vendidos)
+            .map((nombre) => ({ nombre, cantidad: vendidos[nombre] }))
+            .sort((a, b) => b.cantidad - a.cantidad)
+            .slice(0, 5);
+          const inventario = obtenerCategorias().map((cat) => {
+            const deCat = prods.filter((p) => p.categoria === cat);
+            let unidades = 0, valor = 0;
+            deCat.forEach((p) => { unidades += p.stock; valor += p.stock * p.precio; });
+            return { cat, productos: deCat.length, unidades, valor };
+          });
+          setDatos({
+            totalVentas,
+            comprasPagadas: pagadas.length,
+            ticketPromedio: promedio,
+            ventasPorCategoria: ventasCategoria,
+            masVendidos: topProductos,
+            inventario
+          });
+        }
+      } finally {
+        if (!cancelado) setCargando(false);
+      }
+    }
+    cargar();
+    return () => { cancelado = true; };
+  }, []);
 
+  if (cargando) {
+    return <div className="container my-5 text-center text-muted">Cargando reportes...</div>;
+  }
+
+  const totalVentas = datos?.totalVentas || 0;
+  const comprasPagadas = datos?.comprasPagadas || 0;
+  const promedio = datos?.ticketPromedio || 0;
+  const ventasCategoria = datos?.ventasPorCategoria || {};
+  const topProductos = datos?.masVendidos || [];
+  const inventario = datos?.inventario || [];
   const maxCategoria = Math.max(1, ...Object.values(ventasCategoria));
-
-  const topProductos = Object.keys(vendidos)
-    .map((nombre) => ({ nombre: nombre, cantidad: vendidos[nombre] }))
-    .sort((a, b) => b.cantidad - a.cantidad)
-    .slice(0, 5);
-
-  const inventario = obtenerCategorias().map((cat) => {
-    const prods = productos.filter((p) => p.categoria === cat);
-    let unidades = 0;
-    let valor = 0;
-    prods.forEach((p) => {
-      unidades += p.stock;
-      valor += p.stock * p.precio;
-    });
-    return { cat: cat, productos: prods.length, unidades: unidades, valor: valor };
-  });
 
   return (
     <div className="container my-5">
@@ -60,7 +92,7 @@ export default function AdminReportes() {
         <div className="col-6 col-md-4">
           <div className="card p-3 shadow-sm border-0 bg-success text-white">
             <small>Compras pagadas</small>
-            <h3 className="fw-bold mb-0">{pagadas.length}</h3>
+            <h3 className="fw-bold mb-0">{comprasPagadas}</h3>
           </div>
         </div>
         <div className="col-12 col-md-4">
@@ -117,8 +149,8 @@ export default function AdminReportes() {
             </thead>
             <tbody>
               {inventario.map((fila) => (
-                <tr key={fila.cat}>
-                  <td>{fila.cat}</td>
+                <tr key={fila.cat || fila.categoria}>
+                  <td>{fila.cat || fila.categoria}</td>
                   <td>{fila.productos}</td>
                   <td>{fila.unidades}</td>
                   <td>${fila.valor.toLocaleString('es-CL')}</td>
