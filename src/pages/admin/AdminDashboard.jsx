@@ -7,7 +7,7 @@ import { listarProductos, listarCriticos } from '../../services/productoService'
 
 const secciones = [
   { ruta: '/admin/ordenes', icono: 'bi-receipt', titulo: 'Órdenes', texto: 'Compras y boletas', roles: ['ADMIN', 'VENDEDOR'] },
-  { ruta: '/admin/productos', icono: 'bi-box-seam', titulo: 'Productos', texto: 'Crear, ver y editar productos', roles: ['ADMIN', 'VENDEDOR'] },
+  { ruta: '/admin/productos', icono: 'bi-box-seam', titulo: 'Productos', texto: 'Catálogo e inventario', roles: ['ADMIN', 'VENDEDOR'] },
   { ruta: '/admin/productos/criticos', icono: 'bi-exclamation-triangle', titulo: 'Productos críticos', texto: 'Stock por reponer', roles: ['ADMIN'] },
   { ruta: '/admin/categorias', icono: 'bi-tags', titulo: 'Categorías', texto: 'Crear y editar categorías', roles: ['ADMIN'] },
   { ruta: '/admin/usuarios', icono: 'bi-people', titulo: 'Usuarios', texto: 'Cuentas e historial de compras', roles: ['ADMIN'] },

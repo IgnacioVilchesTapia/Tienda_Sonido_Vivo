@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import SoloRol from '../../components/SoloRol';
 import { listarProductos, crearProducto, eliminarProducto } from '../../services/productoService';
 import { listarCategorias } from '../../services/categoriaService';
 import { mensajeDeError } from '../../services/api';
@@ -144,12 +145,14 @@ export default function AdminProductos() {
           <Link to="/admin/dashboard" className="btn btn-outline-secondary">
             <i className="bi bi-arrow-left me-1"></i> Dashboard
           </Link>
-          <Link to="/admin/productos/criticos" className="btn btn-outline-danger">
-            Críticos
-          </Link>
-          <button className="btn btn-amber fw-bold" onClick={() => setMostrarModal(true)}>
-            <i className="bi bi-plus-circle me-1"></i> Nuevo Producto
-          </button>
+          <SoloRol roles={['ADMIN']}>
+            <Link to="/admin/productos/criticos" className="btn btn-outline-danger">
+              Críticos
+            </Link>
+            <button className="btn btn-amber fw-bold" onClick={() => setMostrarModal(true)}>
+              <i className="bi bi-plus-circle me-1"></i> Nuevo Producto
+            </button>
+          </SoloRol>
         </div>
       </div>
 
@@ -219,16 +222,18 @@ export default function AdminProductos() {
                         </span>
                       </td>
                       <td className="text-center text-nowrap">
-                        <Link to={'/admin/productos/' + p.codigo} className="btn btn-outline-primary btn-sm me-1" title="Ver y editar">
-                          <i className="bi bi-pencil"></i>
+                        <Link to={'/admin/productos/' + p.codigo} className="btn btn-outline-primary btn-sm me-1" title="Ver detalle">
+                          <i className="bi bi-eye"></i>
                         </Link>
-                        <button
-                          className="btn btn-outline-danger btn-sm"
-                          title="Eliminar producto"
-                          onClick={() => handleEliminar(p.codigo)}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
+                        <SoloRol roles={['ADMIN']}>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            title="Eliminar producto"
+                            onClick={() => handleEliminar(p.codigo)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </SoloRol>
                       </td>
                     </tr>
                   );
