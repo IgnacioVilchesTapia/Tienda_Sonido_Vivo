@@ -1,9 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarProductos, crearProducto, eliminarProducto } from '../../services/productoService';
 import { listarCategorias } from '../../services/categoriaService';
 import { mensajeDeError } from '../../services/api';
 import { obtenerProductos as obtenerProductosLocales, obtenerCategorias as obtenerCategoriasLocales } from '../../data/datos';
+
+async function obtenerDatosAdmin() {
+  try {
+    const [prods, cats] = await Promise.all([
+      listarProductos(),
+      listarCategorias()
+    ]);
+    const nombresCats = cats.map((c) => (typeof c === 'string' ? c : c.nombre));
+    return { productos: prods, categorias: nombresCats };
+  } catch {
+    return { productos: obtenerProductosLocales(), categorias: obtenerCategoriasLocales() };
+  }
+}
 
 export default function AdminProductos() {
   const [productos, setProductos] = useState([]);
@@ -25,34 +38,24 @@ export default function AdminProductos() {
   });
   const [mensaje, setMensaje] = useState(null);
 
-  const cargarDatos = useCallback(async () => {
-    setCargando(true);
-    try {
-      const [prods, cats] = await Promise.all([
-        listarProductos(),
-        listarCategorias()
-      ]);
-      setProductos(prods);
-      const nombresCats = cats.map((c) => (typeof c === 'string' ? c : c.nombre));
-      setCategorias(nombresCats);
-      if (nombresCats.length > 0) {
-        setNuevo((prev) => ({ ...prev, categoria: nombresCats[0] }));
-      }
-    } catch {
-      setProductos(obtenerProductosLocales());
-      const nombresCats = obtenerCategoriasLocales();
-      setCategorias(nombresCats);
-      if (nombresCats.length > 0) {
-        setNuevo((prev) => ({ ...prev, categoria: nombresCats[0] }));
-      }
-    } finally {
-      setCargando(false);
-    }
-  }, []);
-
   useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
+    let activo = true;
+
+    obtenerDatosAdmin().then((datos) => {
+      if (activo) {
+        setProductos(datos.productos);
+        setCategorias(datos.categorias);
+        if (datos.categorias.length > 0) {
+          setNuevo((prev) => ({ ...prev, categoria: datos.categorias[0] }));
+        }
+        setCargando(false);
+      }
+    });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   const filtrados = productos.filter((p) => {
     const coincideTexto =

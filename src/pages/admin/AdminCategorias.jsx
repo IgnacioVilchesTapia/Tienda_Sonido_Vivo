@@ -1,8 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarCategorias, crearCategoria, actualizarCategoria, eliminarCategoria } from '../../services/categoriaService';
 import { mensajeDeError } from '../../services/api';
 import { obtenerCategorias as obtenerCategoriasLocales, obtenerProductos } from '../../data/datos';
+
+async function obtenerCategoriasAdmin() {
+  try {
+    return await listarCategorias();
+  } catch {
+    const locales = obtenerCategoriasLocales();
+    const prods = obtenerProductos();
+    return locales.map((nom, idx) => ({
+      id: idx + 1,
+      nombre: nom,
+      cantidadProductos: prods.filter((p) => p.categoria === nom).length
+    }));
+  }
+}
 
 export default function AdminCategorias() {
   const [categorias, setCategorias] = useState([]);
@@ -12,28 +26,25 @@ export default function AdminCategorias() {
   const [mensaje, setMensaje] = useState(null);
   const [cargando, setCargando] = useState(true);
 
-  const cargar = useCallback(async () => {
-    setCargando(true);
-    try {
-      const datos = await listarCategorias();
-      setCategorias(datos);
-    } catch {
-      const locales = obtenerCategoriasLocales();
-      const prods = obtenerProductos();
-      const mapeadas = locales.map((nom, idx) => ({
-        id: idx + 1,
-        nombre: nom,
-        cantidadProductos: prods.filter((p) => p.categoria === nom).length
-      }));
-      setCategorias(mapeadas);
-    } finally {
-      setCargando(false);
-    }
+  useEffect(() => {
+    let activo = true;
+
+    obtenerCategoriasAdmin().then((datos) => {
+      if (activo) {
+        setCategorias(datos);
+        setCargando(false);
+      }
+    });
+
+    return () => {
+      activo = false;
+    };
   }, []);
 
-  useEffect(() => {
-    cargar();
-  }, [cargar]);
+  const cargar = async () => {
+    const datos = await obtenerCategoriasAdmin();
+    setCategorias(datos);
+  };
 
   const agregar = async (e) => {
     e.preventDefault();
