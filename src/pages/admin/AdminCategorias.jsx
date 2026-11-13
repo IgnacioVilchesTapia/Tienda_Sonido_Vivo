@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { listarCategorias, crearCategoria, actualizarCategoria, eliminarCategoria } from '../../services/categoriaService';
+import { listarProductos } from '../../services/productoService';
 import { mensajeDeError } from '../../services/api';
 import { obtenerCategorias as obtenerCategoriasLocales, obtenerProductos } from '../../data/datos';
 
 async function obtenerCategoriasAdmin() {
   try {
-    return await listarCategorias();
+    const [cats, prods] = await Promise.all([listarCategorias(), listarProductos()]);
+    return cats.map((cat) => ({
+      ...cat,
+      cantidadProductos: prods.filter((p) => p.categoria === cat.nombre).length
+    }));
   } catch {
     const locales = obtenerCategoriasLocales();
     const prods = obtenerProductos();
