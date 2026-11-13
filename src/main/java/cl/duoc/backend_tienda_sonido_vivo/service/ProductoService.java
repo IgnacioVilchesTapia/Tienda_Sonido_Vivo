@@ -1,5 +1,6 @@
 package cl.duoc.backend_tienda_sonido_vivo.service;
 
+import cl.duoc.backend_tienda_sonido_vivo.dto.PaginaDTO;
 import cl.duoc.backend_tienda_sonido_vivo.dto.ProductoDTO;
 import cl.duoc.backend_tienda_sonido_vivo.exception.ConflictoException;
 import cl.duoc.backend_tienda_sonido_vivo.exception.RecursoNoEncontradoException;
@@ -34,6 +35,19 @@ public class ProductoService {
             productos = productos.stream().filter(p -> coincide(p, texto)).toList();
         }
         return productos.stream().map(ProductoDTO::desde).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PaginaDTO<ProductoDTO> listarPaginado(int pagina, int limite, String categoria, String q) {
+        if (pagina < 0) pagina = 0;
+        if (limite <= 0) limite = 10;
+        List<ProductoDTO> todos = listar(categoria, q);
+        int totalElementos = todos.size();
+        int totalPaginas = (int) Math.ceil((double) totalElementos / limite);
+        int desde = Math.min(pagina * limite, totalElementos);
+        int hasta = Math.min(desde + limite, totalElementos);
+        List<ProductoDTO> contenido = todos.subList(desde, hasta);
+        return new PaginaDTO<>(contenido, pagina, totalPaginas, (long) totalElementos);
     }
 
     @Transactional(readOnly = true)
