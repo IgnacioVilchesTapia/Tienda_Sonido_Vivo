@@ -24,12 +24,12 @@ public class CategoriaService {
 
     @Transactional(readOnly = true)
     public List<CategoriaDTO> listar() {
-        return categoriaRepository.findAll().stream().map(CategoriaDTO::desde).toList();
+        return categoriaRepository.findAll().stream().map(this::aDTO).toList();
     }
 
     @Transactional(readOnly = true)
     public CategoriaDTO obtener(Long id) {
-        return CategoriaDTO.desde(buscar(id));
+        return aDTO(buscar(id));
     }
 
     @Transactional
@@ -38,7 +38,8 @@ public class CategoriaService {
         if (categoriaRepository.existsByNombreIgnoreCase(nombre)) {
             throw new ConflictoException("Ya existe la categoría " + nombre);
         }
-        return CategoriaDTO.desde(categoriaRepository.save(new Categoria(nombre)));
+        Categoria guardada = categoriaRepository.save(new Categoria(nombre));
+        return aDTO(guardada);
     }
 
     @Transactional
@@ -50,7 +51,8 @@ public class CategoriaService {
             throw new ConflictoException("Ya existe la categoría " + nombre);
         }
         categoria.setNombre(nombre);
-        return CategoriaDTO.desde(categoriaRepository.save(categoria));
+        Categoria guardada = categoriaRepository.save(categoria);
+        return aDTO(guardada);
     }
 
     @Transactional
@@ -65,5 +67,10 @@ public class CategoriaService {
     private Categoria buscar(Long id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe la categoría " + id));
+    }
+
+    private CategoriaDTO aDTO(Categoria categoria) {
+        int cantidad = (int) productoRepository.countByCategoriaId(categoria.getId());
+        return CategoriaDTO.desde(categoria, cantidad);
     }
 }

@@ -83,6 +83,20 @@ class ProductoServiceTest {
     }
 
     @Test
+    void crearSinCodigoLanzaErrorDeDatos() {
+        assertThatThrownBy(() -> productoService.crear(nuevo(null, "Guitarras Eléctricas", null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("El código es obligatorio");
+    }
+
+    @Test
+    void crearConCodigoEnBlancoLanzaErrorDeDatos() {
+        assertThatThrownBy(() -> productoService.crear(nuevo("   ", "Guitarras Eléctricas", null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("El código es obligatorio");
+    }
+
+    @Test
     void crearSinCategoriaLanzaErrorDeDatos() {
         when(productoRepository.existsById("GE099")).thenReturn(false);
 

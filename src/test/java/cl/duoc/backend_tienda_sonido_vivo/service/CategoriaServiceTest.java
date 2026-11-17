@@ -1,5 +1,6 @@
 package cl.duoc.backend_tienda_sonido_vivo.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -47,5 +48,17 @@ class CategoriaServiceTest {
 
         assertThatThrownBy(() -> categoriaService.crear(new CategoriaDTO(null, " Baterías ")))
                 .isInstanceOf(ConflictoException.class);
+    }
+
+    @Test
+    void obtenerCalculaCantidadDeProductos() {
+        Categoria c = new Categoria("Guitarras");
+        c.setId(1L);
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(c));
+        when(productoRepository.countByCategoriaId(1L)).thenReturn(4L);
+
+        CategoriaDTO dto = categoriaService.obtener(1L);
+
+        assertThat(dto.cantidadProductos()).isEqualTo(4);
     }
 }

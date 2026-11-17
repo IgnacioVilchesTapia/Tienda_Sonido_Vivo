@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record ProductoDTO(
-        @NotBlank(message = "El código es obligatorio")
         @Size(max = 10, message = "El código tiene máximo 10 caracteres")
         String codigo,
 

@@ -67,6 +67,9 @@ public class ProductoService {
 
     @Transactional
     public ProductoDTO crear(ProductoDTO dto) {
+        if (dto.codigo() == null || dto.codigo().isBlank()) {
+            throw new IllegalArgumentException("El código es obligatorio");
+        }
         String codigo = normalizarCodigo(dto.codigo());
         if (productoRepository.existsById(codigo)) {
             throw new ConflictoException("Ya existe un producto con el código " + codigo);

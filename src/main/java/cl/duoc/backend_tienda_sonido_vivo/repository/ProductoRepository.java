@@ -15,4 +15,6 @@ public interface ProductoRepository extends JpaRepository<Producto, String> {
     List<Producto> buscarStockCritico();
 
     boolean existsByCategoriaId(Long categoriaId);
+
+    long countByCategoriaId(Long categoriaId);
 }

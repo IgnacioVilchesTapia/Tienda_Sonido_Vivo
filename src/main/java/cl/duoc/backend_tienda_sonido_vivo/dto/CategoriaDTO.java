@@ -9,10 +9,20 @@ public record CategoriaDTO(
 
         @NotBlank(message = "El nombre de la categoría es obligatorio")
         @Size(max = 60, message = "El nombre tiene máximo 60 caracteres")
-        String nombre
+        String nombre,
+
+        Integer cantidadProductos
 ) {
 
+    public CategoriaDTO(Long id, String nombre) {
+        this(id, nombre, 0);
+    }
+
     public static CategoriaDTO desde(Categoria c) {
-        return new CategoriaDTO(c.getId(), c.getNombre());
+        return new CategoriaDTO(c.getId(), c.getNombre(), 0);
+    }
+
+    public static CategoriaDTO desde(Categoria c, int cantidadProductos) {
+        return new CategoriaDTO(c.getId(), c.getNombre(), cantidadProductos);
     }
 }
