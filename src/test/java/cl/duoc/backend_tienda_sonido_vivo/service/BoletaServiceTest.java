@@ -22,6 +22,7 @@ import cl.duoc.backend_tienda_sonido_vivo.model.Usuario;
 import cl.duoc.backend_tienda_sonido_vivo.repository.BoletaRepository;
 import cl.duoc.backend_tienda_sonido_vivo.repository.ProductoRepository;
 import cl.duoc.backend_tienda_sonido_vivo.repository.UsuarioRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -162,5 +163,77 @@ class BoletaServiceTest {
 
         assertThat(anulada.estado()).isEqualTo("ANULADA");
         assertThat(guitarra.getStock()).isEqualTo(4);
+    }
+
+    @Test
+    void obtenerPermiteAClienteVerSuPropiaBoleta() {
+        Boleta b = new Boleta();
+        b.setNumero(1L);
+        b.setFecha(LocalDateTime.now());
+        b.setEstado(EstadoBoleta.PAGADA);
+        b.setUsuario(usuarioRepository.findByCorreoIgnoreCase("fsoto2000@gmail.com").get());
+        b.setSubtotal(100000);
+        b.setDescuento(0);
+        b.setDespacho(0);
+        b.setTotal(100000);
+        b.setCalle("Calle 1");
+        b.setRegion("RM");
+        b.setComuna("Maipú");
+        when(boletaRepository.findById(1L)).thenReturn(Optional.of(b));
+
+        BoletaDTO dto = boletaService.obtener(1L, "fsoto2000@gmail.com");
+
+        assertThat(dto.numero()).isEqualTo(1L);
+    }
+
+    @Test
+    void obtenerRechazaAClienteVerBoletaAjena() {
+        Usuario otro = new Usuario();
+        otro.setRun("111111111");
+        otro.setNombre("Otro");
+        otro.setApellidos("Usuario");
+        otro.setCorreo("otro@gmail.com");
+        otro.setRol(Rol.CLIENTE);
+
+        Boleta b = new Boleta();
+        b.setNumero(1L);
+        b.setFecha(LocalDateTime.now());
+        b.setEstado(EstadoBoleta.PAGADA);
+        b.setUsuario(otro);
+        when(boletaRepository.findById(1L)).thenReturn(Optional.of(b));
+
+        assertThatThrownBy(() -> boletaService.obtener(1L, "fsoto2000@gmail.com"))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+    }
+
+    @Test
+    void obtenerPermiteAAdminVerBoletaAjena() {
+        Usuario cliente = usuarioRepository.findByCorreoIgnoreCase("fsoto2000@gmail.com").get();
+        cliente.setRol(Rol.ADMIN);
+
+        Usuario otro = new Usuario();
+        otro.setRun("111111111");
+        otro.setNombre("Otro");
+        otro.setApellidos("Usuario");
+        otro.setCorreo("otro@gmail.com");
+        otro.setRol(Rol.CLIENTE);
+
+        Boleta b = new Boleta();
+        b.setNumero(1L);
+        b.setFecha(LocalDateTime.now());
+        b.setEstado(EstadoBoleta.PAGADA);
+        b.setUsuario(otro);
+        b.setSubtotal(100000);
+        b.setDescuento(0);
+        b.setDespacho(0);
+        b.setTotal(100000);
+        b.setCalle("Calle 1");
+        b.setRegion("RM");
+        b.setComuna("Maipú");
+        when(boletaRepository.findById(1L)).thenReturn(Optional.of(b));
+
+        BoletaDTO dto = boletaService.obtener(1L, "fsoto2000@gmail.com");
+
+        assertThat(dto.numero()).isEqualTo(1L);
     }
 }

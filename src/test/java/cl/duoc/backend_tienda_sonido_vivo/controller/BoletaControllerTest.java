@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,11 +56,21 @@ class BoletaControllerTest {
                 List.of()
         );
 
-        when(boletaService.obtener(1L)).thenReturn(boleta);
+        when(boletaService.obtener(1L, null)).thenReturn(boleta);
 
         mockMvc.perform(get("/api/v1/boletas/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.numero").value(1))
                 .andExpect(jsonPath("$.estado").value("PAGADA"));
+    }
+
+    @Test
+    void obtenerBoletaDeOtroClienteLanzaError() throws Exception {
+        when(boletaService.obtener(2L, null))
+                .thenThrow(new AccessDeniedException("No tiene permisos para ver esta boleta"));
+
+        mockMvc.perform(get("/api/v1/boletas/2"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403));
     }
 }

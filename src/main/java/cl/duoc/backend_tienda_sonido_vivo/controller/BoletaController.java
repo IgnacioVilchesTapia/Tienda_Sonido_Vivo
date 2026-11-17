@@ -34,7 +34,7 @@ public class BoletaController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'VENDEDOR', 'ADMIN')")
     @Operation(summary = "Crea una compra", description = "El front manda códigos y cantidades; el backend calcula precios, cupón, despacho y descuenta el stock")
     public ResponseEntity<BoletaDTO> crear(@Parameter(hidden = true) Authentication authentication,
                                            @Valid @RequestBody CompraDTO compra) {
@@ -56,10 +56,11 @@ public class BoletaController {
     }
 
     @GetMapping("/{numero}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR', 'CLIENTE')")
     @Operation(summary = "Obtiene el detalle de una boleta")
-    public BoletaDTO obtener(@PathVariable Long numero) {
-        return boletaService.obtener(numero);
+    public BoletaDTO obtener(@PathVariable Long numero, @Parameter(hidden = true) Authentication authentication) {
+        String correo = authentication != null ? authentication.getName() : null;
+        return boletaService.obtener(numero, correo);
     }
 
     @PutMapping("/{numero}/estado")

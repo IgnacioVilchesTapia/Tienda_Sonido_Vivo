@@ -9,6 +9,7 @@ import cl.duoc.backend_tienda_sonido_vivo.model.Boleta;
 import cl.duoc.backend_tienda_sonido_vivo.model.DetalleBoleta;
 import cl.duoc.backend_tienda_sonido_vivo.model.EstadoBoleta;
 import cl.duoc.backend_tienda_sonido_vivo.model.Producto;
+import cl.duoc.backend_tienda_sonido_vivo.model.Rol;
 import cl.duoc.backend_tienda_sonido_vivo.model.Usuario;
 import cl.duoc.backend_tienda_sonido_vivo.repository.BoletaRepository;
 import cl.duoc.backend_tienda_sonido_vivo.repository.ProductoRepository;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,7 +110,21 @@ public class BoletaService {
 
     @Transactional(readOnly = true)
     public BoletaDTO obtener(Long numero) {
-        return BoletaDTO.desde(buscar(numero));
+        return obtener(numero, null);
+    }
+
+    @Transactional(readOnly = true)
+    public BoletaDTO obtener(Long numero, String correo) {
+        Boleta boleta = buscar(numero);
+        if (correo != null) {
+            Usuario solicitante = usuarioRepository.findByCorreoIgnoreCase(correo).orElse(null);
+            if (solicitante != null && solicitante.getRol() == Rol.CLIENTE) {
+                if (!boleta.getUsuario().getCorreo().equalsIgnoreCase(correo)) {
+                    throw new AccessDeniedException("No tiene permisos para ver esta boleta");
+                }
+            }
+        }
+        return BoletaDTO.desde(boleta);
     }
 
     @Transactional

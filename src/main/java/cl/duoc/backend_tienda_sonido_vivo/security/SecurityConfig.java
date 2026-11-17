@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(rutas -> rutas
                         .requestMatchers("/api/v1/auth/login", "/api/v1/auth/registro", "/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/productos/criticos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/productos/criticos").hasAnyRole("ADMIN", "VENDEDOR")
                         .requestMatchers(HttpMethod.GET, "/api/v1/estado", "/api/v1/productos/**", "/api/v2/productos/**", "/api/v1/categorias/**").permitAll()
                         .requestMatchers("/api/v1/productos/**", "/api/v2/productos/**", "/api/v1/categorias/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/usuarios/me").authenticated()
@@ -64,6 +64,9 @@ public class SecurityConfig {
         response.setStatus(status);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        if (ruta != null) {
+            ruta = ruta.replace("\"", "");
+        }
         String json = "{\"status\":" + status + ",\"error\":\"" + error + "\",\"mensaje\":\"" + mensaje
                 + "\",\"ruta\":\"" + ruta + "\"}";
         response.getWriter().write(json);
