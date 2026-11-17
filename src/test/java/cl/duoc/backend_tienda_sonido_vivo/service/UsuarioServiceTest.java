@@ -95,4 +95,49 @@ class UsuarioServiceTest {
                 .isInstanceOf(ConflictoException.class);
         verify(usuarioRepository, never()).delete(any());
     }
+
+    @Test
+    void registrarSinRunLanzaErrorDeDatos() {
+        assertThatThrownBy(() -> usuarioService.registrar(formulario(null, "ana@gmail.com", "clave123", null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("El RUN es obligatorio");
+    }
+
+    @Test
+    void passwordFueraDeRangoLanzaErrorDeDatos() {
+        assertThatThrownBy(() -> usuarioService.registrar(formulario("12345678-5", "ana@gmail.com", "123", null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La contraseña debe tener entre 4 y 10 caracteres");
+
+        assertThatThrownBy(() -> usuarioService.registrar(formulario("12345678-5", "ana@gmail.com", "12345678901", null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("La contraseña debe tener entre 4 y 10 caracteres");
+    }
+
+    @Test
+    void actualizarPerfilConPasswordVaciaMantieneLaAnteriorYNoBorraCamposNulos() {
+        Usuario usuario = new Usuario();
+        usuario.setRun("123456785");
+        usuario.setCorreo("ana@gmail.com");
+        usuario.setRol(Rol.CLIENTE);
+        usuario.setPassword("clave-antigua");
+        usuario.setRegion("Valparaíso");
+        usuario.setComuna("Viña del Mar");
+        usuario.setDireccion("Calle 1");
+        usuario.setFechaNacimiento(LocalDate.of(2000, 1, 1));
+        when(usuarioRepository.findByCorreoIgnoreCase("ana@gmail.com")).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        UsuarioFormDTO dto = new UsuarioFormDTO(null, "Ana Actualizada", "Pérez", "ana@gmail.com",
+                "", null, null, null, null, null);
+
+        var resultado = usuarioService.actualizarPerfil("ana@gmail.com", dto);
+
+        assertThat(usuario.getPassword()).isEqualTo("clave-antigua");
+        assertThat(resultado.nombre()).isEqualTo("Ana Actualizada");
+        assertThat(resultado.region()).isEqualTo("Valparaíso");
+        assertThat(resultado.comuna()).isEqualTo("Viña del Mar");
+        assertThat(resultado.direccion()).isEqualTo("Calle 1");
+        assertThat(usuario.getFechaNacimiento()).isEqualTo(LocalDate.of(2000, 1, 1));
+    }
 }

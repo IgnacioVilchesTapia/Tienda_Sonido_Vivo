@@ -96,6 +96,9 @@ public class UsuarioService {
     }
 
     private Usuario guardarNuevo(UsuarioFormDTO dto, Rol rol) {
+        if (dto.run() == null || dto.run().isBlank()) {
+            throw new IllegalArgumentException("El RUN es obligatorio");
+        }
         String run = limpiarRun(dto.run());
         if (!esRunValido(run)) {
             throw new IllegalArgumentException("El RUN " + run + " no es válido");
@@ -124,11 +127,22 @@ public class UsuarioService {
         usuario.setCorreo(correo);
         usuario.setNombre(dto.nombre().trim());
         usuario.setApellidos(dto.apellidos().trim());
-        usuario.setRegion(dto.region());
-        usuario.setComuna(dto.comuna());
-        usuario.setDireccion(dto.direccion());
-        usuario.setFechaNacimiento(dto.nacimiento());
+        if (dto.region() != null) {
+            usuario.setRegion(dto.region());
+        }
+        if (dto.comuna() != null) {
+            usuario.setComuna(dto.comuna());
+        }
+        if (dto.direccion() != null) {
+            usuario.setDireccion(dto.direccion());
+        }
+        if (dto.nacimiento() != null) {
+            usuario.setFechaNacimiento(dto.nacimiento());
+        }
         if (dto.password() != null && !dto.password().isBlank()) {
+            if (dto.password().length() < 4 || dto.password().length() > 10) {
+                throw new IllegalArgumentException("La contraseña debe tener entre 4 y 10 caracteres");
+            }
             usuario.setPassword(passwordEncoder.encode(dto.password()));
         }
     }

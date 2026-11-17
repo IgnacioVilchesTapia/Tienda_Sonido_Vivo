@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record UsuarioFormDTO(
-        @NotBlank(message = "El RUN es obligatorio")
         String run,
 
         @NotBlank(message = "El nombre es obligatorio")
@@ -22,7 +21,6 @@ public record UsuarioFormDTO(
         @Size(max = 100, message = "El correo tiene máximo 100 caracteres")
         String correo,
 
-        @Size(min = 4, max = 10, message = "La contraseña debe tener entre 4 y 10 caracteres")
         String password,
 
         String rol,
