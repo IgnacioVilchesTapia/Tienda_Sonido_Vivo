@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorRespuesta> datosRelacionados(DataIntegrityViolationException ex, HttpServletRequest request) {
-        return responder(HttpStatus.CONFLICT, "Conflicto", "No se puede eliminar porque tiene boletas asociadas", request);
+        return responder(HttpStatus.CONFLICT, "Conflicto", "No se puede realizar la operación porque el registro está asociado a otros datos o ya existe", request);
     }
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorRespuesta> credenciales(CredencialesInvalidasException ex, HttpServletRequest request) {

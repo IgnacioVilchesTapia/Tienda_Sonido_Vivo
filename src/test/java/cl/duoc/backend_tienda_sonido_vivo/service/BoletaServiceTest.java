@@ -236,4 +236,47 @@ class BoletaServiceTest {
 
         assertThat(dto.numero()).isEqualTo(1L);
     }
+
+    @Test
+    void crearCompraAgrupaItemsConMismoCodigo() {
+        Producto guitarra = producto("GA001", 100000, 10, 0);
+        guardarDevuelveLaMisma();
+
+        CompraDTO compra = new CompraDTO(
+                List.of(new ItemCompraDTO("GA001", 2), new ItemCompraDTO(" ga001 ", 3)),
+                null, direccion);
+
+        BoletaDTO boleta = boletaService.crearCompra("fsoto2000@gmail.com", compra);
+
+        assertThat(boleta.detalles()).hasSize(1);
+        assertThat(boleta.detalles().get(0).cantidad()).isEqualTo(5);
+        assertThat(guitarra.getStock()).isEqualTo(5);
+        assertThat(boleta.subtotal()).isEqualTo(500000);
+    }
+
+    @Test
+    void noSePuedeCambiarEstadoDeBoletaEntregada() {
+        Boleta b = new Boleta();
+        b.setNumero(5L);
+        b.setEstado(EstadoBoleta.ENTREGADA);
+        b.setUsuario(usuarioRepository.findByCorreoIgnoreCase("fsoto2000@gmail.com").get());
+        when(boletaRepository.findById(5L)).thenReturn(Optional.of(b));
+
+        assertThatThrownBy(() -> boletaService.cambiarEstado(5L, "ENVIADA"))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("La boleta 5 ya fue entregada y no se puede modificar");
+    }
+
+    @Test
+    void noSePuedeAnularBoletaEntregada() {
+        Boleta b = new Boleta();
+        b.setNumero(5L);
+        b.setEstado(EstadoBoleta.ENTREGADA);
+        b.setUsuario(usuarioRepository.findByCorreoIgnoreCase("fsoto2000@gmail.com").get());
+        when(boletaRepository.findById(5L)).thenReturn(Optional.of(b));
+
+        assertThatThrownBy(() -> boletaService.anular(5L))
+                .isInstanceOf(ConflictoException.class)
+                .hasMessage("La boleta 5 ya fue entregada y no se puede modificar");
+    }
 }

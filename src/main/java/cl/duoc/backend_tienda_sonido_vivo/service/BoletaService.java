@@ -15,6 +15,7 @@ import cl.duoc.backend_tienda_sonido_vivo.repository.BoletaRepository;
 import cl.duoc.backend_tienda_sonido_vivo.repository.ProductoRepository;
 import cl.duoc.backend_tienda_sonido_vivo.repository.UsuarioRepository;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,12 +51,19 @@ public class BoletaService {
         boleta.setFecha(LocalDateTime.now());
         boleta.setEstado(EstadoBoleta.PAGADA);
 
-        int subtotal = 0;
+        LinkedHashMap<String, Integer> agrupados = new LinkedHashMap<>();
         for (ItemCompraDTO item : compra.items()) {
             String codigo = item.codigo().trim().toUpperCase(Locale.ROOT);
+            agrupados.put(codigo, agrupados.getOrDefault(codigo, 0) + item.cantidad());
+        }
+
+        int subtotal = 0;
+        for (Map.Entry<String, Integer> entry : agrupados.entrySet()) {
+            String codigo = entry.getKey();
+            int cantidad = entry.getValue();
             Producto producto = productoRepository.findById(codigo)
                     .orElseThrow(() -> new RecursoNoEncontradoException("No existe el producto " + codigo));
-            if (producto.getStock() < item.cantidad()) {
+            if (producto.getStock() < cantidad) {
                 throw new ConflictoException("Stock insuficiente para " + codigo + ": quedan " + producto.getStock());
             }
 
@@ -63,12 +71,12 @@ public class BoletaService {
             DetalleBoleta detalle = new DetalleBoleta();
             detalle.setBoleta(boleta);
             detalle.setProducto(producto);
-            detalle.setCantidad(item.cantidad());
+            detalle.setCantidad(cantidad);
             detalle.setPrecioUnitario(precio);
-            detalle.setSubtotal(precio * item.cantidad());
+            detalle.setSubtotal(precio * cantidad);
             boleta.getDetalles().add(detalle);
 
-            producto.setStock(producto.getStock() - item.cantidad());
+            producto.setStock(producto.getStock() - cantidad);
             subtotal += detalle.getSubtotal();
         }
 
@@ -130,6 +138,9 @@ public class BoletaService {
     @Transactional
     public BoletaDTO cambiarEstado(Long numero, String nuevoEstado) {
         Boleta boleta = buscar(numero);
+        if (boleta.getEstado() == EstadoBoleta.ENTREGADA) {
+            throw new ConflictoException("La boleta " + numero + " ya fue entregada y no se puede modificar");
+        }
         EstadoBoleta estado = convertirEstado(nuevoEstado);
         if (estado == EstadoBoleta.ANULADA) {
             return anular(numero);
@@ -144,6 +155,9 @@ public class BoletaService {
     @Transactional
     public BoletaDTO anular(Long numero) {
         Boleta boleta = buscar(numero);
+        if (boleta.getEstado() == EstadoBoleta.ENTREGADA) {
+            throw new ConflictoException("La boleta " + numero + " ya fue entregada y no se puede modificar");
+        }
         if (boleta.getEstado() == EstadoBoleta.ANULADA) {
             throw new ConflictoException("La boleta " + numero + " ya está anulada");
         }
