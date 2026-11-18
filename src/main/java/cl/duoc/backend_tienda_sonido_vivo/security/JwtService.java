@@ -40,10 +40,6 @@ public class JwtService {
         return leerClaims(token).getSubject();
     }
 
-    public String obtenerRol(String token) {
-        return leerClaims(token).get("rol", String.class);
-    }
-
     public boolean esTokenDeAcceso(String token) {
         return tieneTipo(token, "acceso");
     }
