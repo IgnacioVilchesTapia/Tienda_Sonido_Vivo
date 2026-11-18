@@ -15,9 +15,15 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "boleta")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Boleta {
 
     @Id
@@ -67,127 +73,4 @@ public class Boleta {
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL)
     private List<DetalleBoleta> detalles = new ArrayList<>();
-
-    public Boleta() {
-    }
-
-    public Long getNumero() {
-        return numero;
-    }
-
-    public void setNumero(Long numero) {
-        this.numero = numero;
-    }
-
-    public LocalDateTime getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDateTime fecha) {
-        this.fecha = fecha;
-    }
-
-    public EstadoBoleta getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoBoleta estado) {
-        this.estado = estado;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getCupon() {
-        return cupon;
-    }
-
-    public void setCupon(String cupon) {
-        this.cupon = cupon;
-    }
-
-    public Integer getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(Integer subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public Integer getDescuento() {
-        return descuento;
-    }
-
-    public void setDescuento(Integer descuento) {
-        this.descuento = descuento;
-    }
-
-    public Integer getDespacho() {
-        return despacho;
-    }
-
-    public void setDespacho(Integer despacho) {
-        this.despacho = despacho;
-    }
-
-    public Integer getTotal() {
-        return total;
-    }
-
-    public void setTotal(Integer total) {
-        this.total = total;
-    }
-
-    public String getCalle() {
-        return calle;
-    }
-
-    public void setCalle(String calle) {
-        this.calle = calle;
-    }
-
-    public String getDepto() {
-        return depto;
-    }
-
-    public void setDepto(String depto) {
-        this.depto = depto;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getComuna() {
-        return comuna;
-    }
-
-    public void setComuna(String comuna) {
-        this.comuna = comuna;
-    }
-
-    public String getIndicaciones() {
-        return indicaciones;
-    }
-
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
-
-    public List<DetalleBoleta> getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(List<DetalleBoleta> detalles) {
-        this.detalles = detalles;
-    }
 }

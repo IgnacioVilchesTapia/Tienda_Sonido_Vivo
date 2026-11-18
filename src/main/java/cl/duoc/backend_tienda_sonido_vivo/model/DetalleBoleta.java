@@ -8,9 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "detalle_boleta")
+@Getter
+@Setter
+@NoArgsConstructor
 public class DetalleBoleta {
 
     @Id
@@ -33,55 +39,4 @@ public class DetalleBoleta {
 
     @Column(nullable = false)
     private Integer subtotal;
-
-    public DetalleBoleta() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Boleta getBoleta() {
-        return boleta;
-    }
-
-    public void setBoleta(Boleta boleta) {
-        this.boleta = boleta;
-    }
-
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
-
-    public Integer getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
-    }
-
-    public Integer getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    public void setPrecioUnitario(Integer precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
-
-    public Integer getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(Integer subtotal) {
-        this.subtotal = subtotal;
-    }
 }
