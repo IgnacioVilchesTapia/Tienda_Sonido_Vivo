@@ -145,10 +145,10 @@ export default function AdminProductos() {
           <Link to="/admin/dashboard" className="btn btn-outline-secondary">
             <i className="bi bi-arrow-left me-1"></i> Dashboard
           </Link>
+          <Link to="/admin/productos/criticos" className="btn btn-outline-danger">
+            Críticos
+          </Link>
           <SoloRol roles={['ADMIN']}>
-            <Link to="/admin/productos/criticos" className="btn btn-outline-danger">
-              Críticos
-            </Link>
             <button className="btn btn-amber fw-bold" onClick={() => setMostrarModal(true)}>
               <i className="bi bi-plus-circle me-1"></i> Nuevo Producto
             </button>
