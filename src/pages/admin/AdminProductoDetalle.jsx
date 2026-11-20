@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import SoloRol from '../../components/SoloRol';
 import { obtenerProducto, actualizarProducto } from '../../services/productoService';
 import { listarCategorias } from '../../services/categoriaService';
 import { mensajeDeError } from '../../services/api';
@@ -96,9 +97,11 @@ export default function AdminProductoDetalle() {
         <div className="d-flex gap-2">
           <Link to="/admin/productos" className="btn btn-outline-secondary">Volver al listado</Link>
           {!editando && (
-            <button className="btn btn-amber fw-bold" onClick={() => { setForm({ ...producto }); setEditando(true); }}>
-              Editar
-            </button>
+            <SoloRol roles={['ADMIN']}>
+              <button className="btn btn-amber fw-bold" onClick={() => { setForm({ ...producto }); setEditando(true); }}>
+                Editar
+              </button>
+            </SoloRol>
           )}
         </div>
       </div>

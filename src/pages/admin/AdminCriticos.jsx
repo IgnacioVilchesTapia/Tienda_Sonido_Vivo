@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import SoloRol from '../../components/SoloRol';
 import { listarCriticos } from '../../services/productoService';
 import { obtenerProductos as obtenerProductosLocales } from '../../data/datos';
 
@@ -73,9 +74,11 @@ export default function AdminCriticos() {
                     <td className={p.stock === 0 ? 'text-danger fw-bold' : 'fw-bold'}>{p.stock}</td>
                     <td>{p.stockCritico}</td>
                     <td>
-                      <Link to={'/admin/productos/' + p.codigo} className="btn btn-sm btn-outline-primary">
-                        Editar stock
-                      </Link>
+                      <SoloRol roles={['ADMIN']}>
+                        <Link to={'/admin/productos/' + p.codigo} className="btn btn-sm btn-outline-primary">
+                          Editar stock
+                        </Link>
+                      </SoloRol>
                     </td>
                   </tr>
                 ))}

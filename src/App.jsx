@@ -73,7 +73,7 @@ function App() {
               <Route path="pago-error" element={<PagoError />} />
               <Route path="admin/dashboard" element={<RutaProtegida roles={PERSONAL}><AdminDashboard /></RutaProtegida>} />
               <Route path="admin/productos" element={<RutaProtegida roles={PERSONAL}><AdminProductos /></RutaProtegida>} />
-              <Route path="admin/productos/criticos" element={<RutaProtegida roles={SOLO_ADMIN}><AdminCriticos /></RutaProtegida>} />
+              <Route path="admin/productos/criticos" element={<RutaProtegida roles={PERSONAL}><AdminCriticos /></RutaProtegida>} />
               <Route path="admin/productos/:codigo" element={<RutaProtegida roles={PERSONAL}><AdminProductoDetalle /></RutaProtegida>} />
               <Route path="admin/usuarios" element={<RutaProtegida roles={SOLO_ADMIN}><AdminUsuarios /></RutaProtegida>} />
               <Route path="admin/usuarios/:run" element={<RutaProtegida roles={SOLO_ADMIN}><AdminUsuarioDetalle /></RutaProtegida>} />

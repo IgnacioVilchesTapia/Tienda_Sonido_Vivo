@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useFetch(url, options = {}) {
+export function useFetch(url) {
   const [respuesta, setRespuesta] = useState({ url: null, data: null, error: null });
 
   useEffect(() => {
@@ -8,7 +8,7 @@ export function useFetch(url, options = {}) {
 
     let activo = true;
 
-    fetch(url, options)
+    fetch(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Error en la petición: ${res.status} ${res.statusText}`);
