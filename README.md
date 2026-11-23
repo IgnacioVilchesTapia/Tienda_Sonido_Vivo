@@ -78,11 +78,11 @@ Las pruebas están al lado del archivo que prueban y terminan en `.spec.js` o `.
 
 Usuarios que crea el backend al partir:
 
-| Rol | Correo | Contraseña |
-| --- | --- | --- |
-| Administrador | c.pizarro@duoc.cl | admin123 |
-| Vendedor | d.rojas@duoc.cl | vende123 |
-| Cliente | fsoto2000@gmail.com | cliente123 |
+| Rol | Correo | Contraseña | Qué puede probar |
+| --- | --- | --- | --- |
+| Administrador | c.pizarro@duoc.cl | admin123 | Todo el panel: productos, categorías, usuarios, órdenes (cambiar estado y anular boletas), reportes y perfil |
+| Vendedor | d.rojas@duoc.cl | vende123 | Ver productos, stock crítico y órdenes con sus boletas, sin crear, editar ni borrar. No entra a usuarios, categorías ni reportes |
+| Cliente | fsoto2000@gmail.com | cliente123 | Catálogo, carrito con cupón, checkout y compra. No entra al panel |
 
 - También se puede registrar un cliente nuevo con un correo @duoc.cl, @profesor.duoc.cl o @gmail.com
 - Cupones: SONIDOVIVO10 (10%) y MUSICO5 (5%)
