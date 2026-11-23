@@ -35,7 +35,6 @@ export default function Contacto() {
       </div>
 
       <div className="row g-5">
-        {/* Formulario */}
         <div className="col-lg-7">
           <div className="card shadow-sm border-0 p-4 rounded-3 bg-white">
             <h4 className="fw-bold mb-3">Envíanos un Mensaje</h4>
@@ -97,7 +96,6 @@ export default function Contacto() {
           </div>
         </div>
 
-        {/* Información de la Tienda Física */}
         <div className="col-lg-5">
           <div className="card shadow-sm border-0 p-4 rounded-3 bg-light h-100">
             <h4 className="fw-bold mb-3">Información de la Tienda</h4>

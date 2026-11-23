@@ -75,7 +75,6 @@ export default function Carrito() {
       </div>
 
       <div className="row g-4">
-        {/* Tabla de Productos */}
         <div className="col-lg-8">
           <div className="card shadow-sm border-0 rounded-3 overflow-hidden">
             <div className="table-responsive">
@@ -167,7 +166,6 @@ export default function Carrito() {
           </div>
         </div>
 
-        {/* Resumen de Compra & Cupones */}
         <div className="col-lg-4">
           <div className="card shadow-sm border-0 rounded-3 p-4 bg-white mb-3">
             <h4 className="fw-bold mb-3">Resumen del Pedido</h4>
@@ -214,7 +212,6 @@ export default function Carrito() {
               <i className="bi bi-lock-fill me-2"></i>Proceder al Pago
             </button>
 
-            {/* Caja de Cupones */}
             <div className="border-top pt-3">
               <label className="form-label small fw-semibold text-muted mb-1">
                 ¿Tienes un cupón de descuento?

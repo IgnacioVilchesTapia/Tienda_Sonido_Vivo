@@ -1,4 +1,3 @@
-// regiones.js — Listado oficial de regiones y comunas de Chile para Sonido Vivo
 export const REGIONES = [
   { nombre: "Región de Arica y Parinacota", comunas: ["Arica", "Camarones", "Putre", "General Lagos"] },
   { nombre: "Región de Tarapacá", comunas: ["Iquique", "Alto Hospicio", "Pozo Almonte", "Pica", "Huara"] },

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 export default function Nosotros() {
   return (
     <div className="container my-5">
-      {/* Encabezado */}
       <div className="text-center mb-5">
         <span className="text-amber fw-bold text-uppercase small">Viña del Mar — Desde 2014</span>
         <h1 className="display-5 fw-bold mb-3">Nuestra Pasión es la Música</h1>
@@ -12,7 +11,6 @@ export default function Nosotros() {
         </p>
       </div>
 
-      {/* Historia e Instalaciones */}
       <div className="row g-5 align-items-center mb-5">
         <div className="col-lg-6">
           <h2 className="fw-bold mb-3">Nuestra Historia</h2>
@@ -58,7 +56,6 @@ export default function Nosotros() {
         </div>
       </div>
 
-      {/* Valores de la Tienda */}
       <div className="row g-4 text-center my-4">
         <div className="col-md-4">
           <div className="card p-4 h-100 border-0 bg-white shadow-sm rounded-3">
@@ -83,7 +80,6 @@ export default function Nosotros() {
         </div>
       </div>
 
-      {/* Botón CTA Catálogo */}
       <div className="text-center mt-5">
         <Link to="/productos" className="btn btn-amber btn-lg px-5 fw-bold shadow">
           Explorar el Catálogo Completo

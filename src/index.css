@@ -28,7 +28,6 @@ h1, h2, h3, h4, h5, h6, .brand-font {
   min-height: 100vh;
 }
 
-/* Clases utilitarias de identidad Sonido Vivo */
 .bg-tolex {
   background-color: var(--color-tolex) !important;
 }

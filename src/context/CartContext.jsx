@@ -11,7 +11,6 @@ const CUPONES_VALIDOS = {
 };
 
 export function CartProvider({ children }) {
-  // Inicializar carrito desde localStorage
   const [items, setItems] = useState(() => {
     try {
       const guardado = localStorage.getItem(STORAGE_KEY);
@@ -21,7 +20,6 @@ export function CartProvider({ children }) {
     }
   });
 
-  // Inicializar cupón activo
   const [cupon, setCupon] = useState(() => {
     try {
       return localStorage.getItem(CUPON_KEY) || '';
@@ -30,7 +28,6 @@ export function CartProvider({ children }) {
     }
   });
 
-  // Guardar en localStorage ante cambios
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -51,7 +48,6 @@ export function CartProvider({ children }) {
     }
   }, [cupon]);
 
-  // Regla 1 & 2: Agregar producto validando stock
   const agregarAlCarrito = (producto, cantidad = 1) => {
     if (!producto || !producto.codigo) return { ok: false, mensaje: 'Producto inválido' };
 
@@ -80,7 +76,6 @@ export function CartProvider({ children }) {
     };
   };
 
-  // Regla 3: Modificar cantidad respetando stock y mínimo 1
   const actualizarCantidad = (codigo, nuevaCantidad) => {
     const cant = parseInt(nuevaCantidad, 10);
     if (isNaN(cant) || cant <= 0) {
@@ -97,18 +92,15 @@ export function CartProvider({ children }) {
     }));
   };
 
-  // Eliminar producto
   const eliminarDelCarrito = (codigo) => {
     setItems(items.filter((it) => it.codigo !== codigo));
   };
 
-  // Vaciar carrito
   const vaciarCarrito = () => {
     setItems([]);
     setCupon('');
   };
 
-  // Regla 4: Cupones de descuento
   const aplicarCupon = (codigoCupon) => {
     const normalizado = (codigoCupon || '').trim().toUpperCase();
     if (CUPONES_VALIDOS[normalizado]) {
@@ -122,13 +114,11 @@ export function CartProvider({ children }) {
     setCupon('');
   };
 
-  // Cálculos totales
   const cantidadTotal = items.reduce((acc, it) => acc + it.cantidad, 0);
   const subtotal = items.reduce((acc, it) => acc + (it.precio * it.cantidad), 0);
   const porcentajeDescuento = CUPONES_VALIDOS[cupon] || 0;
   const descuento = Math.round(subtotal * (porcentajeDescuento / 100));
   
-  // Regla 5: Despacho $4.990; gratuito sobre $150.000
   const costoDespacho = (subtotal > 150000 || items.length === 0) ? 0 : 4990;
   const total = Math.max(0, subtotal - descuento + costoDespacho);
 
