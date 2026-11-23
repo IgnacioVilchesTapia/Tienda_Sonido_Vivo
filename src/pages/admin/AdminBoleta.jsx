@@ -25,7 +25,7 @@ export default function AdminBoleta() {
   const guardarEstado = async () => {
     setError('');
     try {
-      const actualizada = await cambiarEstadoBoleta(boleta.numero, nuevoEstado);
+      const actualizada = await cambiarEstadoBoleta(numero, nuevoEstado);
       setBoleta(actualizada);
       setMensaje('Estado cambiado a ' + buscarEstado(actualizada.estado).etiqueta);
     } catch (err) {
@@ -34,10 +34,10 @@ export default function AdminBoleta() {
   };
 
   const anular = async () => {
-    if (!window.confirm('¿Anular la boleta N° ' + boleta.numero + '? Se devolverá el stock de sus productos.')) return;
+    if (!window.confirm('¿Anular la boleta N° ' + numero + '? Se devolverá el stock de sus productos.')) return;
     setError('');
     try {
-      const anulada = await anularBoleta(boleta.numero);
+      const anulada = await anularBoleta(numero);
       setBoleta(anulada);
       setNuevoEstado(anulada.estado);
       setMensaje('Boleta anulada y stock devuelto');

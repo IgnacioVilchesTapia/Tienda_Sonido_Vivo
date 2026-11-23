@@ -1,38 +1,43 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { listarProductos } from '../services/productoService';
 import { listarCategorias } from '../services/categoriaService';
 import { obtenerProductos as obtenerProductosLocales, obtenerCategorias as obtenerCategoriasLocales } from '../data/datos';
 
-export function useCatalogo(filtros = {}) {
-  const [productos, setProductos] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
+async function obtenerCatalogo(filtros) {
+  try {
+    const [productos, categorias] = await Promise.all([
+      listarProductos(filtros),
+      listarCategorias()
+    ]);
+    return { productos, categorias, error: null };
+  } catch (err) {
+    return {
+      productos: obtenerProductosLocales(),
+      categorias: obtenerCategoriasLocales().map((nombre, i) => ({ id: i + 1, nombre })),
+      error: err
+    };
+  }
+}
 
-  const cargar = useCallback(async () => {
-    setCargando(true);
-    setError(null);
-    try {
-      const [prods, cats] = await Promise.all([
-        listarProductos(filtros),
-        listarCategorias()
-      ]);
-      setProductos(prods);
-      setCategorias(cats);
-    } catch (err) {
-      setError(err);
-      setProductos(obtenerProductosLocales());
-      setCategorias(obtenerCategoriasLocales().map((nombre, i) => ({ id: i + 1, nombre })));
-    } finally {
-      setCargando(false);
-    }
-  }, [filtros.categoria, filtros.q]);
+export function useCatalogo(filtros = {}) {
+  const { categoria, q } = filtros;
+  const [catalogo, setCatalogo] = useState({ productos: [], categorias: [], cargando: true, error: null });
 
   useEffect(() => {
-    cargar();
-  }, [cargar]);
+    let activo = true;
 
-  return { productos, categorias, cargando, error, recargar: cargar };
+    obtenerCatalogo({ categoria, q }).then((datos) => {
+      if (activo) {
+        setCatalogo({ ...datos, cargando: false });
+      }
+    });
+
+    return () => {
+      activo = false;
+    };
+  }, [categoria, q]);
+
+  return catalogo;
 }
 
 export default useCatalogo;
